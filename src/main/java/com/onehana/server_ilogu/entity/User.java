@@ -1,5 +1,6 @@
 package com.onehana.server_ilogu.entity;
 
+import com.onehana.server_ilogu.dto.request.UserJoinRequest;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -32,4 +33,12 @@ public class User extends BaseTimeEntity {
 
     @Enumerated(EnumType.STRING)
     private FamilyRole role = FamilyRole.FATHER;
+
+    public static User of(UserJoinRequest userDto) {
+        User user = new User();
+        user.email = userDto.getEmail();
+        user.password = userDto.getPassword();
+        user.nickname = userDto.getNickname();
+        return user;
+    }
 }
