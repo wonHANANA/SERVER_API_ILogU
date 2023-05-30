@@ -5,8 +5,10 @@ import com.onehana.server_ilogu.dto.UserDto;
 import com.onehana.server_ilogu.dto.request.UserJoinRequest;
 import com.onehana.server_ilogu.dto.request.UserLoginRequest;
 import com.onehana.server_ilogu.dto.response.BaseResponse;
+import com.onehana.server_ilogu.dto.response.BaseResponseStatus;
 import com.onehana.server_ilogu.dto.response.UserJoinResponse;
 import com.onehana.server_ilogu.dto.response.UserLoginResponse;
+import com.onehana.server_ilogu.exception.BaseException;
 import com.onehana.server_ilogu.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -42,8 +44,11 @@ public class UserController {
     @GetMapping("/token/refresh")
     public BaseResponse<JwtDto> refresh(HttpServletRequest request) {
         String header = request.getHeader(HttpHeaders.AUTHORIZATION);
-        String refreshToken = header.split(" ")[1].trim();
+        if (header == null || !header.startsWith("Bearer ")) {
+            throw new BaseException(BaseResponseStatus.INVALID_HEADER);
+        }
 
+        String refreshToken = header.split(" ")[1].trim();
         JwtDto res = userService.refresh(refreshToken);
 
         return new BaseResponse<>(res);

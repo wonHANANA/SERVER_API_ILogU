@@ -39,7 +39,7 @@ public class SecurityConfig implements WebMvcConfigurer {
                 .httpBasic(AbstractHttpConfigurer::disable)
 
                 .authorizeHttpRequests(auth -> auth
-                                .requestMatchers("/**").permitAll()
+                        .requestMatchers("/**").permitAll()
                 )
                 .addFilterBefore(new JwtTokenFilter(key, userService), UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling((exceptionHandling) -> exceptionHandling

@@ -30,7 +30,8 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     private final UserService userService;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws ServletException, IOException {
 
         String servletPath = request.getServletPath();
         String header = request.getHeader(HttpHeaders.AUTHORIZATION);
@@ -42,8 +43,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
         if (header == null || !header.startsWith("Bearer ")) {
             log.error("Header가 null이거나 잘못된 형식입니다.");
-            response.setStatus(HttpStatus.BAD_REQUEST.value());
-            writeErrorResponse(response, BaseResponseStatus.INVALID_HEADER);
+            filterChain.doFilter(request, response);
             return;
         }
 
