@@ -42,7 +42,7 @@ public class ChatGptService {
         return responseEntity.getBody();
     }
 
-    public ChatGptResponse askQuestionWithPrompt(String message, String prompt) {
+    public String askQuestionWithPrompt(String message, String prompt) {
         String newMsg = message + prompt;
 
         MessageDto messageDto = MessageDto.builder()
@@ -52,7 +52,7 @@ public class ChatGptService {
 
         System.out.println("gpt한테 한 질문 : " + newMsg);
 
-        return this.getResponse(
+        ChatGptResponse res = this.getResponse(
                 this.buildHttpEntity(
                         new ChatGptRequest(
                                 ChatGptConfig.MODEL,
@@ -63,5 +63,6 @@ public class ChatGptService {
                         )
                 )
         );
+        return res.getChoices().get(0).getMessage().getContent();
     }
 }

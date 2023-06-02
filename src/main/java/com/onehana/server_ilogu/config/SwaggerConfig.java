@@ -25,4 +25,14 @@ public class SwaggerConfig {
                 .pathsToMatch(paths)
                 .build();
     }
+
+    @Bean
+    public GroupedOpenApi board() {
+        String[] paths = {"/board/**"};
+
+        return GroupedOpenApi.builder()
+                .group("피드")
+                .pathsToMatch(paths)
+                .build();
+    }
 }
