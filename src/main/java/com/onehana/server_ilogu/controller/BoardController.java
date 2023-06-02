@@ -1,6 +1,7 @@
 package com.onehana.server_ilogu.controller;
 
 import com.onehana.server_ilogu.dto.response.ChatGptResponse;
+import com.onehana.server_ilogu.service.AmazonS3Service;
 import com.onehana.server_ilogu.service.AzureService;
 import com.onehana.server_ilogu.service.ChatGptService;
 import lombok.RequiredArgsConstructor;
