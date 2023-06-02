@@ -1,11 +1,18 @@
 package com.onehana.server_ilogu.controller;
 
+import com.onehana.server_ilogu.dto.BoardDto;
+import com.onehana.server_ilogu.dto.UserDto;
+import com.onehana.server_ilogu.dto.request.BoardCreateRequest;
+import com.onehana.server_ilogu.dto.request.BoardModifyRequest;
 import com.onehana.server_ilogu.dto.response.BaseResponse;
-import com.onehana.server_ilogu.dto.response.ChatGptResponse;
+import com.onehana.server_ilogu.dto.response.BaseResponseStatus;
+import com.onehana.server_ilogu.dto.response.BoardResponse;
 import com.onehana.server_ilogu.service.AzureService;
+import com.onehana.server_ilogu.service.BoardService;
 import com.onehana.server_ilogu.service.ChatGptService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -17,8 +24,28 @@ import java.util.List;
 @RequestMapping("/board")
 public class BoardController {
 
+    private final BoardService boardService;
     private final AzureService azureService;
     private final ChatGptService chatGptService;
+
+    @Operation(summary = "피드글 업로드", description = "피드글을 작성한다")
+    @PostMapping
+    public BaseResponse<Void> create(@RequestBody BoardCreateRequest request, Authentication authentication) {
+        UserDto userDto = (UserDto) authentication.getPrincipal();
+        boardService.create(request.getTitle(), request.getContent(), userDto.getEmail());
+
+        return new BaseResponse<>(BaseResponseStatus.SUCCESS);
+    }
+
+    @Operation(summary = "피드글 수정", description = "피드글을 수정한다")
+    @PutMapping("/{postId}")
+    public BaseResponse<BoardResponse> modify(@PathVariable Long postId,
+                                              @RequestBody BoardModifyRequest request, Authentication authentication) {
+        UserDto userDto = (UserDto) authentication.getPrincipal();
+        BoardDto postDto = boardService.modify(request.getTitle(), request.getContent(), userDto.getEmail(), postId);
+
+        return new BaseResponse<>(BoardResponse.of(postDto));
+    }
 
     @Operation(summary = "이미지 설명글 생성", description = "이미지를 등록하면 분석해서 관련 글을 작성해준다.")
     @PostMapping("/image/explain")

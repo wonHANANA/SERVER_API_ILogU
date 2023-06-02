@@ -26,13 +26,13 @@ public class User extends BaseTimeEntity {
     private String refreshToken;
 
     @Enumerated(EnumType.STRING)
-    private UserRole userRole = UserRole.USER_ROLE;
+    private UserRole userRole;
 
     @Enumerated(EnumType.STRING)
-    private FamilyType type = FamilyType.PARENT;
+    private FamilyType type;
 
     @Enumerated(EnumType.STRING)
-    private FamilyRole role = FamilyRole.FATHER;
+    private FamilyRole role;
 
     public static User of(UserJoinRequest userDto) {
         User user = new User();
