@@ -33,19 +33,21 @@ public enum BaseResponseStatus {
     TEST_INNERTEST_TOBE_EMPTY(false, "400-02-09", "testCodes 안에 있는 expect 안에 있는 toBe를 입력해주세요. 예) \"toBe\": 200"),
     TEST_INNERTEST_METHOD_EMPTY(false, "400-02-10", "testCodes 안에 있는 method를 입력해주세요. 예) \"method\": \"post\""),
 
-    DUPLICATED_USERID(false, "400-02-11", "이미 가입된 아이디입니다."),
-    DUPLICATED_EMAIL(false, "400-02-12", "이미 가입된 이메일입니다."),
-    USER_NOT_FOUND(false, "400-02-13", "존재하지 않는 아이디입니다."),
-    INVALID_PASSWORD(false, "400-02-14", "비밀번호가 일치하지 않습니다."),
-    POST_NOT_FOUND(false, "400-02-15", "존재하지 않는 게시물입니다."),
-    INVALID_PERMISSION(false, "400-02-16", "권한이 존재하지 않습니다."),
+    INVALID_HEADER(false, "400-02-20", "Header가 null이거나 형식이 올바르지 않습니다."),
+    INVALID_ACCESS_TOKEN(false, "400-02-21", "Access 토큰이 유효하지 않습니다."),
+    INVALID_REFRESH_TOKEN(false, "400-02-22", "Refresh 토큰이 유효하지 않습니다."),
+    EXPIRED_ACCESS_TOKEN(false, "400-02-23", "Access 토큰이 만료되었습니다."),
+    EXPIRED_REFRESH_TOKEN(false, "400-02-24", "Refresh 토큰이 만료되었습니다. 로그인이 필요합니다."),
 
-    INVALID_HEADER(false, "400-02-17", "Header가 null이거나 형식이 올바르지 않습니다."),
-    INVALID_ACCESS_TOKEN(false, "400-02-18", "Access 토큰이 유효하지 않습니다."),
-    INVALID_REFRESH_TOKEN(false, "400-02-19", "Refresh 토큰이 유효하지 않습니다."),
-    EXPIRED_ACCESS_TOKEN(false, "400-02-20", "Access 토큰이 만료되었습니다."),
-    EXPIRED_REFRESH_TOKEN(false, "400-02-21", "Refresh 토큰이 만료되었습니다. 로그인이 필요합니다."),
+    DUPLICATED_USERID(false, "400-02-30", "이미 가입된 아이디입니다."),
+    DUPLICATED_EMAIL(false, "400-02-31", "이미 가입된 이메일입니다."),
+    USER_NOT_FOUND(false, "400-02-32", "존재하지 않는 아이디입니다."),
+    INVALID_PASSWORD(false, "400-02-33", "비밀번호가 일치하지 않습니다."),
+    INVALID_PERMISSION(false, "400-02-34", "권한이 존재하지 않습니다."),
 
+    BOARD_NOT_FOUND(false, "400-02-40", "존재하지 않는 게시물입니다."),
+    COMMENT_NOT_FOUND(false, "400-02-41", "존재하지 않는 댓글입니다."),
+    IMAGE_NOT_FOUND(false, "400-02-42", "존재하지 않는 사진입니다."),
 
     /**
      * 500번대 에러 : 서버 에러 등 서버 프로그래밍 잘못으로 인한 에러들

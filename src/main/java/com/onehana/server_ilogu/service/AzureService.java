@@ -42,7 +42,7 @@ public class AzureService {
                 .map(ImageTag::name)
                 .collect(Collectors.joining(","));
 
-        joinedString = joinedString + "," + description;
+        joinedString = description + "," + joinedString;
         return joinedString;
     }
 }

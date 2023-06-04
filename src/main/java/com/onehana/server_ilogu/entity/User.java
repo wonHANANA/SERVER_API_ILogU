@@ -22,6 +22,8 @@ public class User extends BaseTimeEntity {
     @Column(nullable = false)
     private String nickname;
 
+    private String profileImageUrl;
+
     @Setter
     private String refreshToken;
 
@@ -29,16 +31,19 @@ public class User extends BaseTimeEntity {
     private UserRole userRole = UserRole.USER_ROLE;
 
     @Enumerated(EnumType.STRING)
-    private FamilyType type = FamilyType.PARENT;
+    private FamilyType familyType;
 
     @Enumerated(EnumType.STRING)
-    private FamilyRole role = FamilyRole.FATHER;
+    private FamilyRole familyRole;
 
-    public static User of(UserJoinRequest userDto) {
+    public static User of(UserJoinRequest userDto, String url) {
         User user = new User();
         user.email = userDto.getEmail();
         user.password = userDto.getPassword();
         user.nickname = userDto.getNickname();
+        user.familyRole = userDto.getFamilyRole();
+        user.familyType = userDto.getFamilyType();
+        user.profileImageUrl = url;
         return user;
     }
 }

@@ -21,6 +21,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Arrays;
+import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -36,7 +38,11 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         String servletPath = request.getServletPath();
         String header = request.getHeader(HttpHeaders.AUTHORIZATION);
 
-        if (servletPath.equals("/user/login") || servletPath.equals("/user/join") || servletPath.equals("/user/token/refresh")) {
+        List<String> excludePaths = Arrays.asList("/api/user/login", "/api/user/join",
+                "/api/user/token/refresh", "/api/board/category");
+
+        if (excludePaths.contains(servletPath) ||
+                servletPath.equals("/api/user/board") && request.getMethod().equals("GET")){
             filterChain.doFilter(request, response);
             return;
         }

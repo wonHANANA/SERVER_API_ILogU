@@ -63,6 +63,6 @@ public class ChatGptService {
                         )
                 )
         );
-        return res.getChoices().get(0).getMessage().getContent();
+        return res.getChoices().get(0).getMessage().getContent().replaceAll("/", "");
     }
 }

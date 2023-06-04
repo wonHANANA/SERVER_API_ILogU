@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
@@ -28,6 +29,14 @@ public class SecurityConfig implements WebMvcConfigurer {
 
     @Value("${jwt.access-token.secret-key}")
     private String key;
+
+    @Bean
+    public WebSecurityCustomizer configure() {
+        return (web -> web.ignoring().requestMatchers(
+                "/swagger-ui/**",
+                "/v3/api-docs/**"
+        ));
+    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
