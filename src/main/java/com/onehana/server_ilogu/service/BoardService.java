@@ -9,6 +9,8 @@ import com.onehana.server_ilogu.exception.BaseException;
 import com.onehana.server_ilogu.repository.BoardRepository;
 import com.onehana.server_ilogu.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -56,5 +58,10 @@ public class BoardService {
             throw new BaseException(BaseResponseStatus.INVALID_PERMISSION);
         }
         boardRepository.delete(post);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<BoardDto> list(Pageable pageable) {
+        return boardRepository.findAll(pageable).map(BoardDto::of);
     }
 }
