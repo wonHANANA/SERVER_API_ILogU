@@ -28,10 +28,7 @@ insert into ILogU.board (created_at, updated_at, user_id, title, content, catego
  (NOW(), NOW(), 6, '제목이다.', 'ㅇㅇ', 'EXERCISE'),
  (NOW(), NOW(), 7, '제목이다.', '할말 없음', 'TRAVEL'),
  (NOW(), NOW(), 8, '제목이다.', '그래', 'TRAVEL'),
- (NOW(), NOW(), 8, '제목이다.', '많이', 'TRAVEL'),
- (NOW(), NOW(), 8, '제목이다.', '써보자', 'TRAVEL'),
- (NOW(), NOW(), 8, '제목이다.', '그래그래', 'TRAVEL'),
- (NOW(), NOW(), 8, '제목이다.', '좋다', 'TRAVEL');
+ (NOW(), NOW(), 8, '제목이다.', '많이', 'TRAVEL');
 
 insert into ILogU.comment (created_at, updated_at, parent_comment_id, board_id,  user_id, comment) values
 (NOW(), NOW(), null, 1, 1, '1빠'),

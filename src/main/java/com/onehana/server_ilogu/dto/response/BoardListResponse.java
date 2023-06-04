@@ -14,6 +14,7 @@ public class BoardListResponse {
     private String title;
     private String content;
     private String nickName;
+    private String userProfileUrl;
     private int likesCount;
     private int commentsCount;
     private BoardCategory category;
@@ -30,6 +31,7 @@ public class BoardListResponse {
                 boardListDto.getTitle(),
                 boardListDto.getContent(),
                 boardListDto.getNickName(),
+                boardListDto.getUserProfileUrl(),
                 boardListDto.getLikesCount(),
                 boardListDto.getCommentsCount(),
                 boardListDto.getCategory(),

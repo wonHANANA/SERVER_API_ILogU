@@ -3,6 +3,7 @@ package com.onehana.server_ilogu.dto;
 import com.onehana.server_ilogu.entity.Board;
 import com.onehana.server_ilogu.entity.BoardCategory;
 import com.onehana.server_ilogu.entity.BoardImage;
+import com.onehana.server_ilogu.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -15,6 +16,7 @@ public class BoardListDto {
     private String title;
     private String content;
     private String nickName;
+    private String userProfileUrl;
     private BoardCategory category;
     private int likesCount;
     private int commentsCount;
@@ -31,6 +33,7 @@ public class BoardListDto {
                 board.getTitle(),
                 board.getContent(),
                 board.getUser().getNickname(),
+                board.getUser().getProfileImageUrl(),
                 board.getCategory(),
                 likesCount,
                 commentsCount,
