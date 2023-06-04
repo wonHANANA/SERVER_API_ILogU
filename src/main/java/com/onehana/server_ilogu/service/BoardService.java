@@ -74,6 +74,14 @@ public class BoardService {
         return boardRepository.findAllByUser(user, pageable).map(BoardDto::of);
     }
 
+    @Transactional(readOnly = true)
+    public Page<BoardDto> getMyBoardsByCategory(String email, BoardCategory category, Pageable pageable) {
+        User user = userRepository.findByEmail(email).orElseThrow(() ->
+                new BaseException(BaseResponseStatus.USER_NOT_FOUND));
+
+        return boardRepository.findByUserAndCategory(user, category, pageable).map(BoardDto::of);
+    }
+
     public void createComment(Long boardId, Long parentCommentId, String comment, String email) {
         User user = getUserOrException(email);
         Board board = getBoardOrException(boardId);

@@ -74,11 +74,21 @@ public class BoardController {
         return new BaseResponse<>(boardService.getBoardsByCategory(category, pageable).map(BoardResponse::of));
     }
 
+    @Operation(summary = "나의 피드글 조회", description = "pageable 옵션에 따라 로그인한 유저의 피드글을 조회한다.")
     @GetMapping("/my")
     public BaseResponse<Page<BoardResponse>> getMyBoards(Pageable pageable, Authentication authentication) {
         UserDto userDto = (UserDto) authentication.getPrincipal();
 
         return new BaseResponse<>(boardService.getMyBoards(userDto.getEmail(), pageable).map(BoardResponse::of));
+    }
+
+    @Operation(summary = "카테고리 별 나의 피드글 조회", description = "pageable 옵션과 카테고리에 따라 로그인한 유저의 피드글을 조회한다.")
+    @GetMapping("/my/category/{category}")
+    public BaseResponse<Page<BoardResponse>> getMyBoardsByCategory(@PathVariable BoardCategory category,
+                                                                   Pageable pageable, Authentication authentication) {
+        UserDto userDto = (UserDto) authentication.getPrincipal();
+
+        return new BaseResponse<>(boardService.getMyBoardsByCategory(userDto.getEmail(), category, pageable).map(BoardResponse::of));
     }
 
     @Operation(summary = "이미지 설명글 생성", description = "이미지를 등록하면 분석해서 관련 글을 작성해준다.")
