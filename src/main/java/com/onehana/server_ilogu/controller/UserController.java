@@ -11,10 +11,13 @@ import com.onehana.server_ilogu.dto.response.UserLoginResponse;
 import com.onehana.server_ilogu.exception.BaseException;
 import com.onehana.server_ilogu.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.annotation.Nullable;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
@@ -24,9 +27,11 @@ public class UserController {
     private final UserService userService;
 
     @Operation(summary = "회원가입", description = "회원가입")
-    @PostMapping("/join")
-    public BaseResponse<UserJoinResponse> join(@RequestBody UserJoinRequest request) {
-        UserDto userDto = userService.join(request);
+    @PostMapping(value = "/join", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
+    public BaseResponse<UserJoinResponse> join(@RequestPart UserJoinRequest request,
+                                               @Nullable @RequestPart("file") MultipartFile file) {
+
+        UserDto userDto = userService.join(request, file);
         return new BaseResponse<>(UserJoinResponse.of(userDto));
     }
 

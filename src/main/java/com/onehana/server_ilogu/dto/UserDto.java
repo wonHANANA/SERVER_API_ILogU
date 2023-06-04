@@ -1,5 +1,7 @@
 package com.onehana.server_ilogu.dto;
 
+import com.onehana.server_ilogu.entity.FamilyRole;
+import com.onehana.server_ilogu.entity.FamilyType;
 import com.onehana.server_ilogu.entity.User;
 import com.onehana.server_ilogu.entity.UserRole;
 import lombok.AllArgsConstructor;
@@ -18,13 +20,17 @@ public class UserDto implements UserDetails {
     private String password;
     private String nickname;
     private UserRole userRole;
+    private FamilyType familyType;
+    private FamilyRole familyRole;
 
     public static UserDto of(User user) {
         return new UserDto(
                 user.getEmail(),
                 user.getPassword(),
                 user.getNickname(),
-                user.getUserRole()
+                user.getUserRole(),
+                user.getFamilyType(),
+                user.getFamilyRole()
         );
     }
 

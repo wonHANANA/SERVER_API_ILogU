@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import static com.onehana.server_ilogu.dto.response.BaseResponseStatus.*;
 
@@ -21,6 +22,7 @@ import static com.onehana.server_ilogu.dto.response.BaseResponseStatus.*;
 @RequiredArgsConstructor
 public class UserService {
 
+    private final AmazonS3Service amazonS3Service;
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder encoder;
 
@@ -44,14 +46,20 @@ public class UserService {
     }
 
     @Transactional
-    public UserDto join(UserJoinRequest request) {
+    public UserDto join(UserJoinRequest request, MultipartFile file) {
         userRepository.findByEmail(request.getEmail()).ifPresent(it -> {
             throw new BaseException(DUPLICATED_EMAIL);
         });
 
 //        request.setPassword(encoder.encode(request.getPassword()));
 
-        User user = userRepository.save(User.of(request));
+        String profileUrl = "";
+        if (file == null) {
+            profileUrl = null;
+        } else {
+            profileUrl = amazonS3Service.uploadProfileImage(file);
+        }
+        User user = userRepository.save(User.of(request, profileUrl));
         return UserDto.of(user);
     }
 
@@ -96,4 +104,6 @@ public class UserService {
         userRepository.save(user);
         return jwtDto;
     }
+
+
 }

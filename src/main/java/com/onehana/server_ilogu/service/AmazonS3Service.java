@@ -39,13 +39,13 @@ public class AmazonS3Service {
     private final BoardImageRepository boardImageRepository;
     private final AmazonS3Client amazonS3Client;
 
-    public List<BoardImageDto> uploadFiles(List<MultipartFile> files, BoardDto boardDto) {
+    public List<BoardImageDto> uploadBoardImages(List<MultipartFile> files, BoardDto boardDto) {
         List<BoardImageDto> s3files = new ArrayList<>();
         String uploadFilePath = "board" + "/" + getFolderName();
 
         for (MultipartFile file : files) {
             String originalFileName = file.getOriginalFilename();
-            String uploadFileName = getUuidFileName(originalFileName);
+            String uploadFileName = getUuidFileName(Objects.requireNonNull(file.getOriginalFilename()));
             String uploadFileUrl = "";
 
             ObjectMetadata objectMetadata = new ObjectMetadata();
@@ -83,7 +83,30 @@ public class AmazonS3Service {
         return s3files;
     }
 
-    public void deleteFile(String email, Long boardId) {
+    public String uploadProfileImage(MultipartFile file) {
+        String uploadFilePath = "profile" + "/" + getFolderName();
+        String uploadFileName = getUuidFileName(Objects.requireNonNull(file.getOriginalFilename()));
+        String uploadFileUrl = "";
+
+        ObjectMetadata objectMetadata = new ObjectMetadata();
+        objectMetadata.setContentLength(file.getSize());
+        objectMetadata.setContentType(file.getContentType());
+
+        try (InputStream inputStream = file.getInputStream()) {
+            String keyName = uploadFilePath + "/" + uploadFileName;
+
+            amazonS3Client.putObject(
+                    new PutObjectRequest(bucket, keyName, inputStream, objectMetadata));
+
+            uploadFileUrl = amazonS3Client.getUrl(bucket, keyName).toString();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return uploadFileUrl;
+    }
+
+    public void deleteAllBoardImages(String email, Long boardId) {
         User user = getUserOrException(email);
         Board board = getBoardOrException(boardId);
 

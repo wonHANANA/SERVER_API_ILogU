@@ -16,6 +16,7 @@ import com.onehana.server_ilogu.service.AzureService;
 import com.onehana.server_ilogu.service.BoardService;
 import com.onehana.server_ilogu.service.ChatGptService;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -40,13 +41,13 @@ public class BoardController {
     @Operation(summary = "피드글 업로드", description = "피드글을 작성한다")
     @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public BaseResponse<Void> createBoard(@RequestPart BoardCreateRequest request,
-                                          @RequestPart List<MultipartFile> files, Authentication authentication) {
+                                          @Nullable @RequestPart List<MultipartFile> files, Authentication authentication) {
         UserDto userDto = (UserDto) authentication.getPrincipal();
         BoardDto boardDto = boardService.createBoard(request.getTitle(), request.getContent(),
                                                 request.getCategory(), userDto.getEmail());
 
         if (files != null)
-            amazonS3Service.uploadFiles(files, boardDto);
+            amazonS3Service.uploadBoardImages(files, boardDto);
 
         return new BaseResponse<>(BaseResponseStatus.SUCCESS);
     }
@@ -54,7 +55,7 @@ public class BoardController {
     @Operation(summary = "피드글 수정", description = "피드글을 수정한다")
     @PutMapping("/{boardId}")
     public BaseResponse<Void> modifyBoard(@PathVariable Long boardId,
-                                              @RequestBody BoardModifyRequest request, Authentication authentication) {
+                                          @RequestBody BoardModifyRequest request, Authentication authentication) {
         UserDto userDto = (UserDto) authentication.getPrincipal();
         boardService.modifyBoard(request.getTitle(), request.getContent(),
                 request.getCategory(), userDto.getEmail(), boardId);
@@ -67,7 +68,7 @@ public class BoardController {
     public BaseResponse<Void> deleteBoard(@PathVariable Long boardId, Authentication authentication) {
         UserDto userDto = (UserDto) authentication.getPrincipal();
 
-        amazonS3Service.deleteFile(userDto.getEmail(), boardId);
+        amazonS3Service.deleteAllBoardImages(userDto.getEmail(), boardId);
         boardService.deleteBoard(userDto.getEmail(), boardId);
 
         return new BaseResponse<>(BaseResponseStatus.SUCCESS);

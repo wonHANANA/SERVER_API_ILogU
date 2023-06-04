@@ -1,12 +1,12 @@
-insert into ILogU.user (created_at, updated_at, email, nickname, password, user_role) values
-(NOW(), NOW(), '1@naver.com', '이동현', '1234', 'USER_ROLE'),
-(NOW(), NOW(), '2@naver.com', '이건영', '1234', 'USER_ROLE'),
-(NOW(), NOW(), '3@naver.com', '이인', '1234', 'USER_ROLE'),
-(NOW(), NOW(), '4@naver.com', '함승현', '1234', 'USER_ROLE'),
-(NOW(), NOW(), '5@naver.com', '전준휘', '1234', 'USER_ROLE'),
-(NOW(), NOW(), '6@naver.com', '김태우', '1234', 'USER_ROLE'),
-(NOW(), NOW(), '7@naver.com', '김준기', '1234', 'USER_ROLE'),
-(NOW(), NOW(), '8@naver.com', '김보인', '1234', 'USER_ROLE');
+insert into ILogU.user (created_at, updated_at, email, nickname, password, family_role, family_type, user_role) values
+(NOW(), NOW(), '1@naver.com', '이동현', '1234', 'FATHER', 'PARENT', 'USER_ROLE'),
+(NOW(), NOW(), '2@naver.com', '이건영', '1234', 'FATHER', 'PARENT','USER_ROLE'),
+(NOW(), NOW(), '3@naver.com', '이인', '1234', 'FATHER', 'PARENT','USER_ROLE'),
+(NOW(), NOW(), '4@naver.com', '함승현', '1234', 'FATHER', 'PARENT','USER_ROLE'),
+(NOW(), NOW(), '5@naver.com', '전준휘', '1234', 'FATHER', 'PARENT','USER_ROLE'),
+(NOW(), NOW(), '6@naver.com', '김태우', '1234', 'FATHER', 'PARENT','USER_ROLE'),
+(NOW(), NOW(), '7@naver.com', '김준기', '1234', 'FATHER', 'PARENT','USER_ROLE'),
+(NOW(), NOW(), '8@naver.com', '김보인', '1234', 'FATHER', 'PARENT','USER_ROLE');
 
 insert into ILogU.board (created_at, updated_at, user_id, title, content, category) values
  (NOW(), NOW(), 1, '제목이다.', '글을 쓴다', 'COOK'),
