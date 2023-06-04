@@ -37,7 +37,7 @@ public enum BaseResponseStatus {
     DUPLICATED_EMAIL(false, "400-02-12", "이미 가입된 이메일입니다."),
     USER_NOT_FOUND(false, "400-02-13", "존재하지 않는 아이디입니다."),
     INVALID_PASSWORD(false, "400-02-14", "비밀번호가 일치하지 않습니다."),
-    POST_NOT_FOUND(false, "400-02-15", "존재하지 않는 게시물입니다."),
+    BOARD_NOT_FOUND(false, "400-02-15", "존재하지 않는 게시물입니다."),
     INVALID_PERMISSION(false, "400-02-16", "권한이 존재하지 않습니다."),
 
     INVALID_HEADER(false, "400-02-17", "Header가 null이거나 형식이 올바르지 않습니다."),

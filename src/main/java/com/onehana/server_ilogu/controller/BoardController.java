@@ -21,7 +21,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/board")
+@RequestMapping("/api/board")
 public class BoardController {
 
     private final BoardService boardService;
@@ -32,19 +32,28 @@ public class BoardController {
     @PostMapping
     public BaseResponse<Void> create(@RequestBody BoardCreateRequest request, Authentication authentication) {
         UserDto userDto = (UserDto) authentication.getPrincipal();
-        boardService.create(request.getTitle(), request.getContent(), userDto.getEmail());
+        boardService.create(request.getTitle(), request.getContent(), request.getCategory(), userDto.getEmail());
 
         return new BaseResponse<>(BaseResponseStatus.SUCCESS);
     }
 
     @Operation(summary = "피드글 수정", description = "피드글을 수정한다")
-    @PutMapping("/{postId}")
-    public BaseResponse<BoardResponse> modify(@PathVariable Long postId,
+    @PutMapping("/{boardId}")
+    public BaseResponse<BoardResponse> modify(@PathVariable Long boardId,
                                               @RequestBody BoardModifyRequest request, Authentication authentication) {
         UserDto userDto = (UserDto) authentication.getPrincipal();
-        BoardDto postDto = boardService.modify(request.getTitle(), request.getContent(), userDto.getEmail(), postId);
+        BoardDto postDto = boardService.modify(request.getTitle(), request.getContent(), request.getCategory(), userDto.getEmail(), boardId);
 
         return new BaseResponse<>(BoardResponse.of(postDto));
+    }
+
+    @Operation(summary = "피드글 삭제", description = "피드글을 삭제한다.")
+    @DeleteMapping("/{boardId}")
+    public BaseResponse<Void> delete(@PathVariable Long boardId, Authentication authentication) {
+        UserDto userDto = (UserDto) authentication.getPrincipal();
+        boardService.delete(userDto.getEmail(), boardId);
+
+        return new BaseResponse<>(BaseResponseStatus.SUCCESS);
     }
 
     @Operation(summary = "이미지 설명글 생성", description = "이미지를 등록하면 분석해서 관련 글을 작성해준다.")
