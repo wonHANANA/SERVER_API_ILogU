@@ -27,7 +27,7 @@ public class Comment extends BaseTimeEntity {
     private String comment;
 
     @Setter
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_comment_id")
     @JsonBackReference
     private Comment parentComment;
@@ -38,11 +38,11 @@ public class Comment extends BaseTimeEntity {
     @JsonManagedReference
     private List<Comment> childComments = new ArrayList<>();
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_id", nullable = false)
     @JsonBackReference
     private Board board;

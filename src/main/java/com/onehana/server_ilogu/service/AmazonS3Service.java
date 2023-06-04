@@ -3,6 +3,7 @@ package com.onehana.server_ilogu.service;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.onehana.server_ilogu.dto.BoardDto;
 import com.onehana.server_ilogu.dto.BoardListDto;
 import com.onehana.server_ilogu.dto.BoardImageDto;
 import com.onehana.server_ilogu.dto.response.BaseResponseStatus;
@@ -38,7 +39,7 @@ public class AmazonS3Service {
     private final BoardImageRepository boardImageRepository;
     private final AmazonS3Client amazonS3Client;
 
-    public List<BoardImageDto> uploadFiles(List<MultipartFile> files, BoardListDto boardListDto) {
+    public List<BoardImageDto> uploadFiles(List<MultipartFile> files, BoardDto boardDto) {
         List<BoardImageDto> s3files = new ArrayList<>();
         String uploadFilePath = "board" + "/" + getFolderName();
 
@@ -71,7 +72,7 @@ public class AmazonS3Service {
                             .uploadFileUrl(uploadFileUrl)
                             .build());
         }
-        Board board = boardRepository.findById(boardListDto.getId())
+        Board board = boardRepository.findById(boardDto.getId())
                 .orElseThrow(() -> new BaseException(BaseResponseStatus.BOARD_NOT_FOUND));
 
         List<BoardImage> boardImages = s3files.stream()

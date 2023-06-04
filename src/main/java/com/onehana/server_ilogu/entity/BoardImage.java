@@ -21,7 +21,7 @@ public class BoardImage extends BaseTimeEntity {
     private String uploadFilePath;
     private String uploadFileUrl;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_id")
     @JsonBackReference
     private Board board;

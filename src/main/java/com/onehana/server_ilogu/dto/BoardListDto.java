@@ -3,7 +3,6 @@ package com.onehana.server_ilogu.dto;
 import com.onehana.server_ilogu.entity.Board;
 import com.onehana.server_ilogu.entity.BoardCategory;
 import com.onehana.server_ilogu.entity.BoardImage;
-import com.onehana.server_ilogu.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -15,14 +14,15 @@ public class BoardListDto {
     private Long id;
     private String title;
     private String content;
+    private String nickName;
     private BoardCategory category;
-    private User user;
+    private int likesCount;
+    private int commentsCount;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private BoardImage mainImage;
 
-
-    public static BoardListDto of(Board board) {
+    public static BoardListDto of(Board board, int likesCount, int commentsCount) {
         BoardImage mainImage = (board.getBoardImages() != null && !board.getBoardImages().isEmpty())
                 ? board.getBoardImages().get(0) : null;
 
@@ -30,8 +30,10 @@ public class BoardListDto {
                 board.getId(),
                 board.getTitle(),
                 board.getContent(),
+                board.getUser().getNickname(),
                 board.getCategory(),
-                board.getUser(),
+                likesCount,
+                commentsCount,
                 board.getCreatedAt(),
                 board.getUpdatedAt(),
                 mainImage

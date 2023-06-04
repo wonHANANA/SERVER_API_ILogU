@@ -29,7 +29,7 @@ public class Board extends BaseTimeEntity{
     @Enumerated(EnumType.STRING)
     private BoardCategory category;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 

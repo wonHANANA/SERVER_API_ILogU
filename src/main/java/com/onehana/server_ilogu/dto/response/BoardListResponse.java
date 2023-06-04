@@ -13,6 +13,9 @@ public class BoardListResponse {
     private Long id;
     private String title;
     private String content;
+    private String nickName;
+    private int likesCount;
+    private int commentsCount;
     private BoardCategory category;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -26,6 +29,9 @@ public class BoardListResponse {
                 boardListDto.getId(),
                 boardListDto.getTitle(),
                 boardListDto.getContent(),
+                boardListDto.getNickName(),
+                boardListDto.getLikesCount(),
+                boardListDto.getCommentsCount(),
                 boardListDto.getCategory(),
                 boardListDto.getCreatedAt(),
                 boardListDto.getUpdatedAt(),

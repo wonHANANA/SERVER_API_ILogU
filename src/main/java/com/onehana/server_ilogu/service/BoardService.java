@@ -1,13 +1,12 @@
 package com.onehana.server_ilogu.service;
 
+import com.onehana.server_ilogu.dto.BoardDto;
 import com.onehana.server_ilogu.dto.BoardListDto;
 import com.onehana.server_ilogu.dto.CommentDto;
 import com.onehana.server_ilogu.dto.response.BaseResponseStatus;
-import com.onehana.server_ilogu.entity.Board;
-import com.onehana.server_ilogu.entity.BoardCategory;
-import com.onehana.server_ilogu.entity.Comment;
-import com.onehana.server_ilogu.entity.User;
+import com.onehana.server_ilogu.entity.*;
 import com.onehana.server_ilogu.exception.BaseException;
+import com.onehana.server_ilogu.repository.BoardLikeRepository;
 import com.onehana.server_ilogu.repository.BoardRepository;
 import com.onehana.server_ilogu.repository.CommentRepository;
 import com.onehana.server_ilogu.repository.UserRepository;
@@ -23,17 +22,18 @@ import org.springframework.transaction.annotation.Transactional;
 public class BoardService {
 
     private final BoardRepository boardRepository;
+    private final BoardLikeRepository boardLikeRepository;
     private final UserRepository userRepository;
     private final CommentRepository commentRepository;
 
-    public BoardListDto createBoard(String title, String content, BoardCategory category, String email) {
+    public BoardDto createBoard(String title, String content, BoardCategory category, String email) {
         User user = getUserOrException(email);
         Board board = boardRepository.save(Board.of(title, content, category, user));
 
-        return BoardListDto.of(board);
+        return BoardDto.of(board);
     }
 
-    public BoardListDto modifyBoard(String title, String content, BoardCategory category, String email, Long boardId) {
+    public BoardDto modifyBoard(String title, String content, BoardCategory category, String email, Long boardId) {
         User user = getUserOrException(email);
         Board board = getBoardOrException(boardId);
 
@@ -45,7 +45,7 @@ public class BoardService {
         board.setContent(content);
         board.setCategory(category);
 
-        return BoardListDto.of(boardRepository.save(board));
+        return BoardDto.of(boardRepository.save(board));
     }
 
     public void deleteBoard(String email, Long boardId) {
@@ -60,12 +60,22 @@ public class BoardService {
 
     @Transactional(readOnly = true)
     public Page<BoardListDto> getBoards(Pageable pageable) {
-        return boardRepository.findAll(pageable).map(BoardListDto::of);
+        return boardRepository.findAll(pageable)
+                .map(board -> {
+                    int likesCount = countLike(board.getId());
+                    int commentsCount = countComments(board.getId());
+                    return BoardListDto.of(board, likesCount, commentsCount);
+                });
     }
 
     @Transactional(readOnly = true)
     public Page<BoardListDto> getBoardsByCategory(BoardCategory category, Pageable pageable) {
-        return boardRepository.findByCategory(category, pageable).map(BoardListDto::of);
+        return boardRepository.findByCategory(category, pageable)
+                .map(board -> {
+                    int likesCount = countLike(board.getId());
+                    int commentsCount = countComments(board.getId());
+                    return BoardListDto.of(board, likesCount, commentsCount);
+                });
     }
 
     @Transactional(readOnly = true)
@@ -73,7 +83,12 @@ public class BoardService {
         User user = userRepository.findByEmail(email).orElseThrow(() ->
                 new BaseException(BaseResponseStatus.USER_NOT_FOUND));
 
-        return boardRepository.findAllByUser(user, pageable).map(BoardListDto::of);
+        return boardRepository.findAllByUser(user, pageable)
+                .map(board -> {
+                    int likesCount = countLike(board.getId());
+                    int commentsCount = countComments(board.getId());
+                    return BoardListDto.of(board, likesCount, commentsCount);
+                });
     }
 
     @Transactional(readOnly = true)
@@ -81,7 +96,12 @@ public class BoardService {
         User user = userRepository.findByEmail(email).orElseThrow(() ->
                 new BaseException(BaseResponseStatus.USER_NOT_FOUND));
 
-        return boardRepository.findByUserAndCategory(user, category, pageable).map(BoardListDto::of);
+        return boardRepository.findByUserAndCategory(user, category, pageable)
+                .map(board -> {
+                    int likesCount = countLike(board.getId());
+                    int commentsCount = countComments(board.getId());
+                    return BoardListDto.of(board, likesCount, commentsCount);
+                });
     }
 
     public void createComment(Long boardId, Long parentCommentId, String comment, String email) {
@@ -123,6 +143,34 @@ public class BoardService {
 
         return commentRepository.findAllByBoardAndParentCommentIsNull(board, pageable)
                 .map(CommentDto::fromEntity);
+    }
+
+    public int countComments(Long boardId) {
+        Board board = boardRepository.findById(boardId).orElseThrow(() ->
+                new BaseException(BaseResponseStatus.BOARD_NOT_FOUND));
+
+        return commentRepository.countByBoard(board);
+    }
+
+    public int like(Long boardId, String email) {
+        User user = getUserOrException(email);
+        Board board = getBoardOrException(boardId);
+
+        BoardLike boardLike = boardLikeRepository.findByUserAndBoard(user, board);
+
+        if (boardLike == null) {
+            boardLikeRepository.save(BoardLike.of(user, board));
+        } else {
+            boardLikeRepository.delete(boardLike);
+        }
+        return countLike(boardId);
+    }
+
+    public int countLike(Long boardId) {
+        Board board = boardRepository.findById(boardId).orElseThrow(() ->
+                new BaseException(BaseResponseStatus.BOARD_NOT_FOUND));
+
+        return boardLikeRepository.countByBoard(board);
     }
 
     private User getUserOrException(String email) {

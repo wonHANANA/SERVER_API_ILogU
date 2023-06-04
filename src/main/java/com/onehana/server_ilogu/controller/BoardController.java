@@ -1,5 +1,6 @@
 package com.onehana.server_ilogu.controller;
 
+import com.onehana.server_ilogu.dto.BoardDto;
 import com.onehana.server_ilogu.dto.BoardListDto;
 import com.onehana.server_ilogu.dto.UserDto;
 import com.onehana.server_ilogu.dto.request.BoardCreateRequest;
@@ -41,11 +42,11 @@ public class BoardController {
     public BaseResponse<Void> createBoard(@RequestPart BoardCreateRequest request,
                                           @RequestPart List<MultipartFile> files, Authentication authentication) {
         UserDto userDto = (UserDto) authentication.getPrincipal();
-        BoardListDto boardListDto = boardService.createBoard(request.getTitle(), request.getContent(),
+        BoardDto boardDto = boardService.createBoard(request.getTitle(), request.getContent(),
                                                 request.getCategory(), userDto.getEmail());
 
         if (files != null)
-            amazonS3Service.uploadFiles(files, boardListDto);
+            amazonS3Service.uploadFiles(files, boardDto);
 
         return new BaseResponse<>(BaseResponseStatus.SUCCESS);
     }
@@ -148,5 +149,13 @@ public class BoardController {
     public BaseResponse<Page<CommentResponse>> getComments(@PathVariable Long boardId, Pageable pageable,
                                                            Authentication authentication) {
         return new BaseResponse<>(boardService.getComments(boardId, pageable).map(CommentResponse::fromCommentDto));
+    }
+
+    @Operation(summary = "좋아요", description = "이미 좋아요 한 게시글은 좋아요가 삭제된다.")
+    @PutMapping("/{boardId}/like")
+    public BaseResponse<Integer> like(@PathVariable Long boardId, Authentication authentication) {
+        UserDto userDto = (UserDto) authentication.getPrincipal();
+
+        return new BaseResponse<>(boardService.like(boardId, userDto.getEmail()));
     }
 }
