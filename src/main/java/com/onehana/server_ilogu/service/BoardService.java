@@ -57,8 +57,13 @@ public class BoardService {
     }
 
     @Transactional(readOnly = true)
-    public Page<BoardDto> boardList(Pageable pageable) {
+    public Page<BoardDto> getBoards(Pageable pageable) {
         return boardRepository.findAll(pageable).map(BoardDto::of);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<BoardDto> getBoardsByCategory(BoardCategory category, Pageable pageable) {
+        return boardRepository.findByCategory(category, pageable).map(BoardDto::of);
     }
 
     public void createComment(Long boardId, Long parentCommentId, String comment, String email) {

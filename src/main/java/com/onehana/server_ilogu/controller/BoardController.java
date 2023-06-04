@@ -9,6 +9,7 @@ import com.onehana.server_ilogu.dto.response.BaseResponse;
 import com.onehana.server_ilogu.dto.response.BaseResponseStatus;
 import com.onehana.server_ilogu.dto.response.BoardResponse;
 import com.onehana.server_ilogu.dto.response.CommentResponse;
+import com.onehana.server_ilogu.entity.BoardCategory;
 import com.onehana.server_ilogu.service.AzureService;
 import com.onehana.server_ilogu.service.BoardService;
 import com.onehana.server_ilogu.service.ChatGptService;
@@ -60,10 +61,17 @@ public class BoardController {
         return new BaseResponse<>(BaseResponseStatus.SUCCESS);
     }
 
-    @Operation(summary = "피드글 조회", description = "pageable 옵션에 따라 최신글을 조회한다.")
+    @Operation(summary = "피드글 조회", description = "pageable 옵션에 따라 전체 피드글을 조회한다.")
     @GetMapping
-    public BaseResponse<Page<BoardResponse>> boardList(Pageable pageable, Authentication authentication) {
-        return new BaseResponse<>(boardService.boardList(pageable).map(BoardResponse::of));
+    public BaseResponse<Page<BoardResponse>> getBoards(Pageable pageable, Authentication authentication) {
+        return new BaseResponse<>(boardService.getBoards(pageable).map(BoardResponse::of));
+    }
+
+    @Operation(summary = "카테고리별 피드글 조회", description = "pageable 옵션과 카테고리에 따라 피드글을 조회한다.")
+    @GetMapping("/category/{category}")
+    public BaseResponse<Page<BoardResponse>> getBoardsByCategory(@PathVariable BoardCategory category, Pageable pageable,
+                                                                 Authentication authentication) {
+        return new BaseResponse<>(boardService.getBoardsByCategory(category, pageable).map(BoardResponse::of));
     }
 
     @Operation(summary = "이미지 설명글 생성", description = "이미지를 등록하면 분석해서 관련 글을 작성해준다.")
