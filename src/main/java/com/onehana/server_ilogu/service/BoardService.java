@@ -48,12 +48,12 @@ public class BoardService {
 
     public void deleteBoard(String email, Long boardId) {
         User user = getUserOrException(email);
-        Board post = getBoardOrException(boardId);
+        Board board = getBoardOrException(boardId);
 
-        if (post.getUser() != user) {
+        if (board.getUser() != user) {
             throw new BaseException(BaseResponseStatus.INVALID_PERMISSION);
         }
-        boardRepository.delete(post);
+        boardRepository.delete(board);
     }
 
     @Transactional(readOnly = true)
@@ -64,6 +64,14 @@ public class BoardService {
     @Transactional(readOnly = true)
     public Page<BoardDto> getBoardsByCategory(BoardCategory category, Pageable pageable) {
         return boardRepository.findByCategory(category, pageable).map(BoardDto::of);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<BoardDto> getMyBoards(String email, Pageable pageable) {
+        User user = userRepository.findByEmail(email).orElseThrow(() ->
+                new BaseException(BaseResponseStatus.USER_NOT_FOUND));
+
+        return boardRepository.findAllByUser(user, pageable).map(BoardDto::of);
     }
 
     public void createComment(Long boardId, Long parentCommentId, String comment, String email) {

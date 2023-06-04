@@ -47,9 +47,9 @@ public class BoardController {
     public BaseResponse<BoardResponse> modifyBoard(@PathVariable Long boardId,
                                               @RequestBody BoardModifyRequest request, Authentication authentication) {
         UserDto userDto = (UserDto) authentication.getPrincipal();
-        BoardDto postDto = boardService.modifyBoard(request.getTitle(), request.getContent(), request.getCategory(), userDto.getEmail(), boardId);
+        BoardDto boardDto = boardService.modifyBoard(request.getTitle(), request.getContent(), request.getCategory(), userDto.getEmail(), boardId);
 
-        return new BaseResponse<>(BoardResponse.of(postDto));
+        return new BaseResponse<>(BoardResponse.of(boardDto));
     }
 
     @Operation(summary = "피드글 삭제", description = "피드글을 삭제한다.")
@@ -72,6 +72,13 @@ public class BoardController {
     public BaseResponse<Page<BoardResponse>> getBoardsByCategory(@PathVariable BoardCategory category, Pageable pageable,
                                                                  Authentication authentication) {
         return new BaseResponse<>(boardService.getBoardsByCategory(category, pageable).map(BoardResponse::of));
+    }
+
+    @GetMapping("/my")
+    public BaseResponse<Page<BoardResponse>> getMyBoards(Pageable pageable, Authentication authentication) {
+        UserDto userDto = (UserDto) authentication.getPrincipal();
+
+        return new BaseResponse<>(boardService.getMyBoards(userDto.getEmail(), pageable).map(BoardResponse::of));
     }
 
     @Operation(summary = "이미지 설명글 생성", description = "이미지를 등록하면 분석해서 관련 글을 작성해준다.")
