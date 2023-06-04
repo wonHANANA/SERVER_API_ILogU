@@ -5,7 +5,6 @@ import lombok.Data;
 
 @Data
 public class BoardModifyRequest {
-    private Long id;
     private String title;
     private String content;
     private BoardCategory category;

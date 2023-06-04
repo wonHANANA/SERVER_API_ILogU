@@ -26,7 +26,7 @@ public class User extends BaseTimeEntity {
     private String refreshToken;
 
     @Enumerated(EnumType.STRING)
-    private UserRole userRole;
+    private UserRole userRole = UserRole.USER_ROLE;
 
     @Enumerated(EnumType.STRING)
     private FamilyType type;

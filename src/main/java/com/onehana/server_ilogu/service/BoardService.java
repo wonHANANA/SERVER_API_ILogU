@@ -1,6 +1,6 @@
 package com.onehana.server_ilogu.service;
 
-import com.onehana.server_ilogu.dto.BoardDto;
+import com.onehana.server_ilogu.dto.BoardListDto;
 import com.onehana.server_ilogu.dto.CommentDto;
 import com.onehana.server_ilogu.dto.response.BaseResponseStatus;
 import com.onehana.server_ilogu.entity.Board;
@@ -26,14 +26,14 @@ public class BoardService {
     private final UserRepository userRepository;
     private final CommentRepository commentRepository;
 
-    public BoardDto createBoard(String title, String content, BoardCategory category, String email) {
+    public BoardListDto createBoard(String title, String content, BoardCategory category, String email) {
         User user = getUserOrException(email);
         Board board = boardRepository.save(Board.of(title, content, category, user));
 
-        return BoardDto.of(board);
+        return BoardListDto.of(board);
     }
 
-    public BoardDto modifyBoard(String title, String content, BoardCategory category, String email, Long boardId) {
+    public BoardListDto modifyBoard(String title, String content, BoardCategory category, String email, Long boardId) {
         User user = getUserOrException(email);
         Board board = getBoardOrException(boardId);
 
@@ -45,7 +45,7 @@ public class BoardService {
         board.setContent(content);
         board.setCategory(category);
 
-        return BoardDto.of(boardRepository.save(board));
+        return BoardListDto.of(boardRepository.save(board));
     }
 
     public void deleteBoard(String email, Long boardId) {
@@ -59,29 +59,29 @@ public class BoardService {
     }
 
     @Transactional(readOnly = true)
-    public Page<BoardDto> getBoards(Pageable pageable) {
-        return boardRepository.findAll(pageable).map(BoardDto::of);
+    public Page<BoardListDto> getBoards(Pageable pageable) {
+        return boardRepository.findAll(pageable).map(BoardListDto::of);
     }
 
     @Transactional(readOnly = true)
-    public Page<BoardDto> getBoardsByCategory(BoardCategory category, Pageable pageable) {
-        return boardRepository.findByCategory(category, pageable).map(BoardDto::of);
+    public Page<BoardListDto> getBoardsByCategory(BoardCategory category, Pageable pageable) {
+        return boardRepository.findByCategory(category, pageable).map(BoardListDto::of);
     }
 
     @Transactional(readOnly = true)
-    public Page<BoardDto> getMyBoards(String email, Pageable pageable) {
+    public Page<BoardListDto> getMyBoards(String email, Pageable pageable) {
         User user = userRepository.findByEmail(email).orElseThrow(() ->
                 new BaseException(BaseResponseStatus.USER_NOT_FOUND));
 
-        return boardRepository.findAllByUser(user, pageable).map(BoardDto::of);
+        return boardRepository.findAllByUser(user, pageable).map(BoardListDto::of);
     }
 
     @Transactional(readOnly = true)
-    public Page<BoardDto> getMyBoardsByCategory(String email, BoardCategory category, Pageable pageable) {
+    public Page<BoardListDto> getMyBoardsByCategory(String email, BoardCategory category, Pageable pageable) {
         User user = userRepository.findByEmail(email).orElseThrow(() ->
                 new BaseException(BaseResponseStatus.USER_NOT_FOUND));
 
-        return boardRepository.findByUserAndCategory(user, category, pageable).map(BoardDto::of);
+        return boardRepository.findByUserAndCategory(user, category, pageable).map(BoardListDto::of);
     }
 
     public void createComment(Long boardId, Long parentCommentId, String comment, String email) {

@@ -1,5 +1,6 @@
 package com.onehana.server_ilogu.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.onehana.server_ilogu.dto.BoardImageDto;
 import jakarta.persistence.*;
 import lombok.*;
@@ -22,6 +23,7 @@ public class BoardImage extends BaseTimeEntity {
 
     @ManyToOne
     @JoinColumn(name = "board_id")
+    @JsonBackReference
     private Board board;
 
     public static BoardImage from(BoardImageDto boardImageDto, Board board) {

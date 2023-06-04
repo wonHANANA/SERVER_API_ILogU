@@ -8,7 +8,7 @@ insert into ILogU.user (created_at, updated_at, email, nickname, password, user_
 (NOW(), NOW(), '7@naver.com', '김준기', '1234', 'USER_ROLE'),
 (NOW(), NOW(), '8@naver.com', '김보인', '1234', 'USER_ROLE');
 
-insert into ILogU.board (created_at, updated_at, user_id, content, title, category) values
+insert into ILogU.board (created_at, updated_at, user_id, title, content, category) values
  (NOW(), NOW(), 1, '제목이다.', '글을 쓴다', 'COOK'),
  (NOW(), NOW(), 1, '제목이다.', '밥을 먹다', 'COOK'),
  (NOW(), NOW(), 1, '제목이다.', '뭐든 한다', 'FINANCE'),
@@ -43,19 +43,27 @@ insert into ILogU.comment (created_at, updated_at, parent_comment_id, board_id, 
 (NOW(), NOW(), 5, 1, 7, '2빠에 2빠'),
 (NOW(), NOW(), null, 1, 8, '3빠'),
 
-(NOW(), NOW(), null, 2, 1, '3빠'),
-(NOW(), NOW(), null, 2, 1, '3빠'),
-(NOW(), NOW(), null, 2, 1, '3빠'),
-(NOW(), NOW(), null, 2, 1, '3빠'),
+(NOW(), NOW(), null, 2, 1, '4빠'),
+(NOW(), NOW(), null, 2, 1, '5빠'),
+(NOW(), NOW(), null, 2, 1, '6빠'),
+(NOW(), NOW(), null, 2, 1, '7빠'),
 
-(NOW(), NOW(), null, 3, 1, '3빠'),
+(NOW(), NOW(), null, 3, 1, '8빠'),
 (NOW(), NOW(), null, 3, 1, '3빠'),
 (NOW(), NOW(), null, 3, 1, '3빠'),
 (NOW(), NOW(), null, 3, 1, '3빠'),
 (NOW(), NOW(), null, 3, 1, '3빠'),
 (NOW(), NOW(), null, 3, 1, '3빠');
 
-
+insert into ILogU.board_image (board_id, created_at, updated_at, original_file_name, upload_file_name, upload_file_path, upload_file_url) values
+(1, NOW(), NOW(), 'weoifj', 'woeifjwoeijf', 'woeifjwojie', '1번'),
+(1, NOW(), NOW(), 'weoifj', 'woeifjwoeijf', 'woeifjwojie', '2번'),
+(1, NOW(), NOW(), 'weoifj', 'woeifjwoeijf', 'woeifjwojie', '3번'),
+(1, NOW(), NOW(), 'weoifj', 'woeifjwoeijf', 'woeifjwojie', '4번'),
+(1, NOW(), NOW(), 'weoifj', 'woeifjwoeijf', 'woeifjwojie', '5번'),
+(2, NOW(), NOW(), 'weoifj', 'woeifjwoeijf', 'woeifjwojie', '6번'),
+(2, NOW(), NOW(), 'weoifj', 'woeifjwoeijf', 'woeifjwojie', '7번'),
+(3, NOW(), NOW(), 'weoifj', 'woeifjwoeijf', 'woeifjwojie', '8번');
 
 
 

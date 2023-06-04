@@ -8,30 +8,33 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Data
 @AllArgsConstructor
-public class BoardDto {
+public class BoardListDto {
     private Long id;
     private String title;
     private String content;
     private BoardCategory category;
     private User user;
-    private List<BoardImage> boardImages;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private BoardImage mainImage;
 
-    public static BoardDto of(Board board) {
-        return new BoardDto(
+
+    public static BoardListDto of(Board board) {
+        BoardImage mainImage = (board.getBoardImages() != null && !board.getBoardImages().isEmpty())
+                ? board.getBoardImages().get(0) : null;
+
+        return new BoardListDto(
                 board.getId(),
                 board.getTitle(),
                 board.getContent(),
                 board.getCategory(),
                 board.getUser(),
-                board.getBoardImages(),
                 board.getCreatedAt(),
-                board.getUpdatedAt()
+                board.getUpdatedAt(),
+                mainImage
         );
     }
 }

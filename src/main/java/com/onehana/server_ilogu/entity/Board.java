@@ -1,5 +1,6 @@
 package com.onehana.server_ilogu.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -33,9 +34,13 @@ public class Board extends BaseTimeEntity{
     private User user;
 
     @OneToMany(mappedBy = "board", cascade = CascadeType.ALL)
+    @ToString.Exclude
+    @JsonManagedReference
     private List<BoardImage> boardImages = new ArrayList<>();
 
     @OneToMany(mappedBy = "board", cascade = CascadeType.ALL)
+    @ToString.Exclude
+    @JsonManagedReference
     private List<Comment> comments = new ArrayList<>();
 
     public static Board of(String title, String content, BoardCategory category, User user) {

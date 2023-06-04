@@ -36,7 +36,8 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         String servletPath = request.getServletPath();
         String header = request.getHeader(HttpHeaders.AUTHORIZATION);
 
-        if (servletPath.equals("/user/login") || servletPath.equals("/user/join") || servletPath.equals("/user/token/refresh")) {
+        if (servletPath.equals("/api/user/login") || servletPath.equals("/api/user/join") ||
+                servletPath.equals("/api/user/token/refresh")) {
             filterChain.doFilter(request, response);
             return;
         }
