@@ -26,9 +26,11 @@ public class BoardService {
     private final UserRepository userRepository;
     private final CommentRepository commentRepository;
 
-    public void createBoard(String title, String content, BoardCategory category, String email) {
+    public BoardDto createBoard(String title, String content, BoardCategory category, String email) {
         User user = getUserOrException(email);
-        boardRepository.save(Board.of(title, content, category, user));
+        Board board = boardRepository.save(Board.of(title, content, category, user));
+
+        return BoardDto.of(board);
     }
 
     public BoardDto modifyBoard(String title, String content, BoardCategory category, String email, Long boardId) {

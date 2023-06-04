@@ -10,13 +10,17 @@ import com.onehana.server_ilogu.dto.response.BaseResponseStatus;
 import com.onehana.server_ilogu.dto.response.BoardResponse;
 import com.onehana.server_ilogu.dto.response.CommentResponse;
 import com.onehana.server_ilogu.entity.BoardCategory;
+import com.onehana.server_ilogu.service.AmazonS3Service;
 import com.onehana.server_ilogu.service.AzureService;
 import com.onehana.server_ilogu.service.BoardService;
 import com.onehana.server_ilogu.service.ChatGptService;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.annotation.Nullable;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -30,14 +34,20 @@ import java.util.List;
 public class BoardController {
 
     private final BoardService boardService;
+    private final AmazonS3Service amazonS3Service;
     private final AzureService azureService;
     private final ChatGptService chatGptService;
 
     @Operation(summary = "피드글 업로드", description = "피드글을 작성한다")
-    @PostMapping
-    public BaseResponse<Void> createBoard(@RequestBody BoardCreateRequest request, Authentication authentication) {
+    @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
+    public BaseResponse<Void> createBoard(@RequestPart BoardCreateRequest request,
+                                          @RequestPart List<MultipartFile> files, Authentication authentication) {
         UserDto userDto = (UserDto) authentication.getPrincipal();
-        boardService.createBoard(request.getTitle(), request.getContent(), request.getCategory(), userDto.getEmail());
+        BoardDto boardDto = boardService.createBoard(request.getTitle(), request.getContent(),
+                                                request.getCategory(), userDto.getEmail());
+
+        if (files != null)
+            amazonS3Service.uploadFiles(files, boardDto);
 
         return new BaseResponse<>(BaseResponseStatus.SUCCESS);
     }
@@ -56,6 +66,8 @@ public class BoardController {
     @DeleteMapping("/{boardId}")
     public BaseResponse<Void> deleteBoard(@PathVariable Long boardId, Authentication authentication) {
         UserDto userDto = (UserDto) authentication.getPrincipal();
+
+        amazonS3Service.deleteFile(userDto.getEmail(), boardId);
         boardService.deleteBoard(userDto.getEmail(), boardId);
 
         return new BaseResponse<>(BaseResponseStatus.SUCCESS);

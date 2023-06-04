@@ -47,6 +47,7 @@ public enum BaseResponseStatus {
 
     BOARD_NOT_FOUND(false, "400-02-40", "존재하지 않는 게시물입니다."),
     COMMENT_NOT_FOUND(false, "400-02-41", "존재하지 않는 댓글입니다."),
+    IMAGE_NOT_FOUND(false, "400-02-42", "존재하지 않는 사진입니다."),
 
     /**
      * 500번대 에러 : 서버 에러 등 서버 프로그래밍 잘못으로 인한 에러들

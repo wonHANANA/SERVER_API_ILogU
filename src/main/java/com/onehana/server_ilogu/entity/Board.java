@@ -8,7 +8,6 @@ import java.util.List;
 
 @Entity
 @Getter
-@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -18,17 +17,23 @@ public class Board extends BaseTimeEntity{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Setter
     private String title;
 
+    @Setter
     @Column(columnDefinition = "TEXT")
     private String content;
 
+    @Setter
     @Enumerated(EnumType.STRING)
     private BoardCategory category;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL)
+    private List<BoardImage> boardImages = new ArrayList<>();
 
     @OneToMany(mappedBy = "board", cascade = CascadeType.ALL)
     private List<Comment> comments = new ArrayList<>();
