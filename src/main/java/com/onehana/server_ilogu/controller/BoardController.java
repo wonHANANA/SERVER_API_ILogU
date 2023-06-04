@@ -8,6 +8,7 @@ import com.onehana.server_ilogu.dto.request.CommentRequest;
 import com.onehana.server_ilogu.dto.response.BaseResponse;
 import com.onehana.server_ilogu.dto.response.BaseResponseStatus;
 import com.onehana.server_ilogu.dto.response.BoardResponse;
+import com.onehana.server_ilogu.dto.response.CommentResponse;
 import com.onehana.server_ilogu.service.AzureService;
 import com.onehana.server_ilogu.service.BoardService;
 import com.onehana.server_ilogu.service.ChatGptService;
@@ -76,12 +77,40 @@ public class BoardController {
         return new BaseResponse<>(res);
     }
 
-    @PostMapping("/{boardId}/comments")
+    @Operation(summary = "댓글 작성", description = "댓글을 작성한다.")
+    @PostMapping("/{boardId}/comment")
     public BaseResponse<Void> createComment(@PathVariable Long boardId, @RequestBody CommentRequest request,
                                             Authentication authentication) {
         UserDto userDto = (UserDto) authentication.getPrincipal();
 
         boardService.createComment(boardId, request.getParentComment(), request.getComment(), userDto.getEmail());
         return new BaseResponse<>(BaseResponseStatus.SUCCESS);
+    }
+
+    @Operation(summary = "댓글 수정", description = "댓글을 수정한다.")
+    @PutMapping("/{boardId}/comment/{commentId}")
+    public BaseResponse<Void> modifyComment(@PathVariable Long boardId, @PathVariable Long commentId,
+                                            @RequestBody CommentRequest request, Authentication authentication) {
+        UserDto userDto = (UserDto) authentication.getPrincipal();
+
+        boardService.modifyComment(commentId, request.getComment(), userDto.getEmail());
+        return new BaseResponse<>(BaseResponseStatus.SUCCESS);
+    }
+
+    @Operation(summary = "댓글 삭제", description = "댓글을 삭제한다.")
+    @DeleteMapping("/{boardId}/comment/{commentId}")
+    public BaseResponse<Void> deleteComment(@PathVariable Long boardId, @PathVariable Long commentId,
+                                            Authentication authentication) {
+        UserDto userDto = (UserDto) authentication.getPrincipal();
+
+        boardService.deleteComment(commentId, userDto.getEmail());
+        return new BaseResponse<>(BaseResponseStatus.SUCCESS);
+    }
+
+    @Operation(summary = "댓글 조회", description = "해당 게시글의 모든 댓글을 조회한다.")
+    @GetMapping("/{boardId}/comments")
+    public BaseResponse<Page<CommentResponse>> getComments(@PathVariable Long boardId, Pageable pageable,
+                                                           Authentication authentication) {
+        return new BaseResponse<>(boardService.getComments(boardId, pageable).map(CommentResponse::fromCommentDto));
     }
 }

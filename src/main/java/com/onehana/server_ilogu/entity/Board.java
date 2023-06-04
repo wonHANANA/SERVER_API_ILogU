@@ -3,6 +3,9 @@ package com.onehana.server_ilogu.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter
 @Setter
@@ -26,6 +29,9 @@ public class Board extends BaseTimeEntity{
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL)
+    private List<Comment> comments = new ArrayList<>();
 
     public static Board of(String title, String content, BoardCategory category, User user) {
         Board board = new Board();

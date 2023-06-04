@@ -8,7 +8,7 @@ import java.util.List;
 
 @Entity
 @Table(indexes = {
-        @Index(name = "post_id_idx", columnList = "post_id")
+        @Index(name = "board_id_idx", columnList = "board_id")
 })
 @Getter
 @Builder
@@ -20,6 +20,7 @@ public class Comment extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Setter
     @Column(nullable = false, length = 500)
     private String comment;
 
@@ -38,7 +39,7 @@ public class Comment extends BaseTimeEntity {
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "post_id")
+    @JoinColumn(name = "board_id", nullable = false)
     private Board board;
 
     public static Comment of(User user, Board board, String comment, Comment parentComment) {

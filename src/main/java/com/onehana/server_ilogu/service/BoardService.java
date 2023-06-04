@@ -1,6 +1,7 @@
 package com.onehana.server_ilogu.service;
 
 import com.onehana.server_ilogu.dto.BoardDto;
+import com.onehana.server_ilogu.dto.CommentDto;
 import com.onehana.server_ilogu.dto.response.BaseResponseStatus;
 import com.onehana.server_ilogu.entity.Board;
 import com.onehana.server_ilogu.entity.BoardCategory;
@@ -26,18 +27,13 @@ public class BoardService {
     private final CommentRepository commentRepository;
 
     public void createBoard(String title, String content, BoardCategory category, String email) {
-        User user = userRepository.findByEmail(email).orElseThrow(() ->
-                new BaseException(BaseResponseStatus.USER_NOT_FOUND));
-
+        User user = getUserOrException(email);
         boardRepository.save(Board.of(title, content, category, user));
     }
 
     public BoardDto modifyBoard(String title, String content, BoardCategory category, String email, Long boardId) {
-        User user = userRepository.findByEmail(email).orElseThrow(() ->
-                new BaseException(BaseResponseStatus.USER_NOT_FOUND));
-
-        Board board = boardRepository.findById(boardId).orElseThrow(() ->
-                new BaseException(BaseResponseStatus.BOARD_NOT_FOUND));
+        User user = getUserOrException(email);
+        Board board = getBoardOrException(boardId);
 
         if (board.getUser() != user) {
             throw new BaseException(BaseResponseStatus.INVALID_PERMISSION);
@@ -51,11 +47,8 @@ public class BoardService {
     }
 
     public void deleteBoard(String email, Long boardId) {
-        User user = userRepository.findByEmail(email).orElseThrow(() ->
-                new BaseException(BaseResponseStatus.USER_NOT_FOUND));
-
-        Board post = boardRepository.findById(boardId).orElseThrow(() ->
-                new BaseException(BaseResponseStatus.BOARD_NOT_FOUND));
+        User user = getUserOrException(email);
+        Board post = getBoardOrException(boardId);
 
         if (post.getUser() != user) {
             throw new BaseException(BaseResponseStatus.INVALID_PERMISSION);
@@ -69,10 +62,8 @@ public class BoardService {
     }
 
     public void createComment(Long boardId, Long parentCommentId, String comment, String email) {
-        User user = userRepository.findByEmail(email).orElseThrow(() ->
-                new BaseException(BaseResponseStatus.USER_NOT_FOUND));
-        Board board = boardRepository.findById(boardId).orElseThrow(() ->
-                new BaseException(BaseResponseStatus.BOARD_NOT_FOUND));
+        User user = getUserOrException(email);
+        Board board = getBoardOrException(boardId);
 
         Comment parentComment = null;
         if (parentCommentId != null) {
@@ -80,5 +71,44 @@ public class BoardService {
                     new BaseException(BaseResponseStatus.COMMENT_NOT_FOUND));
         }
         commentRepository.save(Comment.of(user, board, comment, parentComment));
+    }
+
+    public void modifyComment(Long commentId, String newComment, String email) {
+        User user = getUserOrException(email);
+        Comment comment = commentRepository.findById(commentId).orElseThrow(() ->
+                new BaseException(BaseResponseStatus.COMMENT_NOT_FOUND));
+
+        if (comment.getUser() != user) {
+            throw new BaseException(BaseResponseStatus.INVALID_PERMISSION);
+        }
+        comment.setComment(newComment);
+    }
+
+    public void deleteComment(Long commentId, String email) {
+        User user = getUserOrException(email);
+        Comment comment = commentRepository.findById(commentId).orElseThrow(() ->
+                new BaseException(BaseResponseStatus.COMMENT_NOT_FOUND));
+
+        if (comment.getUser() != user) {
+            throw new BaseException(BaseResponseStatus.INVALID_PERMISSION);
+        }
+        commentRepository.delete(comment);
+    }
+
+    public Page<CommentDto> getComments(Long boardId, Pageable pageable) {
+        Board board = getBoardOrException(boardId);
+
+        return commentRepository.findAllByBoardAndParentCommentIsNull(board, pageable)
+                .map(CommentDto::fromEntity);
+    }
+
+    private User getUserOrException(String email) {
+        return userRepository.findByEmail(email).orElseThrow(() ->
+                new BaseException(BaseResponseStatus.USER_NOT_FOUND));
+    }
+
+    private Board getBoardOrException(Long boardId) {
+        return boardRepository.findById(boardId).orElseThrow(() ->
+                new BaseException(BaseResponseStatus.BOARD_NOT_FOUND));
     }
 }
