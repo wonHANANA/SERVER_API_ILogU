@@ -1,12 +1,12 @@
-insert into ILogU.user (created_at, updated_at, email, nickname, password, family_role, family_type, user_role) values
-(NOW(), NOW(), '1@naver.com', '이동현', '1234', 'FATHER', 'PARENT', 'USER_ROLE'),
-(NOW(), NOW(), '2@naver.com', '이건영', '1234', 'FATHER', 'PARENT','USER_ROLE'),
-(NOW(), NOW(), '3@naver.com', '이인', '1234', 'FATHER', 'PARENT','USER_ROLE'),
-(NOW(), NOW(), '4@naver.com', '함승현', '1234', 'FATHER', 'PARENT','USER_ROLE'),
-(NOW(), NOW(), '5@naver.com', '전준휘', '1234', 'FATHER', 'PARENT','USER_ROLE'),
-(NOW(), NOW(), '6@naver.com', '김태우', '1234', 'FATHER', 'PARENT','USER_ROLE'),
-(NOW(), NOW(), '7@naver.com', '김준기', '1234', 'FATHER', 'PARENT','USER_ROLE'),
-(NOW(), NOW(), '8@naver.com', '김보인', '1234', 'FATHER', 'PARENT','USER_ROLE');
+insert into ILogU.user (created_at, updated_at, email, nickname, password, family_role, family_type, user_role, profile_image_url) values
+(NOW(), NOW(), '1@naver.com', '이동현', '1234', 'FATHER', 'PARENT', 'USER_ROLE', 'http://wefiwje'),
+(NOW(), NOW(), '2@naver.com', '이건영', '1234', 'FATHER', 'PARENT','USER_ROLE', 'http://wefiwje'),
+(NOW(), NOW(), '3@naver.com', '이인', '1234', 'FATHER', 'PARENT','USER_ROLE', 'http://wefiwje'),
+(NOW(), NOW(), '4@naver.com', '함승현', '1234', 'FATHER', 'PARENT','USER_ROLE', 'http://wefiwje'),
+(NOW(), NOW(), '5@naver.com', '전준휘', '1234', 'FATHER', 'PARENT','USER_ROLE', 'http://wefiwje'),
+(NOW(), NOW(), '6@naver.com', '김태우', '1234', 'FATHER', 'PARENT','USER_ROLE', 'http://wefiwje'),
+(NOW(), NOW(), '7@naver.com', '김준기', '1234', 'FATHER', 'PARENT','USER_ROLE', 'http://wefiwje'),
+(NOW(), NOW(), '8@naver.com', '김보인', '1234', 'FATHER', 'PARENT','USER_ROLE', 'http://wefiwje');
 
 insert into ILogU.board (created_at, updated_at, user_id, title, content, category) values
  (NOW(), NOW(), 1, '제목이다.', '글을 쓴다', 'COOK'),
@@ -53,14 +53,14 @@ insert into ILogU.comment (created_at, updated_at, parent_comment_id, board_id, 
 (NOW(), NOW(), null, 3, 1, '3빠');
 
 insert into ILogU.board_image (board_id, created_at, updated_at, original_file_name, upload_file_name, upload_file_path, upload_file_url) values
-(1, NOW(), NOW(), 'weoifj', 'woeifjwoeijf', 'woeifjwojie', '1번'),
-(1, NOW(), NOW(), 'weoifj', 'woeifjwoeijf', 'woeifjwojie', '2번'),
-(1, NOW(), NOW(), 'weoifj', 'woeifjwoeijf', 'woeifjwojie', '3번'),
-(1, NOW(), NOW(), 'weoifj', 'woeifjwoeijf', 'woeifjwojie', '4번'),
-(1, NOW(), NOW(), 'weoifj', 'woeifjwoeijf', 'woeifjwojie', '5번'),
-(2, NOW(), NOW(), 'weoifj', 'woeifjwoeijf', 'woeifjwojie', '6번'),
-(2, NOW(), NOW(), 'weoifj', 'woeifjwoeijf', 'woeifjwojie', '7번'),
-(3, NOW(), NOW(), 'weoifj', 'woeifjwoeijf', 'woeifjwojie', '8번');
+(1, NOW(), NOW(), 'weoifj', 'woeifjwoeijf', 'woeifjwojie', 'http://wefiwje'),
+(1, NOW(), NOW(), 'weoifj', 'woeifjwoeijf', 'woeifjwojie', 'http://wefiwje'),
+(1, NOW(), NOW(), 'weoifj', 'woeifjwoeijf', 'woeifjwojie', 'http://wefiwje'),
+(1, NOW(), NOW(), 'weoifj', 'woeifjwoeijf', 'woeifjwojie', 'http://wefiwje'),
+(1, NOW(), NOW(), 'weoifj', 'woeifjwoeijf', 'woeifjwojie', 'http://wefiwje'),
+(2, NOW(), NOW(), 'weoifj', 'woeifjwoeijf', 'woeifjwojie', 'http://wefiwje'),
+(2, NOW(), NOW(), 'weoifj', 'woeifjwoeijf', 'woeifjwojie', 'http://wefiwje'),
+(3, NOW(), NOW(), 'weoifj', 'woeifjwoeijf', 'woeifjwojie', 'http://wefiwje');
 
 
 
