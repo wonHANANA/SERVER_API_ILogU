@@ -4,6 +4,7 @@ import com.onehana.server_ilogu.dto.BoardDto;
 import com.onehana.server_ilogu.dto.UserDto;
 import com.onehana.server_ilogu.dto.request.BoardCreateRequest;
 import com.onehana.server_ilogu.dto.request.BoardModifyRequest;
+import com.onehana.server_ilogu.dto.request.CommentRequest;
 import com.onehana.server_ilogu.dto.response.BaseResponse;
 import com.onehana.server_ilogu.dto.response.BaseResponseStatus;
 import com.onehana.server_ilogu.dto.response.BoardResponse;
@@ -34,7 +35,7 @@ public class BoardController {
     @PostMapping
     public BaseResponse<Void> createBoard(@RequestBody BoardCreateRequest request, Authentication authentication) {
         UserDto userDto = (UserDto) authentication.getPrincipal();
-        boardService.create(request.getTitle(), request.getContent(), request.getCategory(), userDto.getEmail());
+        boardService.createBoard(request.getTitle(), request.getContent(), request.getCategory(), userDto.getEmail());
 
         return new BaseResponse<>(BaseResponseStatus.SUCCESS);
     }
@@ -44,7 +45,7 @@ public class BoardController {
     public BaseResponse<BoardResponse> modifyBoard(@PathVariable Long boardId,
                                               @RequestBody BoardModifyRequest request, Authentication authentication) {
         UserDto userDto = (UserDto) authentication.getPrincipal();
-        BoardDto postDto = boardService.modify(request.getTitle(), request.getContent(), request.getCategory(), userDto.getEmail(), boardId);
+        BoardDto postDto = boardService.modifyBoard(request.getTitle(), request.getContent(), request.getCategory(), userDto.getEmail(), boardId);
 
         return new BaseResponse<>(BoardResponse.of(postDto));
     }
@@ -53,7 +54,7 @@ public class BoardController {
     @DeleteMapping("/{boardId}")
     public BaseResponse<Void> deleteBoard(@PathVariable Long boardId, Authentication authentication) {
         UserDto userDto = (UserDto) authentication.getPrincipal();
-        boardService.delete(userDto.getEmail(), boardId);
+        boardService.deleteBoard(userDto.getEmail(), boardId);
 
         return new BaseResponse<>(BaseResponseStatus.SUCCESS);
     }
@@ -61,7 +62,7 @@ public class BoardController {
     @Operation(summary = "피드글 조회", description = "pageable 옵션에 따라 최신글을 조회한다.")
     @GetMapping
     public BaseResponse<Page<BoardResponse>> boardList(Pageable pageable, Authentication authentication) {
-        return new BaseResponse<>(boardService.list(pageable).map(BoardResponse::of));
+        return new BaseResponse<>(boardService.boardList(pageable).map(BoardResponse::of));
     }
 
     @Operation(summary = "이미지 설명글 생성", description = "이미지를 등록하면 분석해서 관련 글을 작성해준다.")
@@ -75,5 +76,12 @@ public class BoardController {
         return new BaseResponse<>(res);
     }
 
+    @PostMapping("/{boardId}/comments")
+    public BaseResponse<Void> createComment(@PathVariable Long boardId, @RequestBody CommentRequest request,
+                                            Authentication authentication) {
+        UserDto userDto = (UserDto) authentication.getPrincipal();
 
+        boardService.createComment(boardId, request.getParentComment(), request.getComment(), userDto.getEmail());
+        return new BaseResponse<>(BaseResponseStatus.SUCCESS);
+    }
 }

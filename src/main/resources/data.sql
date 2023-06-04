@@ -33,5 +33,13 @@ insert into ILogU.board (created_at, updated_at, user_id, content, title, catego
  (NOW(), NOW(), 8, '제목이다.', '그래그래', 'TRAVEL'),
  (NOW(), NOW(), 8, '제목이다.', '좋다', 'TRAVEL');
 
-
+insert into ILogU.comment (created_at, updated_at, parent_comment_id, post_id,  user_id, comment) values
+(NOW(), NOW(), null, 1, 1, '1빠'),
+(NOW(), NOW(), 1, 1, 2, '1빠에 1빠'),
+(NOW(), NOW(), 2, 1, 3, '1빠에 1빠에 1빠'),
+(NOW(), NOW(), 3, 1, 4, '1빠에 1빠에 1빠에 1빠'),
+(NOW(), NOW(), null, 1, 5, '2빠'),
+(NOW(), NOW(), 5, 1, 6, '2빠에 1빠'),
+(NOW(), NOW(), 5, 1, 7, '2빠에 2빠'),
+(NOW(), NOW(), null, 1, 8, '3빠');
 
