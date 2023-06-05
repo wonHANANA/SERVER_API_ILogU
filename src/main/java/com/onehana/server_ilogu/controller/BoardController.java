@@ -1,7 +1,6 @@
 package com.onehana.server_ilogu.controller;
 
 import com.onehana.server_ilogu.dto.BoardDto;
-import com.onehana.server_ilogu.dto.BoardListDto;
 import com.onehana.server_ilogu.dto.UserDto;
 import com.onehana.server_ilogu.dto.request.BoardCreateRequest;
 import com.onehana.server_ilogu.dto.request.BoardModifyRequest;

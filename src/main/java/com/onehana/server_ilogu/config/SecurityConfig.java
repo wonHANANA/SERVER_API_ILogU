@@ -34,7 +34,8 @@ public class SecurityConfig implements WebMvcConfigurer {
     public WebSecurityCustomizer configure() {
         return (web -> web.ignoring().requestMatchers(
                 "/swagger-ui/**",
-                "/v3/api-docs/**"
+                "/v3/api-docs/**",
+                "/favicon.ico"
         ));
     }
 
