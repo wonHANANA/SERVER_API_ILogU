@@ -13,4 +13,6 @@ public interface BoardLikeRepository extends JpaRepository<BoardLike, Long> {
 
     @Query(value = "select count(*) from BoardLike like where like.board =:board")
     Integer countByBoard(@Param("board") Board board);
+
+    Boolean existsByBoardIdAndUserId(Long boardId, Long userId);
 }

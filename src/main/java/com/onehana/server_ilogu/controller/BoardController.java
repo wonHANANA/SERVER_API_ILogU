@@ -77,14 +77,16 @@ public class BoardController {
     @Operation(summary = "피드글 조회", description = "pageable 옵션에 따라 전체 피드글을 조회한다.")
     @GetMapping
     public BaseResponse<Page<BoardListResponse>> getBoards(Pageable pageable, Authentication authentication) {
-        return new BaseResponse<>(boardService.getBoards(pageable).map(BoardListResponse::of));
+        UserDto userDto = (UserDto) authentication.getPrincipal();
+        return new BaseResponse<>(boardService.getBoards(pageable, userDto.getEmail()).map(BoardListResponse::of));
     }
 
     @Operation(summary = "카테고리별 피드글 조회", description = "pageable 옵션과 카테고리에 따라 피드글을 조회한다.")
     @GetMapping("/category/{category}")
     public BaseResponse<Page<BoardListResponse>> getBoardsByCategory(@PathVariable BoardCategory category, Pageable pageable,
                                                                      Authentication authentication) {
-        return new BaseResponse<>(boardService.getBoardsByCategory(category, pageable).map(BoardListResponse::of));
+        UserDto userDto = (UserDto) authentication.getPrincipal();
+        return new BaseResponse<>(boardService.getBoardsByCategory(category, pageable, userDto.getEmail()).map(BoardListResponse::of));
     }
 
     @Operation(summary = "나의 피드글 조회", description = "pageable 옵션에 따라 로그인한 유저의 피드글을 조회한다.")

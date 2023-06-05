@@ -59,22 +59,28 @@ public class BoardService {
     }
 
     @Transactional(readOnly = true)
-    public Page<BoardListDto> getBoards(Pageable pageable) {
+    public Page<BoardListDto> getBoards(Pageable pageable, String email) {
+        User user = getUserOrException(email);
+
         return boardRepository.findAll(pageable)
                 .map(board -> {
                     int likesCount = countLike(board.getId());
                     int commentsCount = countComments(board.getId());
-                    return BoardListDto.of(board, likesCount, commentsCount);
+                    boolean isLiked = isLiked(board.getId(), user.getId());
+                    return BoardListDto.of(board, likesCount, commentsCount, isLiked);
                 });
     }
 
     @Transactional(readOnly = true)
-    public Page<BoardListDto> getBoardsByCategory(BoardCategory category, Pageable pageable) {
+    public Page<BoardListDto> getBoardsByCategory(BoardCategory category, Pageable pageable, String email) {
+        User user = getUserOrException(email);
+
         return boardRepository.findByCategory(category, pageable)
                 .map(board -> {
                     int likesCount = countLike(board.getId());
                     int commentsCount = countComments(board.getId());
-                    return BoardListDto.of(board, likesCount, commentsCount);
+                    boolean isLiked = isLiked(board.getId(), user.getId());
+                    return BoardListDto.of(board, likesCount, commentsCount, isLiked);
                 });
     }
 
@@ -87,7 +93,8 @@ public class BoardService {
                 .map(board -> {
                     int likesCount = countLike(board.getId());
                     int commentsCount = countComments(board.getId());
-                    return BoardListDto.of(board, likesCount, commentsCount);
+                    boolean isLiked = isLiked(board.getId(), user.getId());
+                    return BoardListDto.of(board, likesCount, commentsCount, isLiked);
                 });
     }
 
@@ -100,7 +107,8 @@ public class BoardService {
                 .map(board -> {
                     int likesCount = countLike(board.getId());
                     int commentsCount = countComments(board.getId());
-                    return BoardListDto.of(board, likesCount, commentsCount);
+                    boolean isLiked = isLiked(board.getId(), user.getId());
+                    return BoardListDto.of(board, likesCount, commentsCount, isLiked);
                 });
     }
 
@@ -171,6 +179,10 @@ public class BoardService {
                 new BaseException(BaseResponseStatus.BOARD_NOT_FOUND));
 
         return boardLikeRepository.countByBoard(board);
+    }
+
+    public boolean isLiked(Long boardId, Long userId) {
+        return boardLikeRepository.existsByBoardIdAndUserId(boardId, userId);
     }
 
     private User getUserOrException(String email) {

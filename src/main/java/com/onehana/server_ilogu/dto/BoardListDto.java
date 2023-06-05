@@ -18,13 +18,14 @@ public class BoardListDto {
     private String nickName;
     private String userProfileUrl;
     private BoardCategory category;
+    private boolean isLiked;
     private int likesCount;
     private int commentsCount;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private BoardImage mainImage;
 
-    public static BoardListDto of(Board board, int likesCount, int commentsCount) {
+    public static BoardListDto of(Board board, int likesCount, int commentsCount, boolean isLiked) {
         BoardImage mainImage = (board.getBoardImages() != null && !board.getBoardImages().isEmpty())
                 ? board.getBoardImages().get(0) : null;
 
@@ -35,6 +36,7 @@ public class BoardListDto {
                 board.getUser().getNickname(),
                 board.getUser().getProfileImageUrl(),
                 board.getCategory(),
+                isLiked,
                 likesCount,
                 commentsCount,
                 board.getCreatedAt(),
