@@ -39,10 +39,9 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         String header = request.getHeader(HttpHeaders.AUTHORIZATION);
 
         List<String> excludePaths = Arrays.asList("/api/user/login", "/api/user/join",
-                "/api/user/token/refresh", "/api/board/category");
+                "/api/user/token/refresh");
 
-        if (excludePaths.contains(servletPath) ||
-                servletPath.equals("/api/user/board") && request.getMethod().equals("GET")){
+        if (excludePaths.contains(servletPath)){
             filterChain.doFilter(request, response);
             return;
         }
