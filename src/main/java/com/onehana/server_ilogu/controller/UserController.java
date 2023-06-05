@@ -38,7 +38,7 @@ public class UserController {
 
     @Operation(summary = "로그인", description = "로그인")
     @PostMapping("/login")
-    public BaseResponse<UserLoginResponse> login(@RequestBody UserLoginRequest request) {
+    public BaseResponse<UserLoginResponse> login(@Valid @RequestBody UserLoginRequest request) {
         JwtDto tokens = userService.login(request);
 
         UserLoginResponse res = UserLoginResponse.builder()
