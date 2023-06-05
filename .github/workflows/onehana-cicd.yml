@@ -15,7 +15,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v3 # 최신 버전을 쓰고 싶었으나 이슈가 생겨서 기존에 CI에서 쓰던 버전 사용
+        uses: actions/setup-java@v3 
         with:
           java-version: 17
           distribution: 'adopt'
@@ -51,14 +51,14 @@ jobs:
           cp -r .platform deploy/.platform
           cd deploy && zip -r deploy.zip . # Procfile, .ebextensions, .platform 포함하여 zip 생성
 
-        # Beanstalk Deploy 플러그인 사용
+        # Beanstalk Deploy 플러그인 사용 (홈페이지에서 최신버전 복붙)
       - name: Beanstalk Deploy
         uses: einaregilsson/beanstalk-deploy@v21
         with:
           aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }} # github secrets로 등록한 값 사용
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }} # github secrets로 등록한 값 사용
-          application-name: earth-github-action-test # EB application 이름
-          environment_name: dev-earth-github-action-test # EB environment 이름
+          application-name: i-log-u-server # EB application 이름
+          environment_name: i-log-u-server-env # EB environment 이름
           version_label: Github Action-${{steps.current-time.outputs.formattedTime}} # 배포 버전은 타임스탬프를 이용하여 구분
           region: ap-northeast-2
           deployment_package: deploy/deploy.zip
