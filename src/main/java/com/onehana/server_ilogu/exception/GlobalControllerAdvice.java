@@ -18,25 +18,29 @@ public class GlobalControllerAdvice {
 
     @ExceptionHandler(HttpMessageNotReadableException.class)    // 잘못된 json 정보 처리
     public BaseResponse<Object> HttpMessageNotReadableException(HttpMessageNotReadableException e) {
+        log.info("HttpMessageNotReadable " + e.getMessage());
         BaseResponseStatus status = BaseResponseStatus.INVALID_JSON_REQUEST;
         return new BaseResponse<>(status);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)    // 유효성 검사 실패
     public BaseResponse<Object> MethodArgumentNotValidException(MethodArgumentNotValidException e) {
-        log.info(Arrays.toString(e.getDetailMessageArguments()));
+        String errorMessage = e.getBindingResult().getAllErrors().get(0).getDefaultMessage();
+        log.info("MethodNotValid " + e.getMessage());
         BaseResponseStatus status = BaseResponseStatus.INVALID_JSON_REQUEST;
-        return new BaseResponse<>(status);
+        return new BaseResponse<>(status, errorMessage);
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)    // 잘못된 자료형을 처리
     public BaseResponse<Object> MethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
+        log.info("MethodTypeMismatch " + e.getMessage());
         BaseResponseStatus status = BaseResponseStatus.INVALID_VALUE_TYPE;
         return new BaseResponse<>(status);
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)    // DB 중복오류
     public BaseResponse<Object> DataIntegrityViolationException(DataIntegrityViolationException e) {
+        log.info("DataIntegrityViolation " + e.getMessage());
         BaseResponseStatus status = BaseResponseStatus.DATABASE_DUPLICATE_VALUE;
         return new BaseResponse<>(status);
     }

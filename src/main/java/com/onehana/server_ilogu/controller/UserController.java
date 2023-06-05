@@ -13,6 +13,7 @@ import com.onehana.server_ilogu.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.annotation.Nullable;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -28,7 +29,7 @@ public class UserController {
 
     @Operation(summary = "회원가입", description = "회원가입")
     @PostMapping(value = "/join", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
-    public BaseResponse<UserJoinResponse> join(@RequestPart UserJoinRequest request,
+    public BaseResponse<UserJoinResponse> join(@Valid @RequestPart UserJoinRequest request,
                                                @Nullable @RequestPart("file") MultipartFile file) {
 
         UserDto userDto = userService.join(request, file);
