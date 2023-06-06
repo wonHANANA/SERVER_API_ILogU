@@ -3,10 +3,12 @@ package com.onehana.server_ilogu.dto.response;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.onehana.server_ilogu.dto.BoardListDto;
 import com.onehana.server_ilogu.entity.BoardCategory;
+import com.onehana.server_ilogu.entity.Hashtag;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -17,6 +19,7 @@ public class BoardListResponse {
     private String nickName;
     private String userProfileUrl;
     private BoardCategory category;
+    private Set<String> hashtags;
     @JsonProperty("isLiked")
     private boolean isLiked;
     private int likesCount;
@@ -36,6 +39,7 @@ public class BoardListResponse {
                 boardListDto.getNickName(),
                 boardListDto.getUserProfileUrl(),
                 boardListDto.getCategory(),
+                boardListDto.getHashtags(),
                 boardListDto.isLiked(),
                 boardListDto.getLikesCount(),
                 boardListDto.getCommentsCount(),

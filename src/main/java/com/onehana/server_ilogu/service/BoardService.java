@@ -3,6 +3,7 @@ package com.onehana.server_ilogu.service;
 import com.onehana.server_ilogu.dto.BoardDto;
 import com.onehana.server_ilogu.dto.BoardListDto;
 import com.onehana.server_ilogu.dto.CommentDto;
+import com.onehana.server_ilogu.dto.request.BoardCreateRequest;
 import com.onehana.server_ilogu.dto.response.BaseResponseStatus;
 import com.onehana.server_ilogu.entity.*;
 import com.onehana.server_ilogu.exception.BaseException;
@@ -15,6 +16,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -25,10 +29,17 @@ public class BoardService {
     private final BoardLikeRepository boardLikeRepository;
     private final UserRepository userRepository;
     private final CommentRepository commentRepository;
+    private final AmazonS3Service amazonS3Service;
+    private final HashTagService hashTagService;
 
-    public BoardDto createBoard(String title, String content, BoardCategory category, String email) {
+    public BoardDto createBoard(BoardDto boardDto, String email, List<MultipartFile> files) {
         User user = getUserOrException(email);
-        Board board = boardRepository.save(Board.of(title, content, category, user));
+        Board board = boardRepository.save(Board.toEntity(boardDto, user));
+
+        hashTagService.createTagList(board);
+
+        if (files != null)
+            amazonS3Service.uploadBoardImages(files, BoardDto.of(board));
 
         return BoardDto.of(board);
     }

@@ -1,7 +1,5 @@
 package com.onehana.server_ilogu.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -10,7 +8,9 @@ import java.util.List;
 
 @Entity
 @Table(indexes = {
-        @Index(name = "board_id_idx", columnList = "board_id")
+        @Index(columnList = "board_id"),
+        @Index(columnList = "user_id"),
+        @Index(columnList = "parent_comment_id")
 })
 @Getter
 @Builder
@@ -29,22 +29,20 @@ public class Comment extends BaseTimeEntity {
     @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_comment_id")
-    @JsonBackReference
     private Comment parentComment;
 
     @ToString.Exclude
     @OrderBy("createdAt ASC")
     @OneToMany(mappedBy = "parentComment", cascade = CascadeType.ALL)
-    @JsonManagedReference
     private List<Comment> childComments = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
+    @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_id", nullable = false)
-    @JsonBackReference
     private Board board;
 
     public static Comment of(User user, Board board, String comment, Comment parentComment) {

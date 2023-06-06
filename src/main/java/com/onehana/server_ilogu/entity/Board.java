@@ -1,17 +1,22 @@
 package com.onehana.server_ilogu.entity;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.onehana.server_ilogu.dto.BoardDto;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Entity
 @Getter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(indexes = {
+        @Index(columnList = "title"),
+        @Index(columnList = "user_id"),
+        @Index(columnList = "category")
+})
 public class Board extends BaseTimeEntity{
 
     @Id
@@ -29,26 +34,40 @@ public class Board extends BaseTimeEntity{
     @Enumerated(EnumType.STRING)
     private BoardCategory category;
 
+    @JsonIgnore
+    @JoinTable(
+            name = "board_hashtag",
+            joinColumns = @JoinColumn(name = "boardId"),
+            inverseJoinColumns = @JoinColumn(name = "hashtagId")
+    )
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    private Set<Hashtag> hashtags = new LinkedHashSet<>();
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
     @OneToMany(mappedBy = "board", cascade = CascadeType.ALL)
-    @ToString.Exclude
-    @JsonManagedReference
+    @JsonIgnore
     private List<BoardImage> boardImages = new ArrayList<>();
 
     @OneToMany(mappedBy = "board", cascade = CascadeType.ALL)
-    @ToString.Exclude
-    @JsonManagedReference
+    @JsonIgnore
     private List<Comment> comments = new ArrayList<>();
 
-    public static Board of(String title, String content, BoardCategory category, User user) {
+    public static Board toEntity(BoardDto boardDto, User user) {
         Board board = new Board();
-        board.title = title;
-        board.content = content;
-        board.category = category;
+        board.title = boardDto.getTitle();
+        board.content = boardDto.getContent();
+        board.category = boardDto.getCategory();
+        board.hashtags = boardDto.getHashtags();
         board.user = user;
         return board;
+    }
+
+    public void addHashtag(Hashtag hashtag) {
+        if(this.hashtags == null)
+            this.hashtags = new LinkedHashSet<>();
+        this.getHashtags().add(hashtag);
     }
 }
