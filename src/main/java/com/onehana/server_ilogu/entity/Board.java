@@ -70,4 +70,8 @@ public class Board extends BaseTimeEntity{
             this.hashtags = new LinkedHashSet<>();
         this.getHashtags().add(hashtag);
     }
+
+    public void clearHashtags() {
+        this.hashtags.clear();
+    }
 }

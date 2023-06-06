@@ -55,6 +55,8 @@ public class BoardService {
         board.setTitle(title);
         board.setContent(content);
         board.setCategory(category);
+        board.clearHashtags();
+        hashTagService.createTagList(board);
 
         return BoardDto.of(boardRepository.save(board));
     }
