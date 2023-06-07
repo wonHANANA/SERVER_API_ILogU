@@ -5,6 +5,7 @@ import com.onehana.server_ilogu.dto.UserDto;
 import com.onehana.server_ilogu.dto.response.BaseResponse;
 import com.onehana.server_ilogu.dto.response.BaseResponseStatus;
 import com.onehana.server_ilogu.exception.ExpiredTokenException;
+import com.onehana.server_ilogu.exception.InvalidHeaderException;
 import com.onehana.server_ilogu.service.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -39,21 +40,16 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         String header = request.getHeader(HttpHeaders.AUTHORIZATION);
 
         List<String> excludePaths = Arrays.asList("/api/user/login", "/api/user/join",
-                "/api/user/token/refresh");
+                "/api/user/token/refresh", "/");
 
         if (excludePaths.contains(servletPath)){
             filterChain.doFilter(request, response);
             return;
         }
 
-        if (header == null || !header.startsWith("Bearer ")) {
-            log.error("Header가 null이거나 잘못된 형식입니다.");
-            filterChain.doFilter(request, response);
-            return;
-        }
-
         try {
-            String token = header.split(" ")[1].trim();
+            validateHeader(header);
+            String token = extractToken(header);
 
             if (JwtTokenUtils.isExpired(token, key)) {
                 throw new ExpiredTokenException(BaseResponseStatus.EXPIRED_ACCESS_TOKEN.getMessage());
@@ -68,19 +64,33 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
+        } catch (InvalidHeaderException e) {
+            handleException(response, HttpStatus.UNAUTHORIZED, BaseResponseStatus.INVALID_HEADER);
+            return;
         } catch (ExpiredTokenException e) {
-            log.error("토큰이 만료되었습니다.");
-            response.setStatus(HttpStatus.UNAUTHORIZED.value());
-            writeErrorResponse(response, BaseResponseStatus.EXPIRED_ACCESS_TOKEN);
+            handleException(response, HttpStatus.UNAUTHORIZED, BaseResponseStatus.EXPIRED_ACCESS_TOKEN);
             return;
         } catch (RuntimeException e) {
-            log.error("토큰이 유효하지 않습니다.");
-            response.setStatus(HttpStatus.UNAUTHORIZED.value());
-            writeErrorResponse(response, BaseResponseStatus.INVALID_ACCESS_TOKEN);
+            handleException(response, HttpStatus.UNAUTHORIZED, BaseResponseStatus.INVALID_ACCESS_TOKEN);
             return;
         }
-
         filterChain.doFilter(request, response);
+    }
+
+    private void validateHeader(String header) {
+        if (header == null || !header.startsWith("Bearer ")) {
+            throw new InvalidHeaderException(BaseResponseStatus.INVALID_HEADER.getMessage());
+        }
+    }
+
+    private String extractToken(String header) {
+        return header.split(" ")[1].trim();
+    }
+
+    private void handleException(HttpServletResponse response, HttpStatus status, BaseResponseStatus baseResponseStatus) throws IOException {
+        log.error(baseResponseStatus.getMessage());
+        response.setStatus(status.value());
+        writeErrorResponse(response, baseResponseStatus);
     }
 
     private void writeErrorResponse(HttpServletResponse response, BaseResponseStatus status) throws IOException {

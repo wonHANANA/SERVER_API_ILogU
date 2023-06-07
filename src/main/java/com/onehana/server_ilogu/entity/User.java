@@ -9,6 +9,9 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(indexes = {
+        @Index(columnList = "email", unique = true)
+})
 public class User extends BaseTimeEntity {
 
     @Id

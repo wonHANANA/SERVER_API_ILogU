@@ -1,7 +1,6 @@
 package com.onehana.server_ilogu.controller;
 
 import com.onehana.server_ilogu.dto.BoardDto;
-import com.onehana.server_ilogu.dto.BoardListDto;
 import com.onehana.server_ilogu.dto.UserDto;
 import com.onehana.server_ilogu.dto.request.BoardCreateRequest;
 import com.onehana.server_ilogu.dto.request.BoardModifyRequest;
@@ -43,11 +42,7 @@ public class BoardController {
     public BaseResponse<Void> createBoard(@RequestPart BoardCreateRequest request,
                                           @Nullable @RequestPart List<MultipartFile> files, Authentication authentication) {
         UserDto userDto = (UserDto) authentication.getPrincipal();
-        BoardDto boardDto = boardService.createBoard(request.getTitle(), request.getContent(),
-                                                request.getCategory(), userDto.getEmail());
-
-        if (files != null)
-            amazonS3Service.uploadBoardImages(files, boardDto);
+        boardService.createBoard(BoardDto.of(request), userDto.getEmail(), files);
 
         return new BaseResponse<>(BaseResponseStatus.SUCCESS);
     }
