@@ -26,6 +26,7 @@ import static org.springframework.http.HttpMethod.DELETE;
 public class SecurityConfig implements WebMvcConfigurer {
 
     private final UserService userService;
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
     @Value("${jwt.access-token.secret-key}")
     private String key;
@@ -53,7 +54,7 @@ public class SecurityConfig implements WebMvcConfigurer {
                 )
                 .addFilterBefore(new JwtTokenFilter(key, userService), UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling((exceptionHandling) -> exceptionHandling
-                        .authenticationEntryPoint(new CustomAuthenticationEntryPoint()))
+                        .authenticationEntryPoint(customAuthenticationEntryPoint))
                 .build();
     }
 

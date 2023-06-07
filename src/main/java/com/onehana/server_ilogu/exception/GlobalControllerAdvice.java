@@ -47,7 +47,7 @@ public class GlobalControllerAdvice {
 
     @ExceptionHandler(BaseException.class)
     public BaseResponse<?> errorHandler(BaseException e) {
-        log.info("BaseResponse에서 처리");
+        log.info("BaseException 에서 처리");
         return new BaseResponse<>(e.getStatus());
     }
 

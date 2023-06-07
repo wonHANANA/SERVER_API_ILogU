@@ -8,10 +8,12 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 
+@Component
 public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
     @Override
@@ -22,7 +24,17 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
         PrintWriter writer = response.getWriter();
         ObjectMapper objectMapper = new ObjectMapper();
 
-        BaseResponse<Object> baseResponse = new BaseResponse<>(BaseResponseStatus.INVALID_ACCESS_TOKEN);
+        BaseResponseStatus status;
+
+        if (authException instanceof InvalidHeaderException) {
+            status = BaseResponseStatus.INVALID_HEADER;
+        } else if (authException instanceof ExpiredTokenException) {
+            status = BaseResponseStatus.EXPIRED_ACCESS_TOKEN;
+        } else {
+            status = BaseResponseStatus.INVALID_PERMISSION;
+        }
+
+        BaseResponse<Object> baseResponse = new BaseResponse<>(status);
         String jsonResponse = objectMapper.writeValueAsString(baseResponse);
 
         writer.print(jsonResponse);

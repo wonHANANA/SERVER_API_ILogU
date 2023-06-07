@@ -5,8 +5,8 @@ import lombok.Data;
 
 @Data
 public class UserLoginRequest {
-//    @NotBlank
+    @NotBlank
     private String email;
-//    @NotBlank
+    @NotBlank
     private String password;
 }
