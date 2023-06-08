@@ -123,8 +123,6 @@ public class AmazonS3Service {
 
             if (isObjectExist) {
                 amazonS3Client.deleteObject(bucket, keyName);
-            } else {
-                throw new BaseException(BaseResponseStatus.IMAGE_NOT_FOUND);
             }
         }
     }
