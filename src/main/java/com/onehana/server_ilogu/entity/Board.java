@@ -9,7 +9,6 @@ import java.util.*;
 
 @Entity
 @Getter
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(indexes = {

@@ -20,7 +20,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -40,8 +40,7 @@ public class BoardController {
     @Operation(summary = "피드글 업로드", description = "피드글을 작성한다")
     @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public BaseResponse<Void> createBoard(@RequestPart BoardCreateRequest request,
-                                          @Nullable @RequestPart List<MultipartFile> files, Authentication authentication) {
-        UserDto userDto = (UserDto) authentication.getPrincipal();
+                                          @Nullable @RequestPart List<MultipartFile> files, @AuthenticationPrincipal UserDto userDto) {
         boardService.createBoard(BoardDto.of(request), userDto.getEmail(), files);
 
         return new BaseResponse<>(BaseResponseStatus.SUCCESS);
@@ -50,8 +49,7 @@ public class BoardController {
     @Operation(summary = "피드글 수정", description = "피드글을 수정한다")
     @PutMapping("/{boardId}")
     public BaseResponse<Void> modifyBoard(@PathVariable Long boardId,
-                                          @RequestBody BoardModifyRequest request, Authentication authentication) {
-        UserDto userDto = (UserDto) authentication.getPrincipal();
+                                          @RequestBody BoardModifyRequest request, @AuthenticationPrincipal UserDto userDto) {
         boardService.modifyBoard(request.getTitle(), request.getContent(),
                 request.getCategory(), userDto.getEmail(), boardId);
 
@@ -60,8 +58,7 @@ public class BoardController {
 
     @Operation(summary = "피드글 삭제", description = "피드글을 삭제한다.")
     @DeleteMapping("/{boardId}")
-    public BaseResponse<Void> deleteBoard(@PathVariable Long boardId, Authentication authentication) {
-        UserDto userDto = (UserDto) authentication.getPrincipal();
+    public BaseResponse<Void> deleteBoard(@PathVariable Long boardId, @AuthenticationPrincipal UserDto userDto) {
 
         amazonS3Service.deleteAllBoardImages(userDto.getEmail(), boardId);
         boardService.deleteBoard(userDto.getEmail(), boardId);
@@ -71,23 +68,20 @@ public class BoardController {
 
     @Operation(summary = "피드글 조회", description = "pageable 옵션에 따라 전체 피드글을 조회한다.")
     @GetMapping
-    public BaseResponse<Page<BoardListResponse>> getBoards(Pageable pageable, Authentication authentication) {
-        UserDto userDto = (UserDto) authentication.getPrincipal();
+    public BaseResponse<Page<BoardListResponse>> getBoards(Pageable pageable, @AuthenticationPrincipal UserDto userDto) {
         return new BaseResponse<>(boardService.getBoards(pageable, userDto.getEmail()).map(BoardListResponse::of));
     }
 
     @Operation(summary = "카테고리별 피드글 조회", description = "pageable 옵션과 카테고리에 따라 피드글을 조회한다.")
     @GetMapping("/category/{category}")
     public BaseResponse<Page<BoardListResponse>> getBoardsByCategory(@PathVariable BoardCategory category, Pageable pageable,
-                                                                     Authentication authentication) {
-        UserDto userDto = (UserDto) authentication.getPrincipal();
+                                                                     @AuthenticationPrincipal UserDto userDto) {
         return new BaseResponse<>(boardService.getBoardsByCategory(category, pageable, userDto.getEmail()).map(BoardListResponse::of));
     }
 
     @Operation(summary = "나의 피드글 조회", description = "pageable 옵션에 따라 로그인한 유저의 피드글을 조회한다.")
     @GetMapping("/my")
-    public BaseResponse<Page<BoardListResponse>> getMyBoards(Pageable pageable, Authentication authentication) {
-        UserDto userDto = (UserDto) authentication.getPrincipal();
+    public BaseResponse<Page<BoardListResponse>> getMyBoards(Pageable pageable, @AuthenticationPrincipal UserDto userDto) {
 
         return new BaseResponse<>(boardService.getMyBoards(userDto.getEmail(), pageable).map(BoardListResponse::of));
     }
@@ -95,8 +89,7 @@ public class BoardController {
     @Operation(summary = "카테고리 별 나의 피드글 조회", description = "pageable 옵션과 카테고리에 따라 로그인한 유저의 피드글을 조회한다.")
     @GetMapping("/my/category/{category}")
     public BaseResponse<Page<BoardListResponse>> getMyBoardsByCategory(@PathVariable BoardCategory category,
-                                                                       Pageable pageable, Authentication authentication) {
-        UserDto userDto = (UserDto) authentication.getPrincipal();
+                                                                       Pageable pageable, @AuthenticationPrincipal UserDto userDto) {
 
         return new BaseResponse<>(boardService.getMyBoardsByCategory(userDto.getEmail(), category, pageable).map(BoardListResponse::of));
     }
@@ -115,8 +108,7 @@ public class BoardController {
     @Operation(summary = "댓글 작성", description = "댓글을 작성한다.")
     @PostMapping("/{boardId}/comment")
     public BaseResponse<Void> createComment(@PathVariable Long boardId, @RequestBody CommentRequest request,
-                                            Authentication authentication) {
-        UserDto userDto = (UserDto) authentication.getPrincipal();
+                                            @AuthenticationPrincipal UserDto userDto) {
 
         boardService.createComment(boardId, request.getParentComment(), request.getComment(), userDto.getEmail());
         return new BaseResponse<>(BaseResponseStatus.SUCCESS);
@@ -125,8 +117,7 @@ public class BoardController {
     @Operation(summary = "댓글 수정", description = "댓글을 수정한다.")
     @PutMapping("/{boardId}/comment/{commentId}")
     public BaseResponse<Void> modifyComment(@PathVariable Long boardId, @PathVariable Long commentId,
-                                            @RequestBody CommentRequest request, Authentication authentication) {
-        UserDto userDto = (UserDto) authentication.getPrincipal();
+                                            @RequestBody CommentRequest request, @AuthenticationPrincipal UserDto userDto) {
 
         boardService.modifyComment(commentId, request.getComment(), userDto.getEmail());
         return new BaseResponse<>(BaseResponseStatus.SUCCESS);
@@ -135,8 +126,7 @@ public class BoardController {
     @Operation(summary = "댓글 삭제", description = "댓글을 삭제한다.")
     @DeleteMapping("/{boardId}/comment/{commentId}")
     public BaseResponse<Void> deleteComment(@PathVariable Long boardId, @PathVariable Long commentId,
-                                            Authentication authentication) {
-        UserDto userDto = (UserDto) authentication.getPrincipal();
+                                            @AuthenticationPrincipal UserDto userDto) {
 
         boardService.deleteComment(commentId, userDto.getEmail());
         return new BaseResponse<>(BaseResponseStatus.SUCCESS);
@@ -145,14 +135,13 @@ public class BoardController {
     @Operation(summary = "댓글 조회", description = "해당 게시글의 모든 댓글을 조회한다.")
     @GetMapping("/{boardId}/comments")
     public BaseResponse<Page<CommentResponse>> getComments(@PathVariable Long boardId, Pageable pageable,
-                                                           Authentication authentication) {
+                                                           @AuthenticationPrincipal UserDto userDto) {
         return new BaseResponse<>(boardService.getComments(boardId, pageable).map(CommentResponse::fromCommentDto));
     }
 
     @Operation(summary = "좋아요", description = "이미 좋아요 한 게시글은 좋아요가 삭제된다.")
     @PutMapping("/{boardId}/like")
-    public BaseResponse<Integer> like(@PathVariable Long boardId, Authentication authentication) {
-        UserDto userDto = (UserDto) authentication.getPrincipal();
+    public BaseResponse<Integer> like(@PathVariable Long boardId, @AuthenticationPrincipal UserDto userDto) {
 
         return new BaseResponse<>(boardService.like(boardId, userDto.getEmail()));
     }

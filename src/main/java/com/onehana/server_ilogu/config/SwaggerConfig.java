@@ -35,4 +35,14 @@ public class SwaggerConfig {
                 .pathsToMatch(paths)
                 .build();
     }
+
+    @Bean
+    public GroupedOpenApi family() {
+        String[] paths = {"/api/family/**"};
+
+        return GroupedOpenApi.builder()
+                .group("가족")
+                .pathsToMatch(paths)
+                .build();
+    }
 }

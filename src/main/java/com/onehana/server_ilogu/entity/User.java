@@ -6,11 +6,11 @@ import lombok.*;
 
 @Entity
 @Getter
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(indexes = {
-        @Index(columnList = "email", unique = true)
+        @Index(columnList = "email", unique = true),
+        @Index(columnList = "family_id")
 })
 public class User extends BaseTimeEntity {
 
@@ -39,14 +39,20 @@ public class User extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private FamilyRole familyRole;
 
-    public static User of(UserJoinRequest userDto, String url) {
+    @ManyToOne
+    @JoinColumn(name = "family_id")
+    @Setter
+    private Family family;
+
+    public static User of(UserJoinRequest request, String url, Family family) {
         User user = new User();
-        user.email = userDto.getEmail();
-        user.password = userDto.getPassword();
-        user.nickname = userDto.getNickname();
-        user.familyRole = userDto.getFamilyRole();
-        user.familyType = userDto.getFamilyType();
+        user.email = request.getEmail();
+        user.password = request.getPassword();
+        user.nickname = request.getNickname();
+        user.familyRole = request.getFamilyRole();
+        user.familyType = request.getFamilyType();
         user.profileImageUrl = url;
+        user.family = family;
         return user;
     }
 }
