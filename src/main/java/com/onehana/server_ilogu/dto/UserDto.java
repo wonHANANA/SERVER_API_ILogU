@@ -1,5 +1,6 @@
 package com.onehana.server_ilogu.dto;
 
+import com.onehana.server_ilogu.dto.request.UserJoinRequest;
 import com.onehana.server_ilogu.entity.FamilyRole;
 import com.onehana.server_ilogu.entity.FamilyType;
 import com.onehana.server_ilogu.entity.User;
@@ -22,6 +23,17 @@ public class UserDto implements UserDetails {
     private UserRole userRole;
     private FamilyType familyType;
     private FamilyRole familyRole;
+
+    public static UserDto of(UserJoinRequest request) {
+        return new UserDto(
+                request.getEmail(),
+                request.getPassword(),
+                request.getNickname(),
+                UserRole.USER_ROLE,
+                request.getFamilyType(),
+                request.getFamilyRole()
+        );
+    }
 
     public static UserDto of(User user) {
         return new UserDto(

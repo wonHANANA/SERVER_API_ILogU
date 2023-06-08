@@ -5,8 +5,10 @@ import com.onehana.server_ilogu.dto.UserDto;
 import com.onehana.server_ilogu.dto.request.UserJoinRequest;
 import com.onehana.server_ilogu.dto.request.UserLoginRequest;
 import com.onehana.server_ilogu.dto.response.BaseResponseStatus;
+import com.onehana.server_ilogu.entity.Family;
 import com.onehana.server_ilogu.entity.User;
 import com.onehana.server_ilogu.exception.BaseException;
+import com.onehana.server_ilogu.repository.FamilyRepository;
 import com.onehana.server_ilogu.repository.UserRepository;
 import com.onehana.server_ilogu.util.jwt.JwtTokenUtils;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +39,7 @@ public class UserService {
 
     @Value("${jwt.refresh-token.expired-time-ms}")
     private Long refreshExpiredTime;
+    private final FamilyRepository familyRepository;
 
     @Transactional(readOnly = true)
     public UserDto loadUserByEmail(String email) {
@@ -59,7 +62,15 @@ public class UserService {
         } else {
             profileUrl = amazonS3Service.uploadProfileImage(file);
         }
-        User user = userRepository.save(User.of(request, profileUrl));
+
+        Family family = null;
+        if(request.getInviteCode() != null && !request.getInviteCode().trim().isEmpty()) {
+            family = familyRepository.findByInviteCode(request.getInviteCode()).orElseThrow(() -> {
+                throw new BaseException(INVALID_INVITE_CODE);
+            });
+        }
+
+        User user = userRepository.save(User.of(request, profileUrl, family));
         return UserDto.of(user);
     }
 

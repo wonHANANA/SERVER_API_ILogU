@@ -15,6 +15,7 @@ public class UserJoinRequest {
     private String password;
     @Size(message = "닉네임은 2자 이상, 10자 이하입니다.", min = 2, max = 10)
     private String nickname;
+    private String inviteCode;
     private FamilyType familyType;
     private FamilyRole familyRole;
 }
