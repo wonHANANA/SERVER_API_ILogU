@@ -105,5 +105,8 @@ public class UserService {
         return jwtDto;
     }
 
-
+    public User getUserOrException(String email) {
+        return userRepository.findByEmail(email).orElseThrow(() ->
+                new BaseException(BaseResponseStatus.USER_NOT_FOUND));
+    }
 }

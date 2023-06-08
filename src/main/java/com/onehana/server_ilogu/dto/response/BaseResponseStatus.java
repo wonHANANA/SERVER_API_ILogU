@@ -41,9 +41,14 @@ public enum BaseResponseStatus {
 
     DUPLICATED_USERID(false, "400-04-01", "이미 가입된 아이디입니다."),
     DUPLICATED_EMAIL(false, "400-04-02", "이미 가입된 이메일입니다."),
-    USER_NOT_FOUND(false, "400-04-03", "존재하지 않는 아이디입니다."),
-    INVALID_PASSWORD(false, "400-04-04", "비밀번호가 일치하지 않습니다."),
-    INVALID_PERMISSION(false, "400-04-05", "권한이 존재하지 않습니다."),
+    DUPLICATED_FAMILY(false, "400-04-03", "이미 가입된 가족입니다."),
+    DUPLICATED_FAMILY_NAME(false, "400-04-04", "중복된 가족 이름입니다."),
+    USER_NOT_FOUND(false, "400-04-05", "존재하지 않는 아이디입니다."),
+    INVALID_PASSWORD(false, "400-04-06", "비밀번호가 일치하지 않습니다."),
+    INVALID_PERMISSION(false, "400-04-07", "권한이 존재하지 않습니다."),
+    INVALID_FAMILY_CREATE_PERMISSION(false, "400-04-08", "가족은 PARENT 권한만 생성할 수 있습니다."),
+    INVALID_INVITE_CODE(false, "400-04-09", "유효하지 않은 가족 코드입니다."),
+
 
     BOARD_NOT_FOUND(false, "400-05-01", "존재하지 않는 게시물입니다."),
     COMMENT_NOT_FOUND(false, "400-05-02", "존재하지 않는 댓글입니다."),

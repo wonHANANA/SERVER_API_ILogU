@@ -13,7 +13,6 @@ import java.util.List;
         @Index(columnList = "parent_comment_id")
 })
 @Getter
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class Comment extends BaseTimeEntity {

@@ -14,7 +14,6 @@ import java.util.Set;
 @Table(indexes = {
         @Index(columnList = "hashtagName", unique = true)
 })
-@Builder
 public class Hashtag extends BaseTimeEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)

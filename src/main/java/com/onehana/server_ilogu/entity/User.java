@@ -30,6 +30,7 @@ public class User extends BaseTimeEntity {
     @Setter
     private String refreshToken;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     private UserRole userRole = UserRole.USER_ROLE;
 
@@ -38,6 +39,11 @@ public class User extends BaseTimeEntity {
 
     @Enumerated(EnumType.STRING)
     private FamilyRole familyRole;
+
+    @ManyToOne
+    @JoinColumn(name = "family_id")
+    @Setter
+    private Family family;
 
     public static User of(UserJoinRequest userDto, String url) {
         User user = new User();
