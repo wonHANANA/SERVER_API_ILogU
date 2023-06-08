@@ -28,7 +28,7 @@ public class FamilyController {
         return new BaseResponse<>(FamilyCreateResponse.of(familyDto));
     }
 
-    @Operation(summary = "가족에 가입", description = "가족 초대 코드를 이용해 가족에 가입한다.")
+    @Operation(summary = "가족 가입", description = "가족 초대 코드를 이용해 가족에 가입한다.")
     @PostMapping("/join")
     public BaseResponse<String> joinFamily(@RequestBody FamilyJoinRequest request,
                                            @AuthenticationPrincipal UserDto userDto) {
