@@ -64,6 +64,8 @@ public enum BaseResponseStatus {
 
     PRODUCTS_NOT_FOUND(false, "400-07-01", "해당 상품을 찾을 수 없습니다."),
     ACCOUNT_NOT_FOUND(false, "400-07-02", "해당 계좌를 찾을 수 없습니다."),
+    LACK_OF_BALANCE(false, "400-07-03", "잔액이 부족합니다."),
+    CANNOT_SEND_TO_SELF(false, "400-07-04", "같은 계좌로는 송금을 할 수 없습니다."),
 
     /**
      * 500번대 에러 : 서버 에러 등 서버 프로그래밍 잘못으로 인한 에러들

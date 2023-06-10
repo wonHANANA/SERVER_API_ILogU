@@ -1,6 +1,8 @@
 package com.onehana.server_ilogu.entity;
 
 import com.onehana.server_ilogu.dto.DepositAccountDto;
+import com.onehana.server_ilogu.dto.response.BaseResponseStatus;
+import com.onehana.server_ilogu.exception.BaseException;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,7 +11,6 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.util.Random;
-import java.util.UUID;
 
 @Entity
 @Getter
@@ -30,6 +31,16 @@ public class DepositAccount {
     @JoinColumn(name = "user_id")
     @Setter
     private User user;
+
+    public void deposit(BigDecimal money) {
+        balance = balance.add(money);
+    }
+    public void withdraw(BigDecimal money) {
+        if (balance.compareTo(money) < 0) {
+            throw new BaseException(BaseResponseStatus.LACK_OF_BALANCE);
+        }
+        balance = balance.subtract(money);
+    }
 
     @PrePersist
     public void generateAccountNumber() {
