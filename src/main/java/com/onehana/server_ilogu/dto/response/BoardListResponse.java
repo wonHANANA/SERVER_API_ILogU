@@ -2,6 +2,7 @@ package com.onehana.server_ilogu.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.onehana.server_ilogu.dto.BoardListDto;
+import com.onehana.server_ilogu.entity.BoardImage;
 import com.onehana.server_ilogu.entity.enums.BoardCategory;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -28,9 +29,6 @@ public class BoardListResponse {
     private BoardImageResponse mainImage;
 
     public static BoardListResponse of(BoardListDto boardListDto) {
-        BoardImageResponse mainImageResponse = (boardListDto.getMainImage() != null)
-                ? BoardImageResponse.of(boardListDto.getMainImage()) : null;
-
         return new BoardListResponse(
                 boardListDto.getId(),
                 boardListDto.getTitle(),
@@ -44,7 +42,7 @@ public class BoardListResponse {
                 boardListDto.getCommentsCount(),
                 boardListDto.getCreatedAt(),
                 boardListDto.getUpdatedAt(),
-                mainImageResponse
+                boardListDto.getMainImage()
         );
     }
 }

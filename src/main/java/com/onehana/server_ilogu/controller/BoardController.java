@@ -1,5 +1,6 @@
 package com.onehana.server_ilogu.controller;
 
+import com.onehana.server_ilogu.dto.BoardDetailDto;
 import com.onehana.server_ilogu.dto.BoardDto;
 import com.onehana.server_ilogu.dto.UserDto;
 import com.onehana.server_ilogu.dto.request.BoardCreateRequest;
@@ -66,7 +67,15 @@ public class BoardController {
         return new BaseResponse<>(BaseResponseStatus.SUCCESS);
     }
 
-    @Operation(summary = "피드글 조회", description = "pageable 옵션에 따라 전체 피드글을 조회한다.")
+    @Operation(summary = "피드글 단건 조회", description = "피드글 상세 정보를 댓글과 함께 조회한다.")
+    @GetMapping("/{boardId}")
+    public BaseResponse<BoardDetailDto> getBoardWithComments(@AuthenticationPrincipal UserDto userDto,
+                                                             @PathVariable Long boardId, Pageable pageable) {
+        BoardDetailDto boardDetail = boardService.getBoardWithComments(boardId, userDto.getEmail(), pageable);
+        return new BaseResponse<>(boardDetail);
+    }
+
+    @Operation(summary = "피드글 리스트 조회", description = "pageable 옵션에 따라 전체 피드글을 조회한다.")
     @GetMapping
     public BaseResponse<Page<BoardListResponse>> getBoards(Pageable pageable, @AuthenticationPrincipal UserDto userDto) {
         return new BaseResponse<>(boardService.getBoards(pageable, userDto.getEmail()).map(BoardListResponse::of));
