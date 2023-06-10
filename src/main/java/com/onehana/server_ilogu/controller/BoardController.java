@@ -9,7 +9,7 @@ import com.onehana.server_ilogu.dto.response.BaseResponse;
 import com.onehana.server_ilogu.dto.response.BaseResponseStatus;
 import com.onehana.server_ilogu.dto.response.BoardListResponse;
 import com.onehana.server_ilogu.dto.response.CommentResponse;
-import com.onehana.server_ilogu.entity.BoardCategory;
+import com.onehana.server_ilogu.entity.enums.BoardCategory;
 import com.onehana.server_ilogu.service.AmazonS3Service;
 import com.onehana.server_ilogu.service.AzureService;
 import com.onehana.server_ilogu.service.BoardService;

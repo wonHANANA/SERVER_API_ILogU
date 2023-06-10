@@ -3,7 +3,7 @@ package com.onehana.server_ilogu.service;
 import com.onehana.server_ilogu.dto.FamilyDto;
 import com.onehana.server_ilogu.dto.response.BaseResponseStatus;
 import com.onehana.server_ilogu.entity.Family;
-import com.onehana.server_ilogu.entity.FamilyType;
+import com.onehana.server_ilogu.entity.enums.FamilyType;
 import com.onehana.server_ilogu.entity.User;
 import com.onehana.server_ilogu.exception.BaseException;
 import com.onehana.server_ilogu.repository.FamilyRepository;

@@ -2,7 +2,7 @@ package com.onehana.server_ilogu.dto;
 
 import com.onehana.server_ilogu.dto.request.BoardCreateRequest;
 import com.onehana.server_ilogu.entity.Board;
-import com.onehana.server_ilogu.entity.BoardCategory;
+import com.onehana.server_ilogu.entity.enums.BoardCategory;
 import com.onehana.server_ilogu.entity.Hashtag;
 import com.onehana.server_ilogu.entity.User;
 import lombok.AllArgsConstructor;

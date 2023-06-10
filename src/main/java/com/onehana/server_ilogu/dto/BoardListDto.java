@@ -1,6 +1,7 @@
 package com.onehana.server_ilogu.dto;
 
 import com.onehana.server_ilogu.entity.*;
+import com.onehana.server_ilogu.entity.enums.BoardCategory;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
