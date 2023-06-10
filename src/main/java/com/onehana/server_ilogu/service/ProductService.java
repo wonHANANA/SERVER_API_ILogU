@@ -18,6 +18,7 @@ public class ProductService {
 
     private final ProductRepository productRepository;
 
+    @Transactional(readOnly = true)
     public List<ProductDto> getProducts() {
         return productRepository.findAll()
                 .stream()
@@ -25,6 +26,7 @@ public class ProductService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public List<ProductDto> getProductsByType(ProductType type) {
         return productRepository.findByType(type)
                 .stream()

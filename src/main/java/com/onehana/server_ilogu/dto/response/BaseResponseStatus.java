@@ -60,6 +60,8 @@ public enum BaseResponseStatus {
     INVALID_VALUE_TYPE(false, "400-06-02", "잘못된 자료형을 입력했습니다."),
     INVALID_JSON_REQUEST(false, "400-06-03", "JSON에 null값이나 잘못된 형식이 포함되어 있습니다."),
 
+    PRODUCTS_NOT_FOUND(false, "400-07-01", "해당 상품을 찾을 수 없습니다."),
+
     /**
      * 500번대 에러 : 서버 에러 등 서버 프로그래밍 잘못으로 인한 에러들
      */

@@ -160,6 +160,7 @@ public class BoardService {
         commentRepository.delete(comment);
     }
 
+    @Transactional(readOnly = true)
     public Page<CommentDto> getComments(Long boardId, Pageable pageable) {
         Board board = getBoardOrException(boardId);
 
@@ -167,6 +168,7 @@ public class BoardService {
                 .map(CommentDto::fromEntity);
     }
 
+    @Transactional(readOnly = true)
     public int countComments(Long boardId) {
         Board board = boardRepository.findById(boardId).orElseThrow(() ->
                 new BaseException(BaseResponseStatus.BOARD_NOT_FOUND));
@@ -199,6 +201,7 @@ public class BoardService {
         return boardLikeRepository.existsByBoardIdAndUserId(boardId, userId);
     }
 
+    @Transactional(readOnly = true)
     private Board getBoardOrException(Long boardId) {
         return boardRepository.findById(boardId).orElseThrow(() ->
                 new BaseException(BaseResponseStatus.BOARD_NOT_FOUND));
