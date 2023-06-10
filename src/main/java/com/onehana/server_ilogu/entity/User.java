@@ -4,6 +4,9 @@ import com.onehana.server_ilogu.dto.request.UserJoinRequest;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter
 @NoArgsConstructor
@@ -43,6 +46,19 @@ public class User extends BaseTimeEntity {
     @JoinColumn(name = "family_id")
     @Setter
     private Family family;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<DepositAccount> depositAccounts = new ArrayList<>();
+
+    public void addDepositAccount(DepositAccount depositAccount) {
+        depositAccounts.add(depositAccount);
+        depositAccount.setUser(this);
+    }
+
+    public void removeDepositAccount(DepositAccount depositAccount) {
+        depositAccounts.remove(depositAccount);
+        depositAccount.setUser(null);
+    }
 
     public static User of(UserJoinRequest request, String url, Family family) {
         User user = new User();
