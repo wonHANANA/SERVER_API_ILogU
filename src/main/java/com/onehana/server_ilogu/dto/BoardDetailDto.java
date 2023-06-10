@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.onehana.server_ilogu.dto.response.BoardImageResponse;
 import com.onehana.server_ilogu.entity.Board;
-import com.onehana.server_ilogu.entity.BoardImage;
 import com.onehana.server_ilogu.entity.Hashtag;
 import com.onehana.server_ilogu.entity.enums.BoardCategory;
 import lombok.AllArgsConstructor;

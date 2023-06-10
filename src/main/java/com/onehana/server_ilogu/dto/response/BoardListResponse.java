@@ -2,7 +2,6 @@ package com.onehana.server_ilogu.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.onehana.server_ilogu.dto.BoardListDto;
-import com.onehana.server_ilogu.entity.BoardImage;
 import com.onehana.server_ilogu.entity.enums.BoardCategory;
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -1,7 +1,6 @@
 package com.onehana.server_ilogu.service;
 
 import com.onehana.server_ilogu.dto.ProductDto;
-import com.onehana.server_ilogu.entity.Product;
 import com.onehana.server_ilogu.entity.enums.ProductType;
 import com.onehana.server_ilogu.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;

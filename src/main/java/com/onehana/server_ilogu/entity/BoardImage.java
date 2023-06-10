@@ -1,6 +1,5 @@
 package com.onehana.server_ilogu.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.onehana.server_ilogu.dto.BoardImageDto;
 import jakarta.persistence.*;
