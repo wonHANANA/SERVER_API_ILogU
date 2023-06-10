@@ -1,8 +1,8 @@
 package com.onehana.server_ilogu.dto.response;
 
 import com.onehana.server_ilogu.dto.UserDto;
-import com.onehana.server_ilogu.entity.FamilyRole;
-import com.onehana.server_ilogu.entity.FamilyType;
+import com.onehana.server_ilogu.entity.enums.FamilyRole;
+import com.onehana.server_ilogu.entity.enums.FamilyType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 

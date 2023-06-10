@@ -1,8 +1,14 @@
 package com.onehana.server_ilogu.entity;
 
 import com.onehana.server_ilogu.dto.request.UserJoinRequest;
+import com.onehana.server_ilogu.entity.enums.FamilyRole;
+import com.onehana.server_ilogu.entity.enums.FamilyType;
+import com.onehana.server_ilogu.entity.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -31,7 +37,7 @@ public class User extends BaseTimeEntity {
     private String refreshToken;
 
     @Enumerated(EnumType.STRING)
-    private UserRole userRole = UserRole.USER_ROLE;
+    private UserRole userRole;
 
     @Enumerated(EnumType.STRING)
     private FamilyType familyType;
@@ -43,6 +49,19 @@ public class User extends BaseTimeEntity {
     @JoinColumn(name = "family_id")
     @Setter
     private Family family;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<DepositAccount> depositAccounts = new ArrayList<>();
+
+    public void addDepositAccount(DepositAccount depositAccount) {
+        depositAccounts.add(depositAccount);
+        depositAccount.setUser(this);
+    }
+
+    public void removeDepositAccount(DepositAccount depositAccount) {
+        depositAccounts.remove(depositAccount);
+        depositAccount.setUser(null);
+    }
 
     public static User of(UserJoinRequest request, String url, Family family) {
         User user = new User();

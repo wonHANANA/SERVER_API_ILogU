@@ -1,7 +1,7 @@
 package com.onehana.server_ilogu.repository;
 
 import com.onehana.server_ilogu.entity.Board;
-import com.onehana.server_ilogu.entity.BoardCategory;
+import com.onehana.server_ilogu.entity.enums.BoardCategory;
 import com.onehana.server_ilogu.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

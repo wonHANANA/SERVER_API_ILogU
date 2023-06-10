@@ -1,11 +1,12 @@
 package com.onehana.server_ilogu.service;
 
+import com.onehana.server_ilogu.dto.BoardDetailDto;
 import com.onehana.server_ilogu.dto.BoardDto;
 import com.onehana.server_ilogu.dto.BoardListDto;
 import com.onehana.server_ilogu.dto.CommentDto;
-import com.onehana.server_ilogu.dto.request.BoardCreateRequest;
 import com.onehana.server_ilogu.dto.response.BaseResponseStatus;
 import com.onehana.server_ilogu.entity.*;
+import com.onehana.server_ilogu.entity.enums.BoardCategory;
 import com.onehana.server_ilogu.exception.BaseException;
 import com.onehana.server_ilogu.repository.BoardLikeRepository;
 import com.onehana.server_ilogu.repository.BoardRepository;
@@ -70,6 +71,21 @@ public class BoardService {
             throw new BaseException(BaseResponseStatus.INVALID_PERMISSION);
         }
         boardRepository.delete(board);
+    }
+
+    @Transactional(readOnly = true)
+    public BoardDetailDto getBoardWithComments(Long boardId, String email, Pageable pageable) {
+        User user = userService.getUserOrException(email);
+        Board board = getBoardOrException(boardId);
+
+        int likesCount = countLike(board.getId());
+        int commentsCount = countComments(board.getId());
+        boolean isLiked = isLiked(board.getId(), user.getId());
+
+        Page<CommentDto> comments = commentRepository.findAllByBoardAndParentCommentIsNull(board, pageable)
+                .map(CommentDto::fromEntity);
+
+        return BoardDetailDto.of(board, likesCount, commentsCount, isLiked, comments);
     }
 
     @Transactional(readOnly = true)
@@ -160,6 +176,7 @@ public class BoardService {
         commentRepository.delete(comment);
     }
 
+    @Transactional(readOnly = true)
     public Page<CommentDto> getComments(Long boardId, Pageable pageable) {
         Board board = getBoardOrException(boardId);
 
@@ -167,6 +184,7 @@ public class BoardService {
                 .map(CommentDto::fromEntity);
     }
 
+    @Transactional(readOnly = true)
     public int countComments(Long boardId) {
         Board board = boardRepository.findById(boardId).orElseThrow(() ->
                 new BaseException(BaseResponseStatus.BOARD_NOT_FOUND));
@@ -199,7 +217,8 @@ public class BoardService {
         return boardLikeRepository.existsByBoardIdAndUserId(boardId, userId);
     }
 
-    private Board getBoardOrException(Long boardId) {
+    @Transactional(readOnly = true)
+    public Board getBoardOrException(Long boardId) {
         return boardRepository.findById(boardId).orElseThrow(() ->
                 new BaseException(BaseResponseStatus.BOARD_NOT_FOUND));
     }

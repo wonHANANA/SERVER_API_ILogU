@@ -1,10 +1,10 @@
 package com.onehana.server_ilogu.dto;
 
 import com.onehana.server_ilogu.dto.request.UserJoinRequest;
-import com.onehana.server_ilogu.entity.FamilyRole;
-import com.onehana.server_ilogu.entity.FamilyType;
+import com.onehana.server_ilogu.entity.enums.FamilyRole;
+import com.onehana.server_ilogu.entity.enums.FamilyType;
 import com.onehana.server_ilogu.entity.User;
-import com.onehana.server_ilogu.entity.UserRole;
+import com.onehana.server_ilogu.entity.enums.UserRole;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
