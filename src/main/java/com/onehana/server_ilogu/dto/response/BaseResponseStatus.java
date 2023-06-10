@@ -38,6 +38,7 @@ public enum BaseResponseStatus {
     INVALID_REFRESH_TOKEN(false, "400-03-03", "Refresh 토큰이 유효하지 않습니다."),
     EXPIRED_ACCESS_TOKEN(false, "400-03-04", "Access 토큰이 만료되었습니다."),
     EXPIRED_REFRESH_TOKEN(false, "400-03-05", "Refresh 토큰이 만료되었습니다. 로그인이 필요합니다."),
+    INVALID_HTTP_REQUEST(false, "400-03-06", "잘못된 HTTP 요청입니다."),
 
     DUPLICATED_USERID(false, "400-04-01", "이미 가입된 아이디입니다."),
     DUPLICATED_EMAIL(false, "400-04-02", "이미 가입된 이메일입니다."),
@@ -62,6 +63,7 @@ public enum BaseResponseStatus {
     INVALID_JSON_REQUEST(false, "400-06-03", "JSON에 null값이나 잘못된 형식이 포함되어 있습니다."),
 
     PRODUCTS_NOT_FOUND(false, "400-07-01", "해당 상품을 찾을 수 없습니다."),
+    ACCOUNT_NOT_FOUND(false, "400-07-02", "해당 계좌를 찾을 수 없습니다."),
 
     /**
      * 500번대 에러 : 서버 에러 등 서버 프로그래밍 잘못으로 인한 에러들
