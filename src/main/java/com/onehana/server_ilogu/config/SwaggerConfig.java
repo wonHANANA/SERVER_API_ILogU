@@ -45,4 +45,14 @@ public class SwaggerConfig {
                 .pathsToMatch(paths)
                 .build();
     }
+
+    @Bean
+    public GroupedOpenApi product() {
+        String[] paths = {"/api/product/**"};
+
+        return GroupedOpenApi.builder()
+                .group("상품")
+                .pathsToMatch(paths)
+                .build();
+    }
 }
