@@ -5,6 +5,7 @@ import com.onehana.server_ilogu.dto.response.BaseResponseStatus;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -21,6 +22,13 @@ public class GlobalControllerAdvice {
     public BaseResponse<Object> HttpMessageNotReadableException(HttpMessageNotReadableException e) {
         log.info("HttpMessageNotReadable " + e.getMessage());
         BaseResponseStatus status = BaseResponseStatus.INVALID_JSON_REQUEST;
+        return new BaseResponse<>(status);
+    }
+
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)    // 잘못된 http 메소드 처리
+    public BaseResponse<Object> HttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e) {
+        log.info("HttpRequestMethodNotSupportedException " + e.getMessage());
+        BaseResponseStatus status = BaseResponseStatus.INVALID_HTTP_REQUEST;
         return new BaseResponse<>(status);
     }
 
