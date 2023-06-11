@@ -13,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -48,7 +47,7 @@ public class DepositAccountController {
     }
 
     // TODO: 기획이 나오면 상대방 닉네임 대신 다른 방식으로 처리해보자
-    @Operation(summary = "송금하기", description = "상대방의 계좌의 닉네임을 통해 입금한다 (추후 계좌번호나 다른 방식으로 수정 계획")
+    @Operation(summary = "송금하기", description = "상대방의 닉네임을 통해 송금한다.(추후 계좌번호나 다른 방식으로 수정 계획")
     @PostMapping("/send")
     public BaseResponse<SendMoneyResponse> sendMoney(@AuthenticationPrincipal UserDto userDto,
                                                      @RequestBody @Valid SendMoneyRequest request) {
