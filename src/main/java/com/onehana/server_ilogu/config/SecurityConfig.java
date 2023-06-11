@@ -82,7 +82,6 @@ public class SecurityConfig implements WebMvcConfigurer {
                 .password(passwordEncoder.encode(swaggerPw))
                 .roles("ADMIN")
                 .build());
-
         return new InMemoryUserDetailsManager(userDetailsList);
     }
 
