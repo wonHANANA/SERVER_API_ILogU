@@ -2,6 +2,7 @@ package com.onehana.server_ilogu.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.util.concurrent.RateLimiter;
 import com.onehana.server_ilogu.dto.SmsDto;
 import com.onehana.server_ilogu.dto.request.SmsRequest;
 import com.onehana.server_ilogu.dto.response.BaseResponseStatus;
@@ -43,6 +44,7 @@ public class SmsService {
     private final UserRepository userRepository;
     private final Map<String, VerificationCode> verifyCodes = new ConcurrentHashMap<>();
     private final RestTemplate restTemplate;
+    private final RateLimiter rateLimiter;
 
     @Value("${naver.cloud.sms.accessKey}")
     private String accessKey;
@@ -69,6 +71,10 @@ public class SmsService {
 
     public SmsResponse sendVerifySms(String email, String toPhone) throws JsonProcessingException, RestClientException,
             URISyntaxException, InvalidKeyException, NoSuchAlgorithmException, UnsupportedEncodingException {
+
+        if (!rateLimiter.tryAcquire()) {
+            throw new BaseException(BaseResponseStatus.EXCEED_VERIFY_REQUEST);
+        }
 
         verifyUser(email, toPhone);
         VerificationCode verifyCode = createVerificationCode(email);

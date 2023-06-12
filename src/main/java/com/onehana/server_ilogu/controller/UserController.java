@@ -5,10 +5,7 @@ import com.onehana.server_ilogu.dto.JwtDto;
 import com.onehana.server_ilogu.dto.UserDto;
 import com.onehana.server_ilogu.dto.request.UserJoinRequest;
 import com.onehana.server_ilogu.dto.request.UserLoginRequest;
-import com.onehana.server_ilogu.dto.response.BaseResponse;
-import com.onehana.server_ilogu.dto.response.BaseResponseStatus;
-import com.onehana.server_ilogu.dto.response.UserJoinResponse;
-import com.onehana.server_ilogu.dto.response.UserLoginResponse;
+import com.onehana.server_ilogu.dto.response.*;
 import com.onehana.server_ilogu.exception.BaseException;
 import com.onehana.server_ilogu.service.SmsService;
 import com.onehana.server_ilogu.service.UserService;
@@ -19,7 +16,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -36,13 +32,12 @@ public class UserController {
     private final UserService userService;
     private final SmsService smsService;
 
-    @Operation(summary = "인증 문자 발송", description = "이메일과 전화번호를 받아 인증 메시지를 발송한다.")
+    @Operation(summary = "인증 문자 발송", description = "이메일과 전화번호를 받아 인증 메시지를 발송한다. [건당 9원 들어서 호출제한 5초당 1번으로 설정해놓음]")
     @PostMapping("/sendCode")
-    public BaseResponse<String> sendVerificationCode(@RequestParam String email,
-                                                     @RequestParam String phoneNumber) throws UnsupportedEncodingException, URISyntaxException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException {
+    public BaseResponse<SmsResponse> sendVerificationCode(@RequestParam String email,
+                                                          @RequestParam String phone) throws UnsupportedEncodingException, URISyntaxException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException {
 
-        smsService.sendVerifySms(email, phoneNumber);
-        return new BaseResponse<>("인증 문자가 발송되었습니다.");
+        return new BaseResponse<>(smsService.sendVerifySms(email, phone));
     }
 
     @Operation(summary = "회원가입", description = "회원가입, 인증코드 [onehana] 쓰면 가입가능")

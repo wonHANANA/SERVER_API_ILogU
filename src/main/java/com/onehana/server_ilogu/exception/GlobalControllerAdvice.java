@@ -12,8 +12,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.multipart.MultipartException;
 
-import java.util.Arrays;
-
 @Slf4j
 @RestControllerAdvice
 public class GlobalControllerAdvice {
@@ -69,8 +67,8 @@ public class GlobalControllerAdvice {
 
     @ExceptionHandler(Exception.class)
     public BaseResponse<Object> Exception(Exception e) {
+        String errorMessage = e.getMessage();
         BaseResponseStatus status = BaseResponseStatus.UNKNOWN_SERVER_ERROR;
-        e.printStackTrace();
-        return new BaseResponse<>(status);
+        return new BaseResponse<>(status, errorMessage);
     }
 }
