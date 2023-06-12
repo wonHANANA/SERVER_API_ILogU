@@ -33,7 +33,6 @@ public class UserService {
     private final FamilyRepository familyRepository;
     private final BCryptPasswordEncoder encoder;
 
-
     @Value("${jwt.access-token.secret-key}")
     private String accessKey;
 

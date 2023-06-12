@@ -9,6 +9,7 @@ import com.onehana.server_ilogu.dto.response.SmsResponse;
 import com.onehana.server_ilogu.exception.BaseException;
 import com.onehana.server_ilogu.repository.UserRepository;
 import com.onehana.server_ilogu.util.VerificationCode;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.codec.binary.Base64;
@@ -28,12 +29,11 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -55,6 +55,23 @@ public class SmsService {
     @Value("${naver.cloud.sms.senderPhone}")
     private String fromPhone;
 
+    @PostConstruct
+    public void scheduleCleanupTask() {
+        ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
+        executor.scheduleAtFixedRate(this::cleanupExpiredCodes, 0, 24, TimeUnit.HOURS);
+    }
+
+    private void cleanupExpiredCodes() {
+        Iterator<Map.Entry<String, VerificationCode>> iterator = verifyCodes.entrySet().iterator();
+
+        while (iterator.hasNext()) {
+            Map.Entry<String, VerificationCode> entry = iterator.next();
+            if (!entry.getValue().isValid()) {
+                iterator.remove();
+            }
+        }
+    }
+
     public SmsResponse sendSms(String email, String toPhone) throws JsonProcessingException, RestClientException, URISyntaxException, InvalidKeyException, NoSuchAlgorithmException, UnsupportedEncodingException {
         userRepository.findByEmail(email).ifPresent(it -> {
             throw new BaseException(BaseResponseStatus.DUPLICATED_EMAIL);
@@ -64,6 +81,7 @@ public class SmsService {
         long expirationTime = System.currentTimeMillis() + 3 * 60 * 1000;
 
         VerificationCode verifyCode = new VerificationCode(generateCode, expirationTime);
+        verifyCodes.remove(email);
         verifyCodes.put(email, verifyCode);
 
         List<SmsDto> messages = new ArrayList<>();
