@@ -42,6 +42,7 @@ public class SmsService {
 
     private final UserRepository userRepository;
     private final Map<String, VerificationCode> verifyCodes = new ConcurrentHashMap<>();
+    private final RestTemplate restTemplate;
 
     @Value("${naver.cloud.sms.accessKey}")
     private String accessKey;
@@ -56,33 +57,21 @@ public class SmsService {
     private String fromPhone;
 
     @PostConstruct
+    public void init() {
+        restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
+    }
+
+    @PostConstruct
     public void scheduleCleanupTask() {
         ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
         executor.scheduleAtFixedRate(this::cleanupExpiredCodes, 0, 24, TimeUnit.HOURS);
     }
 
-    private void cleanupExpiredCodes() {
-        Iterator<Map.Entry<String, VerificationCode>> iterator = verifyCodes.entrySet().iterator();
+    public SmsResponse sendVerifySms(String email, String toPhone) throws JsonProcessingException, RestClientException,
+            URISyntaxException, InvalidKeyException, NoSuchAlgorithmException, UnsupportedEncodingException {
 
-        while (iterator.hasNext()) {
-            Map.Entry<String, VerificationCode> entry = iterator.next();
-            if (!entry.getValue().isValid()) {
-                iterator.remove();
-            }
-        }
-    }
-
-    public SmsResponse sendSms(String email, String toPhone) throws JsonProcessingException, RestClientException, URISyntaxException, InvalidKeyException, NoSuchAlgorithmException, UnsupportedEncodingException {
-        userRepository.findByEmail(email).ifPresent(it -> {
-            throw new BaseException(BaseResponseStatus.DUPLICATED_EMAIL);
-        });
-
-        String generateCode = generateVerificationCode();
-        long expirationTime = System.currentTimeMillis() + 3 * 60 * 1000;
-
-        VerificationCode verifyCode = new VerificationCode(generateCode, expirationTime);
-        verifyCodes.remove(email);
-        verifyCodes.put(email, verifyCode);
+        verifyUser(email, toPhone);
+        VerificationCode verifyCode = createVerificationCode(email);
 
         List<SmsDto> messages = new ArrayList<>();
         messages.add(new SmsDto(toPhone));
@@ -92,26 +81,51 @@ public class SmsService {
                 .contentType("COMM")
                 .countryCode("82")
                 .from(fromPhone)
-                .content("ILogU 인증번호는 ["+generateCode+"] 입니다.")
+                .content("ILogU 인증번호는 ["+verifyCode.getCode()+"] 입니다.")
                 .messages(messages)
                 .build();
 
         Long time = System.currentTimeMillis();
+        HttpHeaders headers = createHeaders(time);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String body = objectMapper.writeValueAsString(request);
+        HttpEntity<String> httpBody = new HttpEntity<>(body, headers);
+
+        return restTemplate.postForObject(new URI("https://sens.apigw.ntruss.com/sms/v2/services/"+
+                serviceId +"/messages"), httpBody, SmsResponse.class);
+    }
+
+    private HttpHeaders createHeaders(Long time) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("x-ncp-apigw-timestamp", time.toString());
         headers.set("x-ncp-iam-access-key", accessKey);
         headers.set("x-ncp-apigw-signature-v2", makeSignature(time));
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        String body = objectMapper.writeValueAsString(request);
-        HttpEntity<String> httpBody = new HttpEntity<>(body, headers);
+        return headers;
+    }
 
-        RestTemplate restTemplate = new RestTemplate();
-        restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
+    private VerificationCode createVerificationCode(String email) {
+        Random random = new Random();
+        int code = random.nextInt(900000) + 100000;
 
-        return restTemplate.postForObject(new URI("https://sens.apigw.ntruss.com/sms/v2/services/"+
-                serviceId +"/messages"), httpBody, SmsResponse.class);
+        String generateCode = String.valueOf(code);
+        long expirationTime = System.currentTimeMillis() + 3 * 60 * 1000;
+
+        VerificationCode verifyCode = new VerificationCode(generateCode, expirationTime);
+        verifyCodes.remove(email);
+        verifyCodes.put(email, verifyCode);
+
+        return verifyCode;
+    }
+
+    private void verifyUser(String email, String toPhone) {
+        userRepository.findByEmail(email).ifPresent(it -> {
+            throw new BaseException(BaseResponseStatus.DUPLICATED_EMAIL);
+        });
+        userRepository.findByPhone(toPhone).ifPresent(it -> {
+            throw new BaseException(BaseResponseStatus.DUPLICATED_PHONE);
+        });
     }
 
     public boolean isVerifiedCode(String email, String verificationCode) {
@@ -152,9 +166,14 @@ public class SmsService {
         return Base64.encodeBase64String(rawHmac);
     }
 
-    public String generateVerificationCode() {
-        Random random = new Random();
-        int code = random.nextInt(900000) + 100000;
-        return String.valueOf(code);
+    private void cleanupExpiredCodes() {
+        Iterator<Map.Entry<String, VerificationCode>> iterator = verifyCodes.entrySet().iterator();
+
+        while (iterator.hasNext()) {
+            Map.Entry<String, VerificationCode> entry = iterator.next();
+            if (!entry.getValue().isValid()) {
+                iterator.remove();
+            }
+        }
     }
 }
