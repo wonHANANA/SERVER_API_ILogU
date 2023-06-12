@@ -8,5 +8,4 @@ import lombok.*;
 @Builder
 public class SmsDto {
     String to;
-    String content;
 }

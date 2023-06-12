@@ -4,7 +4,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.onehana.server_ilogu.dto.SmsDto;
 import com.onehana.server_ilogu.dto.request.SmsRequest;
+import com.onehana.server_ilogu.dto.response.BaseResponseStatus;
 import com.onehana.server_ilogu.dto.response.SmsResponse;
+import com.onehana.server_ilogu.exception.BaseException;
+import com.onehana.server_ilogu.repository.UserRepository;
+import com.onehana.server_ilogu.util.VerificationCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.codec.binary.Base64;
@@ -26,11 +30,18 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ScheduledExecutorService;
 
 @Slf4j
 @RequiredArgsConstructor
 @Service
 public class SmsService {
+
+    private final UserRepository userRepository;
+    private final Map<String, VerificationCode> verifyCodes = new ConcurrentHashMap<>();
 
     @Value("${naver.cloud.sms.accessKey}")
     private String accessKey;
@@ -42,7 +53,59 @@ public class SmsService {
     private String serviceId;
 
     @Value("${naver.cloud.sms.senderPhone}")
-    private String phone;
+    private String fromPhone;
+
+    public SmsResponse sendSms(String email, String toPhone) throws JsonProcessingException, RestClientException, URISyntaxException, InvalidKeyException, NoSuchAlgorithmException, UnsupportedEncodingException {
+        userRepository.findByEmail(email).ifPresent(it -> {
+            throw new BaseException(BaseResponseStatus.DUPLICATED_EMAIL);
+        });
+
+        String generateCode = generateVerificationCode();
+        long expirationTime = System.currentTimeMillis() + 3 * 60 * 1000;
+
+        VerificationCode verifyCode = new VerificationCode(generateCode, expirationTime);
+        verifyCodes.put(email, verifyCode);
+
+        List<SmsDto> messages = new ArrayList<>();
+        messages.add(new SmsDto(toPhone));
+
+        SmsRequest request = SmsRequest.builder()
+                .type("SMS")
+                .contentType("COMM")
+                .countryCode("82")
+                .from(fromPhone)
+                .content("ILogU 인증번호는 ["+generateCode+"] 입니다.")
+                .messages(messages)
+                .build();
+
+        Long time = System.currentTimeMillis();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("x-ncp-apigw-timestamp", time.toString());
+        headers.set("x-ncp-iam-access-key", accessKey);
+        headers.set("x-ncp-apigw-signature-v2", makeSignature(time));
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String body = objectMapper.writeValueAsString(request);
+        HttpEntity<String> httpBody = new HttpEntity<>(body, headers);
+
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
+
+        return restTemplate.postForObject(new URI("https://sens.apigw.ntruss.com/sms/v2/services/"+
+                serviceId +"/messages"), httpBody, SmsResponse.class);
+    }
+
+    public boolean isVerifiedCode(String email, String verificationCode) {
+        if (verifyCodes.containsKey(email)) {
+            VerificationCode storedCode = verifyCodes.get(email);
+            if (storedCode.getCode().equals(verificationCode) && storedCode.isValid()) {
+                verifyCodes.remove(email);
+                return true;
+            }
+        }
+        return false;
+    }
 
     public String makeSignature(Long time) throws NoSuchAlgorithmException, UnsupportedEncodingException, InvalidKeyException {
         String space = " ";
@@ -68,40 +131,12 @@ public class SmsService {
         mac.init(signingKey);
 
         byte[] rawHmac = mac.doFinal(message.getBytes("UTF-8"));
-        String encodeBase64String = Base64.encodeBase64String(rawHmac);
-
-        return encodeBase64String;
+        return Base64.encodeBase64String(rawHmac);
     }
 
-    public SmsResponse sendSms(SmsDto smsDto) throws JsonProcessingException, RestClientException, URISyntaxException, InvalidKeyException, NoSuchAlgorithmException, UnsupportedEncodingException {
-        Long time = System.currentTimeMillis();
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.set("x-ncp-apigw-timestamp", time.toString());
-        headers.set("x-ncp-iam-access-key", accessKey);
-        headers.set("x-ncp-apigw-signature-v2", makeSignature(time));
-
-        List<SmsDto> messages = new ArrayList<>();
-        messages.add(smsDto);
-
-        SmsRequest request = SmsRequest.builder()
-                .type("SMS")
-                .contentType("COMM")
-                .countryCode("82")
-                .from(phone)
-                .content(smsDto.getContent())
-                .messages(messages)
-                .build();
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        String body = objectMapper.writeValueAsString(request);
-        HttpEntity<String> httpBody = new HttpEntity<>(body, headers);
-
-        RestTemplate restTemplate = new RestTemplate();
-        restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
-        SmsResponse response = restTemplate.postForObject(new URI("https://sens.apigw.ntruss.com/sms/v2/services/"+ serviceId +"/messages"), httpBody, SmsResponse.class);
-
-        return response;
+    public String generateVerificationCode() {
+        Random random = new Random();
+        int code = random.nextInt(900000) + 100000;
+        return String.valueOf(code);
     }
 }

@@ -18,6 +18,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Map;
+import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
+
 import static com.onehana.server_ilogu.dto.response.BaseResponseStatus.*;
 
 @Service
@@ -26,7 +30,9 @@ public class UserService {
 
     private final AmazonS3Service amazonS3Service;
     private final UserRepository userRepository;
+    private final FamilyRepository familyRepository;
     private final BCryptPasswordEncoder encoder;
+
 
     @Value("${jwt.access-token.secret-key}")
     private String accessKey;
@@ -39,7 +45,6 @@ public class UserService {
 
     @Value("${jwt.refresh-token.expired-time-ms}")
     private Long refreshExpiredTime;
-    private final FamilyRepository familyRepository;
 
     @Transactional(readOnly = true)
     public UserDto loadUserByEmail(String email) {

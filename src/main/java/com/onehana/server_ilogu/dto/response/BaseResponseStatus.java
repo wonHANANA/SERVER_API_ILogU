@@ -49,9 +49,9 @@ public enum BaseResponseStatus {
     USER_NOT_FOUND(false, "400-04-20", "존재하지 않는 아이디입니다."),
     INVALID_PASSWORD(false, "400-04-21", "비밀번호가 일치하지 않습니다."),
     INVALID_PERMISSION(false, "400-04-22", "권한이 존재하지 않습니다."),
-    INVALID_FAMILY_CREATE_PERMISSION(false, "400-04-23", "가족은 PARENT 권한만 생성할 수 있습니다."),
-    INVALID_INVITE_CODE(false, "400-04-24", "유효하지 않은 가족 코드입니다."),
-
+    INVALID_VERIFY_CODE(false, "400-04-23", "인증코드가 일치하지 않거나 만료되었습니다."),
+    INVALID_FAMILY_CREATE_PERMISSION(false, "400-04-24", "가족은 PARENT 권한만 생성할 수 있습니다."),
+    INVALID_INVITE_CODE(false, "400-04-25", "유효하지 않은 가족 코드입니다."),
 
     BOARD_NOT_FOUND(false, "400-05-01", "존재하지 않는 게시물입니다."),
     COMMENT_NOT_FOUND(false, "400-05-02", "존재하지 않는 댓글입니다."),
