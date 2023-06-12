@@ -82,7 +82,6 @@ public class SecurityConfig implements WebMvcConfigurer {
                 .password(passwordEncoder.encode(swaggerPw))
                 .roles("ADMIN")
                 .build());
-
         return new InMemoryUserDetailsManager(userDetailsList);
     }
 
@@ -90,9 +89,16 @@ public class SecurityConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         registry
                 .addMapping("/**")
-                .allowedOrigins("http://localhost:3000, http://i-log-u.site")
+                //from
+//                .allowedOrigins("http://localhost:3000, http://i-log-u.site")
+                //to
+                .allowedOrigins("http://localhost:3000", "http://i-log-u.site")
+                //from
+                //.allowedMethods(GET.name(), POST.name(), PUT.name(), DELETE.name(), OPTIONS.name())
+                //to
+                .allowedMethods("*")
+
                 .allowedHeaders("*")
-                .allowedMethods(GET.name(), POST.name(), PUT.name(), DELETE.name(), OPTIONS.name())
                 .allowCredentials(true);
     }
 }
