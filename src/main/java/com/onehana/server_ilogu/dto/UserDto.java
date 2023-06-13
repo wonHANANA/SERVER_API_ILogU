@@ -59,7 +59,7 @@ public class UserDto implements UserDetails {
 
     @Override
     public String getUsername() {
-        return this.nickname;
+        return this.username;
     }
 
     public String getEmail() {

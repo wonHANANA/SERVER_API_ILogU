@@ -12,6 +12,8 @@ public class UserJoinResponse {
     private String email;
     private String password;
     private String nickname;
+    private String username;
+    private String phone;
     private FamilyType familyType;
     private FamilyRole familyRole;
 
@@ -20,6 +22,8 @@ public class UserJoinResponse {
                 userDto.getEmail(),
                 userDto.getPassword(),
                 userDto.getNickname(),
+                userDto.getUsername(),
+                userDto.getPhone(),
                 userDto.getFamilyType(),
                 userDto.getFamilyRole()
         );
