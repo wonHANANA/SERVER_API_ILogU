@@ -5,10 +5,12 @@ import com.onehana.server_ilogu.dto.UserDto;
 import com.onehana.server_ilogu.dto.request.UserJoinRequest;
 import com.onehana.server_ilogu.dto.request.UserLoginRequest;
 import com.onehana.server_ilogu.dto.response.BaseResponseStatus;
+import com.onehana.server_ilogu.entity.Child;
 import com.onehana.server_ilogu.entity.Family;
 import com.onehana.server_ilogu.entity.User;
 import com.onehana.server_ilogu.entity.UserFamily;
 import com.onehana.server_ilogu.exception.BaseException;
+import com.onehana.server_ilogu.repository.ChildRepository;
 import com.onehana.server_ilogu.repository.FamilyRepository;
 import com.onehana.server_ilogu.repository.UserFamilyRepository;
 import com.onehana.server_ilogu.repository.UserRepository;
@@ -34,6 +36,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final FamilyRepository familyRepository;
     private final UserFamilyRepository userFamilyRepository;
+    private final ChildRepository childRepository;
     private final BCryptPasswordEncoder encoder;
 
     @Value("${jwt.access-token.secret-key}")
@@ -67,6 +70,12 @@ public class UserService {
             } else {
                 throw new BaseException(INVALID_FAMILY_CREATE_PERMISSION);
             }
+        }
+
+        if (request.getChildName() != null && !request.getChildName().trim().isEmpty()) {
+            Child child = childRepository.save(Child.of(request.getChildName(), request.getChildBirth(), user));
+            user.setChild(child);
+            userRepository.save(user);
         }
         return UserDto.of(user);
     }

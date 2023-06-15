@@ -1,8 +1,6 @@
 package com.onehana.server_ilogu.entity;
 
 import com.onehana.server_ilogu.dto.request.UserJoinRequest;
-import com.onehana.server_ilogu.entity.enums.FamilyRole;
-import com.onehana.server_ilogu.entity.enums.FamilyType;
 import com.onehana.server_ilogu.entity.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.*;
@@ -19,8 +17,7 @@ import java.util.List;
 })
 public class User extends BaseTimeEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false, unique = true)
@@ -33,7 +30,6 @@ public class User extends BaseTimeEntity {
     private String username;
     @Column(nullable = false, unique = true)
     private String phone;
-
     private String profileImageUrl;
 
     @Setter
@@ -44,6 +40,11 @@ public class User extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "user")
     private List<UserFamily> families = new ArrayList<>();
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "child_id", referencedColumnName = "id")
+    @Setter
+    private Child child;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<DepositAccount> depositAccounts = new ArrayList<>();
