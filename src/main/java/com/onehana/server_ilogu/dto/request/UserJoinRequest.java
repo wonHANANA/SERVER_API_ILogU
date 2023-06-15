@@ -3,6 +3,7 @@ package com.onehana.server_ilogu.dto.request;
 import com.onehana.server_ilogu.entity.enums.FamilyRole;
 import com.onehana.server_ilogu.entity.enums.FamilyType;
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
@@ -15,7 +16,13 @@ public class UserJoinRequest {
     private String password;
     @Size(message = "닉네임은 2자 이상, 10자 이하입니다.", min = 2, max = 10)
     private String nickname;
+    private String username;
+    @Pattern(regexp = "^[0-9]*$", message = "휴대전화 번호는 숫자만 가능합니다.")
+    @Size(min = 11, max = 11)
+    private String phone;
     private String inviteCode;
+    @Size(message = "인증코드는 필수 입력입니다.", min = 6)
+    private String verifyCode;
     private FamilyType familyType;
     private FamilyRole familyRole;
 }

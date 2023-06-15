@@ -18,6 +18,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Map;
+import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
+
 import static com.onehana.server_ilogu.dto.response.BaseResponseStatus.*;
 
 @Service
@@ -26,6 +30,7 @@ public class UserService {
 
     private final AmazonS3Service amazonS3Service;
     private final UserRepository userRepository;
+    private final FamilyRepository familyRepository;
     private final BCryptPasswordEncoder encoder;
 
     @Value("${jwt.access-token.secret-key}")
@@ -39,45 +44,22 @@ public class UserService {
 
     @Value("${jwt.refresh-token.expired-time-ms}")
     private Long refreshExpiredTime;
-    private final FamilyRepository familyRepository;
-
-    @Transactional(readOnly = true)
-    public UserDto loadUserByEmail(String email) {
-        return userRepository.findByEmail(email).map(UserDto::of).orElseThrow(() -> {
-            throw new BaseException(USER_NOT_FOUND);
-        });
-    }
 
     @Transactional
     public UserDto join(UserJoinRequest request, MultipartFile file) {
-        userRepository.findByEmail(request.getEmail()).ifPresent(it -> {
-            throw new BaseException(DUPLICATED_EMAIL);
-        });
+        checkDuplicateUserInfo(request);
 
 //        request.setPassword(encoder.encode(request.getPassword()));
 
-        String profileUrl = "";
-        if (file == null) {
-            profileUrl = null;
-        } else {
-            profileUrl = amazonS3Service.uploadProfileImage(file);
-        }
-
-        Family family = null;
-        if(request.getInviteCode() != null && !request.getInviteCode().trim().isEmpty()) {
-            family = familyRepository.findByInviteCode(request.getInviteCode()).orElseThrow(() -> {
-                throw new BaseException(INVALID_INVITE_CODE);
-            });
-        }
+        String profileUrl = setProfileUrl(file);
+        Family family = validFamilyCode(request.getInviteCode());
 
         User user = userRepository.save(User.of(request, profileUrl, family));
         return UserDto.of(user);
     }
 
     public JwtDto login(UserLoginRequest request) {
-        User user = userRepository.findByEmail(request.getEmail()).orElseThrow(() -> {
-            throw new BaseException(USER_NOT_FOUND);
-        });
+        User user = getUserOrException(request.getEmail());
 
         // 비번 암호화 하면 수정
 //        if (!encoder.matches(request.getPassword(), user.getPassword())) {
@@ -114,6 +96,41 @@ public class UserService {
         user.setRefreshToken(refreshToken);
         userRepository.save(user);
         return jwtDto;
+    }
+
+    private void checkDuplicateUserInfo(UserJoinRequest request) {
+        if(userRepository.existsByEmail(request.getEmail())) {
+            throw new BaseException(DUPLICATED_EMAIL);
+        }
+        if(userRepository.existsByPhone(request.getPhone())) {
+            throw new BaseException(DUPLICATED_PHONE);
+        }
+        if(userRepository.existsByNickname(request.getNickname())) {
+            throw new BaseException(DUPLICATED_NICKNAME);
+        }
+    }
+
+    private String setProfileUrl(MultipartFile file) {
+        if (file == null) {
+            return null;
+        }
+        return amazonS3Service.uploadProfileImage(file);
+    }
+
+    private Family validFamilyCode(String inviteCode) {
+        if (inviteCode != null && !inviteCode.trim().isEmpty()) {
+            return familyRepository.findByInviteCode(inviteCode).orElseThrow(() -> {
+                throw new BaseException(INVALID_INVITE_CODE);
+            });
+        }
+        return null;
+    }
+
+    @Transactional(readOnly = true)
+    public UserDto loadUserByEmail(String email) {
+        return userRepository.findByEmail(email).map(UserDto::of).orElseThrow(() -> {
+            throw new BaseException(USER_NOT_FOUND);
+        });
     }
 
     public User getUserOrException(String email) {

@@ -16,7 +16,7 @@ public class BoardListDto {
     private Long id;
     private String title;
     private String content;
-    private String nickName;
+    private String nickname;
     private String userProfileUrl;
     private BoardCategory category;
     private Set<String> hashtags;

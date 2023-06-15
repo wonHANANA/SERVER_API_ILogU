@@ -1,14 +1,13 @@
 package com.onehana.server_ilogu.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.onehana.server_ilogu.dto.JwtDto;
 import com.onehana.server_ilogu.dto.UserDto;
 import com.onehana.server_ilogu.dto.request.UserJoinRequest;
 import com.onehana.server_ilogu.dto.request.UserLoginRequest;
-import com.onehana.server_ilogu.dto.response.BaseResponse;
-import com.onehana.server_ilogu.dto.response.BaseResponseStatus;
-import com.onehana.server_ilogu.dto.response.UserJoinResponse;
-import com.onehana.server_ilogu.dto.response.UserLoginResponse;
+import com.onehana.server_ilogu.dto.response.*;
 import com.onehana.server_ilogu.exception.BaseException;
+import com.onehana.server_ilogu.service.SmsService;
 import com.onehana.server_ilogu.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.annotation.Nullable;
@@ -20,20 +19,39 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URISyntaxException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/user")
 public class UserController {
 
     private final UserService userService;
+    private final SmsService smsService;
 
-    @Operation(summary = "회원가입", description = "회원가입")
+    @Operation(summary = "인증 문자 발송", description = "이메일과 전화번호를 받아 인증 메시지를 발송한다. [건당 9원 들어서 호출제한 5초당 1번으로 설정해놓음]")
+    @PostMapping("/sendCode")
+    public BaseResponse<SmsResponse> sendVerificationCode(@RequestParam String email,
+                                                          @RequestParam String phone) throws UnsupportedEncodingException, URISyntaxException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException {
+
+        return new BaseResponse<>(smsService.sendVerifySms(email, phone));
+    }
+
+    @Operation(summary = "회원가입", description = "회원가입, 인증코드 [onehana] 쓰면 가입가능")
     @PostMapping(value = "/join", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public BaseResponse<UserJoinResponse> join(@Valid @RequestPart UserJoinRequest request,
                                                @Nullable @RequestPart("file") MultipartFile file) {
 
-        UserDto userDto = userService.join(request, file);
-        return new BaseResponse<>(UserJoinResponse.of(userDto));
+        boolean isValidCode = smsService.isVerifiedCode(request.getEmail(), request.getVerifyCode());
+        if (isValidCode || request.getVerifyCode().equals("onehana")) {
+            UserDto userDto = userService.join(request, file);
+            return new BaseResponse<>(UserJoinResponse.of(userDto));
+        } else {
+            throw new BaseException(BaseResponseStatus.INVALID_VERIFY_CODE);
+        }
     }
 
     @Operation(summary = "로그인", description = "로그인")

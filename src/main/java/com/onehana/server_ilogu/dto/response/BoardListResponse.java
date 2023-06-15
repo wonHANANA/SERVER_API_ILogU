@@ -15,7 +15,7 @@ public class BoardListResponse {
     private Long id;
     private String title;
     private String content;
-    private String nickName;
+    private String nickname;
     private String userProfileUrl;
     private BoardCategory category;
     private Set<String> hashtags;
@@ -32,7 +32,7 @@ public class BoardListResponse {
                 boardListDto.getId(),
                 boardListDto.getTitle(),
                 boardListDto.getContent(),
-                boardListDto.getNickName(),
+                boardListDto.getNickname(),
                 boardListDto.getUserProfileUrl(),
                 boardListDto.getCategory(),
                 boardListDto.getHashtags(),

@@ -28,8 +28,12 @@ public class User extends BaseTimeEntity {
     private String email;
     @Column(nullable = false)
     private String password;
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String nickname;
+    @Column(nullable = false)
+    private String username;
+    @Column(nullable = false, unique = true)
+    private String phone;
 
     private String profileImageUrl;
 
@@ -68,6 +72,9 @@ public class User extends BaseTimeEntity {
         user.email = request.getEmail();
         user.password = request.getPassword();
         user.nickname = request.getNickname();
+        user.username = request.getUsername();
+        user.phone = request.getPhone();
+        user.userRole = UserRole.USER_ROLE;
         user.familyRole = request.getFamilyRole();
         user.familyType = request.getFamilyType();
         user.profileImageUrl = url;

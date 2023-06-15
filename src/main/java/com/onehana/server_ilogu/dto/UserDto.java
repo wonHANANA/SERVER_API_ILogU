@@ -20,6 +20,8 @@ public class UserDto implements UserDetails {
     private String email;
     private String password;
     private String nickname;
+    private String username;
+    private String phone;
     private UserRole userRole;
     private FamilyType familyType;
     private FamilyRole familyRole;
@@ -29,6 +31,8 @@ public class UserDto implements UserDetails {
                 request.getEmail(),
                 request.getPassword(),
                 request.getNickname(),
+                request.getUsername(),
+                request.getPhone(),
                 UserRole.USER_ROLE,
                 request.getFamilyType(),
                 request.getFamilyRole()
@@ -40,6 +44,8 @@ public class UserDto implements UserDetails {
                 user.getEmail(),
                 user.getPassword(),
                 user.getNickname(),
+                user.getUsername(),
+                user.getPhone(),
                 user.getUserRole(),
                 user.getFamilyType(),
                 user.getFamilyRole()
@@ -53,7 +59,7 @@ public class UserDto implements UserDetails {
 
     @Override
     public String getUsername() {
-        return this.nickname;
+        return this.username;
     }
 
     public String getEmail() {
