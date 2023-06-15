@@ -29,4 +29,20 @@ public class UserFamily extends BaseTimeEntity {
 
     @Enumerated(EnumType.STRING)
     private FamilyRole familyRole;
+
+    private UserFamily(User user, Family family, FamilyType familyType, FamilyRole familyRole) {
+        this.user = user;
+        this.family = family;
+        this.familyType = familyType;
+        this.familyRole = familyRole;
+    }
+
+    public static UserFamily of(User user, Family family, FamilyType familyType, FamilyRole familyRole) {
+        return new UserFamily(
+                user,
+                family,
+                familyType,
+                familyRole
+        );
+    }
 }

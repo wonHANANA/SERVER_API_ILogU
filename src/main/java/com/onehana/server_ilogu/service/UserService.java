@@ -7,8 +7,10 @@ import com.onehana.server_ilogu.dto.request.UserLoginRequest;
 import com.onehana.server_ilogu.dto.response.BaseResponseStatus;
 import com.onehana.server_ilogu.entity.Family;
 import com.onehana.server_ilogu.entity.User;
+import com.onehana.server_ilogu.entity.UserFamily;
 import com.onehana.server_ilogu.exception.BaseException;
 import com.onehana.server_ilogu.repository.FamilyRepository;
+import com.onehana.server_ilogu.repository.UserFamilyRepository;
 import com.onehana.server_ilogu.repository.UserRepository;
 import com.onehana.server_ilogu.util.jwt.JwtTokenUtils;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +33,7 @@ public class UserService {
     private final AmazonS3Service amazonS3Service;
     private final UserRepository userRepository;
     private final FamilyRepository familyRepository;
+    private final UserFamilyRepository userFamilyRepository;
     private final BCryptPasswordEncoder encoder;
 
     @Value("${jwt.access-token.secret-key}")
@@ -50,11 +53,21 @@ public class UserService {
         checkDuplicateUserInfo(request);
 
 //        request.setPassword(encoder.encode(request.getPassword()));
-
         String profileUrl = setProfileUrl(file);
-        Family family = validFamilyCode(request.getInviteCode());
 
         User user = userRepository.save(User.of(request, profileUrl));
+
+        Family invitedFamily = validFamilyCode(request.getInviteCode());
+        if (invitedFamily != null) {
+            userFamilyRepository.save(UserFamily.of(user, invitedFamily, request.getFamilyType(), request.getFamilyRole()));
+        } else {
+            if (request.getFamilyType().toString().equals("PARENT")) {
+                Family newFamily = familyRepository.save(Family.of(request.getFamilyName()));
+                userFamilyRepository.save(UserFamily.of(user, newFamily, request.getFamilyType(), request.getFamilyRole()));
+            } else {
+                throw new BaseException(INVALID_FAMILY_CREATE_PERMISSION);
+            }
+        }
         return UserDto.of(user);
     }
 
@@ -119,7 +132,7 @@ public class UserService {
 
     private Family validFamilyCode(String inviteCode) {
         if (inviteCode != null && !inviteCode.trim().isEmpty()) {
-            return familyRepository.findByInviteCode(inviteCode).orElseThrow(() -> {
+            familyRepository.findByInviteCode(inviteCode).orElseThrow(() -> {
                 throw new BaseException(INVALID_INVITE_CODE);
             });
         }

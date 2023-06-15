@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Getter
@@ -27,10 +28,15 @@ public class Family extends BaseTimeEntity {
     @OneToMany(mappedBy = "family")
     private List<UserFamily> members = new ArrayList<>();
 
-    public static Family toEntity(FamilyDto familyDto) {
-        Family family = new Family();
-        family.familyName = familyDto.getFamilyName();
-        family.inviteCode = familyDto.getInviteCode();
-        return family;
+    private Family(String familyName, String inviteCode) {
+        this.familyName = familyName;
+        this.inviteCode = inviteCode;
+    }
+
+    public static Family of(String familyName) {
+        return new Family(
+                familyName,
+                UUID.randomUUID().toString()
+        );
     }
 }
