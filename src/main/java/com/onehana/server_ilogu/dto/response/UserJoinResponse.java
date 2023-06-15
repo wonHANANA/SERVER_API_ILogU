@@ -14,8 +14,6 @@ public class UserJoinResponse {
     private String nickname;
     private String username;
     private String phone;
-    private FamilyType familyType;
-    private FamilyRole familyRole;
 
     public static UserJoinResponse of(UserDto userDto) {
         return new UserJoinResponse(
@@ -23,9 +21,7 @@ public class UserJoinResponse {
                 userDto.getPassword(),
                 userDto.getNickname(),
                 userDto.getUsername(),
-                userDto.getPhone(),
-                userDto.getFamilyType(),
-                userDto.getFamilyRole()
+                userDto.getPhone()
         );
     }
 }

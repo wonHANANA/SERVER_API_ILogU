@@ -16,7 +16,6 @@ import java.util.List;
 @AllArgsConstructor
 @Table(indexes = {
         @Index(columnList = "email", unique = true),
-        @Index(columnList = "family_id")
 })
 public class User extends BaseTimeEntity {
 
@@ -43,16 +42,8 @@ public class User extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private UserRole userRole;
 
-    @Enumerated(EnumType.STRING)
-    private FamilyType familyType;
-
-    @Enumerated(EnumType.STRING)
-    private FamilyRole familyRole;
-
-    @ManyToOne
-    @JoinColumn(name = "family_id")
-    @Setter
-    private Family family;
+    @OneToMany(mappedBy = "user")
+    private List<UserFamily> families = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<DepositAccount> depositAccounts = new ArrayList<>();
@@ -67,7 +58,7 @@ public class User extends BaseTimeEntity {
         depositAccount.setUser(null);
     }
 
-    public static User of(UserJoinRequest request, String url, Family family) {
+    public static User of(UserJoinRequest request, String url) {
         User user = new User();
         user.email = request.getEmail();
         user.password = request.getPassword();
@@ -75,10 +66,7 @@ public class User extends BaseTimeEntity {
         user.username = request.getUsername();
         user.phone = request.getPhone();
         user.userRole = UserRole.USER_ROLE;
-        user.familyRole = request.getFamilyRole();
-        user.familyType = request.getFamilyType();
         user.profileImageUrl = url;
-        user.family = family;
         return user;
     }
 }

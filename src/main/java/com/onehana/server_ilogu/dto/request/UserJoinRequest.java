@@ -18,11 +18,14 @@ public class UserJoinRequest {
     private String nickname;
     private String username;
     @Pattern(regexp = "^[0-9]*$", message = "휴대전화 번호는 숫자만 가능합니다.")
-    @Size(min = 11, max = 11)
+    @Size(min = 10, max = 12)
     private String phone;
-    private String inviteCode;
     @Size(message = "인증코드는 필수 입력입니다.", min = 6)
     private String verifyCode;
+    private String familyName;
+    private String inviteCode;
     private FamilyType familyType;
     private FamilyRole familyRole;
+    private String childName;
+    private String childBirth;
 }

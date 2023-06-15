@@ -25,13 +25,12 @@ public class Family extends BaseTimeEntity {
     private String inviteCode;
 
     @OneToMany(mappedBy = "family")
-    private List<User> members = new ArrayList<>();
+    private List<UserFamily> members = new ArrayList<>();
 
-    public static Family toEntity(FamilyDto familyDto, User user) {
+    public static Family toEntity(FamilyDto familyDto) {
         Family family = new Family();
         family.familyName = familyDto.getFamilyName();
         family.inviteCode = familyDto.getInviteCode();
-        family.members.add(user);
         return family;
     }
 }

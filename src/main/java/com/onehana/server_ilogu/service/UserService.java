@@ -54,7 +54,7 @@ public class UserService {
         String profileUrl = setProfileUrl(file);
         Family family = validFamilyCode(request.getInviteCode());
 
-        User user = userRepository.save(User.of(request, profileUrl, family));
+        User user = userRepository.save(User.of(request, profileUrl));
         return UserDto.of(user);
     }
 

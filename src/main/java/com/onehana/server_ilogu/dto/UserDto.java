@@ -23,8 +23,6 @@ public class UserDto implements UserDetails {
     private String username;
     private String phone;
     private UserRole userRole;
-    private FamilyType familyType;
-    private FamilyRole familyRole;
 
     public static UserDto of(UserJoinRequest request) {
         return new UserDto(
@@ -33,9 +31,7 @@ public class UserDto implements UserDetails {
                 request.getNickname(),
                 request.getUsername(),
                 request.getPhone(),
-                UserRole.USER_ROLE,
-                request.getFamilyType(),
-                request.getFamilyRole()
+                UserRole.USER_ROLE
         );
     }
 
@@ -46,9 +42,7 @@ public class UserDto implements UserDetails {
                 user.getNickname(),
                 user.getUsername(),
                 user.getPhone(),
-                user.getUserRole(),
-                user.getFamilyType(),
-                user.getFamilyRole()
+                user.getUserRole()
         );
     }
 
