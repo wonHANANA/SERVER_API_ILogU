@@ -68,6 +68,12 @@ public class UserController {
         return new BaseResponse<>(res);
     }
 
+    @Operation(summary = "일반 페이지 토큰 인증", description = "일반 페이지 접근을 위한 토큰 인증")
+    @GetMapping("/token/pages")
+    public BaseResponse<String> showPage() {
+        return new BaseResponse<>(BaseResponseStatus.SUCCESS);
+    }
+
     @Operation(summary = "토큰 재발급", description = "header에 refresh token을 담아서 보낸다.")
     @GetMapping("/token/refresh")
     public BaseResponse<JwtDto> refresh(HttpServletRequest request) {
