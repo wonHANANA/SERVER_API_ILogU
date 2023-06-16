@@ -13,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+
 import static com.onehana.server_ilogu.dto.response.BaseResponseStatus.*;
 
 @Service
@@ -59,7 +61,7 @@ public class FamilyService {
         if (familyRepository.findByFamilyName(familyName).isPresent()) {
             throw new BaseException(DUPLICATED_FAMILY_NAME);
         }
-        Child child = Child.of(request.getChildName(), request.getChildBirth());
+        Child child = Child.of(request.getChildName(), request.getChildBirth(), BigDecimal.ZERO);
         Family newFamily = familyRepository.save(Family.of(familyName, child));
         addUserToFamily(user, newFamily, request);
     }

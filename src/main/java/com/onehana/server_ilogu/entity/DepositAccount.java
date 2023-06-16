@@ -7,7 +7,6 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.util.Random;
@@ -27,11 +26,6 @@ public class DepositAccount {
     @Column(nullable = false)
     private BigDecimal balance;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    @Setter
-    private User user;
-
     public void deposit(BigDecimal money) {
         balance = balance.add(money);
     }
@@ -46,13 +40,7 @@ public class DepositAccount {
     public void generateAccountNumber() {
         Random rand = new Random();
         this.accountNumber = String.format("%014d", Math.abs(rand.nextLong()) % (long) Math.pow(10, 14));
-        this.balance = BigDecimal.ZERO;
-    }
-
-    private DepositAccount(Long id, String accountNumber, BigDecimal balance) {
-        this.id = id;
-        this.accountNumber = accountNumber;
-        this.balance = balance;
+        this.balance = BigDecimal.valueOf(30000000);
     }
 
     public static DepositAccount of(DepositAccountDto accountDto) {

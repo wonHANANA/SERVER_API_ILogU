@@ -52,8 +52,10 @@ public class User extends BaseTimeEntity {
     @Setter
     private String familyRole;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<DepositAccount> depositAccounts = new ArrayList<>();
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "deposit_account_id", referencedColumnName = "id")
+    @Setter
+    private DepositAccount depositAccount;
 
     public void joinFamily(Family family, FamilyType familyType, String familyRole) {
         this.family = family;
