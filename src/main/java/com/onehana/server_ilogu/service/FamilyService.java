@@ -2,11 +2,10 @@ package com.onehana.server_ilogu.service;
 
 import com.onehana.server_ilogu.dto.request.UserJoinRequest;
 import com.onehana.server_ilogu.entity.Family;
-import com.onehana.server_ilogu.entity.UserFamily;
 import com.onehana.server_ilogu.entity.User;
 import com.onehana.server_ilogu.exception.BaseException;
 import com.onehana.server_ilogu.repository.FamilyRepository;
-import com.onehana.server_ilogu.repository.UserFamilyRepository;
+import com.onehana.server_ilogu.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,7 +18,7 @@ import static com.onehana.server_ilogu.dto.response.BaseResponseStatus.*;
 public class FamilyService {
 
     private final FamilyRepository familyRepository;
-    private final UserFamilyRepository userFamilyRepository;
+    private final UserRepository userRepository;
 
     public void joinFamily(User user, UserJoinRequest request) {
         Family invitedFamily = validFamilyCode(request.getInviteCode());
@@ -34,7 +33,8 @@ public class FamilyService {
 
     private void addUserToFamily(User user, Family family, UserJoinRequest request) {
         String role = "PARENTS".equals(request.getFamilyType().toString()) ? "부모님" : request.getFamilyRole();
-        userFamilyRepository.save(UserFamily.of(user, family, request.getFamilyType(), role));
+        user.joinFamily(family, request.getFamilyType(), role);
+        userRepository.save(user);
     }
 
     private void createNewFamily(User user, UserJoinRequest request) {

@@ -2,10 +2,8 @@ package com.onehana.server_ilogu.controller;
 
 import com.onehana.server_ilogu.dto.FamilyDto;
 import com.onehana.server_ilogu.dto.UserDto;
-import com.onehana.server_ilogu.dto.request.FamilyCreateRequest;
-import com.onehana.server_ilogu.dto.request.FamilyJoinRequest;
 import com.onehana.server_ilogu.dto.response.BaseResponse;
-import com.onehana.server_ilogu.dto.response.FamilyCreateResponse;
+import com.onehana.server_ilogu.dto.response.BaseResponseStatus;
 import com.onehana.server_ilogu.service.FamilyService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +16,14 @@ import org.springframework.web.bind.annotation.*;
 public class FamilyController {
 
     private final FamilyService familyService;
+
+//    @Operation(summary = "우리 가족 구성원 조회", description = "내가 속한 가족 구성원을 조회한다.")
+//    @GetMapping
+//    public BaseResponse<Void> getFamilyMembers(@AuthenticationPrincipal UserDto userDto) {
+//        familyService.getFamilyMembers(userDto.getEmail());
+//
+//        return new BaseResponse<>(BaseResponseStatus.SUCCESS);
+//    }
 
 //    @Operation(summary = "가족 생성", description = "새 가족을 생성한다.")
 //    @PostMapping

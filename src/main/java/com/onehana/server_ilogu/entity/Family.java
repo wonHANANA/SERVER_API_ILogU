@@ -25,7 +25,7 @@ public class Family extends BaseTimeEntity {
     private String inviteCode;
 
     @OneToMany(mappedBy = "family")
-    private List<UserFamily> members = new ArrayList<>();
+    private List<User> members = new ArrayList<>();
 
     private Family(String familyName, String inviteCode) {
         this.familyName = familyName;
