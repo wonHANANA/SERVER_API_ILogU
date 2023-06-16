@@ -61,7 +61,7 @@ public class UserController {
     }
 
     @Operation(summary = "심플 로그인", description = "간편 비밀번호로 로그인")
-    @PostMapping("/login")
+    @PostMapping("/simpleLogin")
     public BaseResponse<UserLoginResponse> simpleLogin(@Valid @RequestBody UserLoginRequest request) {
         return new BaseResponse<>(userService.simpleLogin(request));
     }

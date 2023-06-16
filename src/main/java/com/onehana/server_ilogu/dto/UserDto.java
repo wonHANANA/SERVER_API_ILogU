@@ -17,6 +17,7 @@ import java.util.List;
 public class UserDto implements UserDetails {
     private String email;
     private String password;
+    private String simplePassword;
     private String nickname;
     private String username;
     private String phone;
@@ -26,6 +27,7 @@ public class UserDto implements UserDetails {
         return new UserDto(
                 request.getEmail(),
                 request.getPassword(),
+                request.getSimplePassword(),
                 request.getNickname(),
                 request.getUsername(),
                 request.getPhone(),
@@ -37,6 +39,7 @@ public class UserDto implements UserDetails {
         return new UserDto(
                 user.getEmail(),
                 user.getPassword(),
+                user.getSimplePassword(),
                 user.getNickname(),
                 user.getUsername(),
                 user.getPhone(),

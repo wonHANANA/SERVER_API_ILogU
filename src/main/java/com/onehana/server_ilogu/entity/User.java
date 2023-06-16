@@ -51,16 +51,6 @@ public class User extends BaseTimeEntity {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<DepositAccount> depositAccounts = new ArrayList<>();
 
-    public void addDepositAccount(DepositAccount depositAccount) {
-        depositAccounts.add(depositAccount);
-        depositAccount.setUser(this);
-    }
-
-    public void removeDepositAccount(DepositAccount depositAccount) {
-        depositAccounts.remove(depositAccount);
-        depositAccount.setUser(null);
-    }
-
     public static User of(UserJoinRequest request, String url) {
         User user = new User();
         user.email = request.getEmail();

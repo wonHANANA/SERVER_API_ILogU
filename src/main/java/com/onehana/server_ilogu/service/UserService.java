@@ -54,7 +54,7 @@ public class UserService {
 
         depositAccountService.createDepositAccount(user);
 
-        familyService.createFamily(user, request);
+        familyService.joinFamily(user, request);
 
         if (request.getChildName() != null && !request.getChildName().trim().isEmpty()) {
             Child child = childRepository.save(Child.of(request.getChildName(), request.getChildBirth(), user));

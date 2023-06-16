@@ -113,9 +113,8 @@ public class SmsService {
 
     private VerificationCode createVerificationCode(String email) {
         Random random = new Random();
-        int code = random.nextInt(900000) + 100000;
+        String generateCode = String.valueOf(random.nextInt(900000) + 100000);
 
-        String generateCode = String.valueOf(code);
         long expirationTime = System.currentTimeMillis() + 3 * 60 * 1000;
 
         VerificationCode verifyCode = new VerificationCode(generateCode, expirationTime);
