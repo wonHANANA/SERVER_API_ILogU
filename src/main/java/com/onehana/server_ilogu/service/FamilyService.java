@@ -1,6 +1,7 @@
 package com.onehana.server_ilogu.service;
 
 import com.onehana.server_ilogu.dto.request.UserJoinRequest;
+import com.onehana.server_ilogu.entity.Child;
 import com.onehana.server_ilogu.entity.Family;
 import com.onehana.server_ilogu.entity.User;
 import com.onehana.server_ilogu.exception.BaseException;
@@ -45,8 +46,8 @@ public class FamilyService {
         if (familyRepository.findByFamilyName(familyName).isPresent()) {
             throw new BaseException(DUPLICATED_FAMILY_NAME);
         }
-
-        Family newFamily = familyRepository.save(Family.of(familyName));
+        Child child = Child.of(request.getChildName(), request.getChildBirth());
+        Family newFamily = familyRepository.save(Family.of(familyName, child));
         addUserToFamily(user, newFamily, request);
     }
 

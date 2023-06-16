@@ -6,10 +6,8 @@ import com.onehana.server_ilogu.dto.request.UserJoinRequest;
 import com.onehana.server_ilogu.dto.request.UserLoginRequest;
 import com.onehana.server_ilogu.dto.response.BaseResponseStatus;
 import com.onehana.server_ilogu.dto.response.UserLoginResponse;
-import com.onehana.server_ilogu.entity.Child;
 import com.onehana.server_ilogu.entity.User;
 import com.onehana.server_ilogu.exception.BaseException;
-import com.onehana.server_ilogu.repository.ChildRepository;
 import com.onehana.server_ilogu.repository.UserRepository;
 import com.onehana.server_ilogu.util.jwt.JwtTokenUtils;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +28,6 @@ public class UserService {
     private final DepositAccountService depositAccountService;
     private final FamilyService familyService;
     private final UserRepository userRepository;
-    private final ChildRepository childRepository;
     private final BCryptPasswordEncoder encoder;
 
     @Value("${jwt.access-token.secret-key}")
@@ -53,14 +50,8 @@ public class UserService {
         User user = userRepository.save(User.of(request, profileUrl));
 
         depositAccountService.createDepositAccount(user);
-
         familyService.joinFamily(user, request);
 
-        if (request.getChildName() != null && !request.getChildName().trim().isEmpty()) {
-            Child child = childRepository.save(Child.of(request.getChildName(), request.getChildBirth(), user));
-            user.setChild(child);
-            userRepository.save(user);
-        }
         return UserDto.of(user);
     }
 

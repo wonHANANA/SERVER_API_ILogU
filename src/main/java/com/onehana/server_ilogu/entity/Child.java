@@ -18,19 +18,17 @@ public class Child extends BaseTimeEntity {
     private String birth;
 
     @OneToOne(mappedBy = "child")
-    private User parent;
+    private Family family;
 
-    private Child(String name, String birth, User parent) {
+    private Child(String name, String birth) {
         this.name = name;
         this.birth = birth;
-        this.parent = parent;
     }
 
-    public static Child of(String name, String birth, User parent) {
+    public static Child of(String name, String birth) {
         return new Child(
                 name,
-                birth,
-                parent
+                birth
         );
     }
 }
