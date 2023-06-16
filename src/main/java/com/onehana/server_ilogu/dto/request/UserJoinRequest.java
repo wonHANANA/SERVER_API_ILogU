@@ -1,6 +1,5 @@
 package com.onehana.server_ilogu.dto.request;
 
-import com.onehana.server_ilogu.entity.enums.FamilyRole;
 import com.onehana.server_ilogu.entity.enums.FamilyType;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
@@ -25,7 +24,7 @@ public class UserJoinRequest {
     private String familyName;
     private String inviteCode;
     private FamilyType familyType;
-    private FamilyRole familyRole;
+    private String familyRole;
     private String childName;
     private String childBirth;
 }

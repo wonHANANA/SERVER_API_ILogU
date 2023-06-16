@@ -1,6 +1,5 @@
 package com.onehana.server_ilogu.entity;
 
-import com.onehana.server_ilogu.entity.enums.FamilyRole;
 import com.onehana.server_ilogu.entity.enums.FamilyType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -27,17 +26,16 @@ public class UserFamily extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private FamilyType familyType;
 
-    @Enumerated(EnumType.STRING)
-    private FamilyRole familyRole;
+    private String familyRole;
 
-    private UserFamily(User user, Family family, FamilyType familyType, FamilyRole familyRole) {
+    private UserFamily(User user, Family family, FamilyType familyType, String familyRole) {
         this.user = user;
         this.family = family;
         this.familyType = familyType;
         this.familyRole = familyRole;
     }
 
-    public static UserFamily of(User user, Family family, FamilyType familyType, FamilyRole familyRole) {
+    public static UserFamily of(User user, Family family, FamilyType familyType, String familyRole) {
         return new UserFamily(
                 user,
                 family,

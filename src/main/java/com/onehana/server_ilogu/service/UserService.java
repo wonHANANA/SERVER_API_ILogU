@@ -9,8 +9,6 @@ import com.onehana.server_ilogu.entity.Child;
 import com.onehana.server_ilogu.entity.User;
 import com.onehana.server_ilogu.exception.BaseException;
 import com.onehana.server_ilogu.repository.ChildRepository;
-import com.onehana.server_ilogu.repository.FamilyRepository;
-import com.onehana.server_ilogu.repository.UserFamilyRepository;
 import com.onehana.server_ilogu.repository.UserRepository;
 import com.onehana.server_ilogu.util.jwt.JwtTokenUtils;
 import lombok.RequiredArgsConstructor;

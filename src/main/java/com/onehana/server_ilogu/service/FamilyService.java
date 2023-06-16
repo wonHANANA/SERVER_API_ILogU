@@ -29,11 +29,15 @@ public class FamilyService {
         Family invitedFamily = validFamilyCode(request.getInviteCode());
 
         if (invitedFamily != null) {
-            userFamilyRepository.save(UserFamily.of(user, invitedFamily, request.getFamilyType(), request.getFamilyRole()));
+            if (request.getFamilyType().toString().equals("PARENTS")) {
+                userFamilyRepository.save(UserFamily.of(user, invitedFamily, request.getFamilyType(), "부모님"));
+            } else {
+                userFamilyRepository.save(UserFamily.of(user, invitedFamily, request.getFamilyType(), request.getFamilyRole()));
+            }
         } else {
-            if (request.getFamilyType().toString().equals("PARENT")) {
+            if (request.getFamilyType().toString().equals("PARENTS")) {
                 Family newFamily = familyRepository.save(Family.of(request.getFamilyName()));
-                userFamilyRepository.save(UserFamily.of(user, newFamily, request.getFamilyType(), request.getFamilyRole()));
+                userFamilyRepository.save(UserFamily.of(user, newFamily, request.getFamilyType(), "부모님"));
             } else {
                 throw new BaseException(INVALID_FAMILY_CREATE_PERMISSION);
             }
