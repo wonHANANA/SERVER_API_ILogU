@@ -1,9 +1,11 @@
 package com.onehana.server_ilogu.service;
 
 import com.onehana.server_ilogu.dto.request.UserJoinRequest;
+import com.onehana.server_ilogu.dto.response.BaseResponseStatus;
 import com.onehana.server_ilogu.entity.Child;
 import com.onehana.server_ilogu.entity.Family;
 import com.onehana.server_ilogu.entity.User;
+import com.onehana.server_ilogu.entity.enums.FamilyType;
 import com.onehana.server_ilogu.exception.BaseException;
 import com.onehana.server_ilogu.repository.FamilyRepository;
 import com.onehana.server_ilogu.repository.UserRepository;
@@ -33,7 +35,18 @@ public class FamilyService {
     }
 
     private void addUserToFamily(User user, Family family, UserJoinRequest request) {
-        String role = "PARENTS".equals(request.getFamilyType().toString()) ? "부모님" : request.getFamilyRole();
+        String role;
+        if (request.getFamilyType() == FamilyType.PARENTS) {
+            role = "부모님";
+            long parentCount = family.getMembers().stream()
+                    .filter(member -> member.getFamilyType() == FamilyType.PARENTS)
+                    .count();
+            if (parentCount >= 2) {
+                throw new BaseException(ALREADY_TWO_PARENTS);
+            }
+        } else {
+            role = request.getFamilyRole();
+        }
         user.joinFamily(family, request.getFamilyType(), role);
         userRepository.save(user);
     }
