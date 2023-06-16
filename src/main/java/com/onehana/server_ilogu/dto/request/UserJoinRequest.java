@@ -17,7 +17,7 @@ public class UserJoinRequest {
     @Size(message = "닉네임은 2자 이상, 10자 이하입니다.", min = 2, max = 10)
     private String nickname;
     private String username;
-    @Pattern(regexp = "^[0-9]*$", message = "휴대전화 번호는 숫자만 가능합니다.")
+    @Pattern(regexp = "^[0-9]*$", message = "휴대전화 번호는 - 없이 숫자만 가능합니다.")
     @Size(min = 10, max = 12)
     private String phone;
     @Size(message = "인증코드는 필수 입력입니다.", min = 6)

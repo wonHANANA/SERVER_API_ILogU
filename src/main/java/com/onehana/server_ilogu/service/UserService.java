@@ -6,9 +6,7 @@ import com.onehana.server_ilogu.dto.request.UserJoinRequest;
 import com.onehana.server_ilogu.dto.request.UserLoginRequest;
 import com.onehana.server_ilogu.dto.response.BaseResponseStatus;
 import com.onehana.server_ilogu.entity.Child;
-import com.onehana.server_ilogu.entity.Family;
 import com.onehana.server_ilogu.entity.User;
-import com.onehana.server_ilogu.entity.UserFamily;
 import com.onehana.server_ilogu.exception.BaseException;
 import com.onehana.server_ilogu.repository.ChildRepository;
 import com.onehana.server_ilogu.repository.FamilyRepository;
@@ -22,20 +20,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Map;
-import java.util.Random;
-import java.util.concurrent.ConcurrentHashMap;
-
 import static com.onehana.server_ilogu.dto.response.BaseResponseStatus.*;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class UserService {
 
     private final AmazonS3Service amazonS3Service;
+    private final DepositAccountService depositAccountService;
+    private final FamilyService familyService;
     private final UserRepository userRepository;
-    private final FamilyRepository familyRepository;
-    private final UserFamilyRepository userFamilyRepository;
     private final ChildRepository childRepository;
     private final BCryptPasswordEncoder encoder;
 
@@ -51,26 +46,16 @@ public class UserService {
     @Value("${jwt.refresh-token.expired-time-ms}")
     private Long refreshExpiredTime;
 
-    @Transactional
     public UserDto join(UserJoinRequest request, MultipartFile file) {
         checkDuplicateUserInfo(request);
 
 //        request.setPassword(encoder.encode(request.getPassword()));
         String profileUrl = setProfileUrl(file);
-
         User user = userRepository.save(User.of(request, profileUrl));
 
-        Family invitedFamily = validFamilyCode(request.getInviteCode());
-        if (invitedFamily != null) {
-            userFamilyRepository.save(UserFamily.of(user, invitedFamily, request.getFamilyType(), request.getFamilyRole()));
-        } else {
-            if (request.getFamilyType().toString().equals("PARENT")) {
-                Family newFamily = familyRepository.save(Family.of(request.getFamilyName()));
-                userFamilyRepository.save(UserFamily.of(user, newFamily, request.getFamilyType(), request.getFamilyRole()));
-            } else {
-                throw new BaseException(INVALID_FAMILY_CREATE_PERMISSION);
-            }
-        }
+        depositAccountService.createDepositAccount(user);
+
+        familyService.createFamily(user, request);
 
         if (request.getChildName() != null && !request.getChildName().trim().isEmpty()) {
             Child child = childRepository.save(Child.of(request.getChildName(), request.getChildBirth(), user));
@@ -90,7 +75,6 @@ public class UserService {
         if (!request.getPassword().equals(user.getPassword())) {
             throw new BaseException(INVALID_PASSWORD);
         }
-
         return createJwtDto(user, request.getEmail());
     }
 
@@ -137,15 +121,6 @@ public class UserService {
             return null;
         }
         return amazonS3Service.uploadProfileImage(file);
-    }
-
-    private Family validFamilyCode(String inviteCode) {
-        if (inviteCode != null && !inviteCode.trim().isEmpty()) {
-            familyRepository.findByInviteCode(inviteCode).orElseThrow(() -> {
-                throw new BaseException(INVALID_INVITE_CODE);
-            });
-        }
-        return null;
     }
 
     @Transactional(readOnly = true)
