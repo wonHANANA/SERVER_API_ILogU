@@ -59,8 +59,9 @@ public enum BaseResponseStatus {
 
     BOARD_NOT_FOUND(false, "400-05-01", "존재하지 않는 게시물입니다."),
     COMMENT_NOT_FOUND(false, "400-05-02", "존재하지 않는 댓글입니다."),
-    IMAGE_NOT_FOUND(false, "400-05-03", "존재하지 않는 사진입니다."),
-    MULTI_PART_EXCEPTION(false, "400-05-04", "잘못된 multipart 요청입니다."),
+    BOARD_COMMENT_MISMATCH(false, "400-05-03", "게시판과 댓글의 위치가 올바르지 않습니다."),
+    IMAGE_NOT_FOUND(false, "400-05-04", "존재하지 않는 사진입니다."),
+    MULTI_PART_EXCEPTION(false, "400-05-05", "잘못된 multipart 요청입니다."),
 
     EMPTY_STRING(false, "400-06-01", "빈 문자열을 입력하셨습니다."),
     INVALID_VALUE_TYPE(false, "400-06-02", "잘못된 자료형을 입력했습니다."),
