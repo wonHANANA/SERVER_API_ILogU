@@ -5,6 +5,7 @@ import com.onehana.server_ilogu.dto.UserDto;
 import com.onehana.server_ilogu.dto.request.UserJoinRequest;
 import com.onehana.server_ilogu.dto.request.UserLoginRequest;
 import com.onehana.server_ilogu.dto.response.BaseResponseStatus;
+import com.onehana.server_ilogu.dto.response.UserLoginResponse;
 import com.onehana.server_ilogu.entity.Child;
 import com.onehana.server_ilogu.entity.User;
 import com.onehana.server_ilogu.exception.BaseException;
@@ -63,7 +64,7 @@ public class UserService {
         return UserDto.of(user);
     }
 
-    public JwtDto login(UserLoginRequest request) {
+    public UserLoginResponse login(UserLoginRequest request) {
         User user = getUserOrException(request.getEmail());
 
         // 비번 암호화 하면 수정
@@ -73,7 +74,16 @@ public class UserService {
         if (!request.getPassword().equals(user.getPassword())) {
             throw new BaseException(INVALID_PASSWORD);
         }
-        return createJwtDto(user, request.getEmail());
+        return loginResponse(user, request);
+    }
+
+    public UserLoginResponse simpleLogin(UserLoginRequest request) {
+        User user = getUserOrException(request.getEmail());
+
+        if (!request.getPassword().equals(user.getSimplePassword())) {
+            throw new BaseException(INVALID_PASSWORD);
+        }
+        return loginResponse(user, request);
     }
 
     public JwtDto refresh(String refreshToken) {
@@ -119,6 +129,16 @@ public class UserService {
             return null;
         }
         return amazonS3Service.uploadProfileImage(file);
+    }
+
+    public UserLoginResponse loginResponse(User user, UserLoginRequest request) {
+        JwtDto tokens = createJwtDto(user, request.getEmail());
+
+        return UserLoginResponse.builder()
+                .email(request.getEmail())
+                .accessToken(tokens.getAccessToken())
+                .refreshToken(tokens.getRefreshToken())
+                .build();
     }
 
     @Transactional(readOnly = true)

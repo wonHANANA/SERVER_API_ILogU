@@ -57,15 +57,13 @@ public class UserController {
     @Operation(summary = "로그인", description = "로그인")
     @PostMapping("/login")
     public BaseResponse<UserLoginResponse> login(@Valid @RequestBody UserLoginRequest request) {
-        JwtDto tokens = userService.login(request);
+        return new BaseResponse<>(userService.login(request));
+    }
 
-        UserLoginResponse res = UserLoginResponse.builder()
-                .email(request.getEmail())
-                .accessToken(tokens.getAccessToken())
-                .refreshToken(tokens.getRefreshToken())
-                .build();
-
-        return new BaseResponse<>(res);
+    @Operation(summary = "심플 로그인", description = "간편 비밀번호로 로그인")
+    @PostMapping("/login")
+    public BaseResponse<UserLoginResponse> simpleLogin(@Valid @RequestBody UserLoginRequest request) {
+        return new BaseResponse<>(userService.simpleLogin(request));
     }
 
     @Operation(summary = "일반 페이지 토큰 인증", description = "일반 페이지 접근을 위한 토큰 인증")

@@ -24,6 +24,8 @@ public class User extends BaseTimeEntity {
     private String email;
     @Column(nullable = false)
     private String password;
+    @Column(nullable = false)
+    private String simplePassword;
     @Column(nullable = false, unique = true)
     private String nickname;
     @Column(nullable = false)
@@ -63,6 +65,7 @@ public class User extends BaseTimeEntity {
         User user = new User();
         user.email = request.getEmail();
         user.password = request.getPassword();
+        user.simplePassword = request.getSimplePassword();
         user.nickname = request.getNickname();
         user.username = request.getUsername();
         user.phone = request.getPhone();

@@ -13,6 +13,8 @@ public class UserJoinRequest {
     private String email;
     @Size(message = "비밀번호는 2자 이상, 20자 이하입니다.", min= 2, max = 20)
     private String password;
+    @Size(message = "간편 비밀번호는 6자입니다.", min = 6, max = 6)
+    private String simplePassword;
     @Size(message = "닉네임은 2자 이상, 10자 이하입니다.", min = 2, max = 10)
     private String nickname;
     private String username;
