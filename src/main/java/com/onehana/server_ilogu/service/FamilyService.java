@@ -58,18 +58,4 @@ public class FamilyService {
         }
         return null;
     }
-
-//    private void validateFamilyCreate(User user, String familyName) {
-//        if (user.getFamilies() != null) {
-//            throw new BaseException(BaseResponseStatus.EXISTING_FAMILY);
-//        }
-//
-//        familyRepository.findByFamilyName(familyName).ifPresent(f -> {
-//            throw new BaseException(BaseResponseStatus.DUPLICATED_FAMILY_NAME);
-//        });
-//
-//        if (!user.getFamilyType().equals(FamilyType.PARENT)) {
-//            throw new BaseException(BaseResponseStatus.INVALID_FAMILY_CREATE_PERMISSION);
-//        }
-//    }
 }

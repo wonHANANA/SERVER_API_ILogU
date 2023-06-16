@@ -5,15 +5,15 @@ import com.onehana.server_ilogu.entity.Hashtag;
 import com.onehana.server_ilogu.repository.HashtagRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class HashTagService {
 
