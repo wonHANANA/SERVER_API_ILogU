@@ -57,15 +57,19 @@ public class UserController {
     @Operation(summary = "로그인", description = "로그인")
     @PostMapping("/login")
     public BaseResponse<UserLoginResponse> login(@Valid @RequestBody UserLoginRequest request) {
-        JwtDto tokens = userService.login(request);
+        return new BaseResponse<>(userService.login(request));
+    }
 
-        UserLoginResponse res = UserLoginResponse.builder()
-                .email(request.getEmail())
-                .accessToken(tokens.getAccessToken())
-                .refreshToken(tokens.getRefreshToken())
-                .build();
+    @Operation(summary = "심플 로그인", description = "간편 비밀번호로 로그인")
+    @PostMapping("/simpleLogin")
+    public BaseResponse<UserLoginResponse> simpleLogin(@Valid @RequestBody UserLoginRequest request) {
+        return new BaseResponse<>(userService.simpleLogin(request));
+    }
 
-        return new BaseResponse<>(res);
+    @Operation(summary = "일반 페이지 토큰 인증", description = "일반 페이지 접근을 위한 토큰 인증")
+    @GetMapping("/token/pages")
+    public BaseResponse<String> showPage() {
+        return new BaseResponse<>(BaseResponseStatus.SUCCESS);
     }
 
     @Operation(summary = "토큰 재발급", description = "header에 refresh token을 담아서 보낸다.")

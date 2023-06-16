@@ -1,15 +1,17 @@
 package com.onehana.server_ilogu.service;
 
-import com.onehana.server_ilogu.dto.FamilyDto;
-import com.onehana.server_ilogu.dto.response.BaseResponseStatus;
+import com.onehana.server_ilogu.dto.request.UserJoinRequest;
 import com.onehana.server_ilogu.entity.Family;
-import com.onehana.server_ilogu.entity.enums.FamilyType;
+import com.onehana.server_ilogu.entity.UserFamily;
 import com.onehana.server_ilogu.entity.User;
 import com.onehana.server_ilogu.exception.BaseException;
 import com.onehana.server_ilogu.repository.FamilyRepository;
+import com.onehana.server_ilogu.repository.UserFamilyRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import static com.onehana.server_ilogu.dto.response.BaseResponseStatus.*;
 
 @Service
 @Transactional
@@ -17,60 +19,43 @@ import org.springframework.transaction.annotation.Transactional;
 public class FamilyService {
 
     private final FamilyRepository familyRepository;
-    private final UserService userService;
+    private final UserFamilyRepository userFamilyRepository;
 
-    public FamilyDto createFamily(FamilyDto familyDto, String email) {
-        User user = userService.getUserOrException(email);
-
-        validateFamilyCreate(user, familyDto.getFamilyName());
-
-        Family family = familyRepository.save(Family.toEntity(familyDto, user));
-        user.setFamily(family);
-        return FamilyDto.of(family);
+    public void joinFamily(User user, UserJoinRequest request) {
+        Family invitedFamily = validFamilyCode(request.getInviteCode());
+        if (invitedFamily != null) {
+            addUserToFamily(user, invitedFamily, request);
+        } else if ("PARENTS".equals(request.getFamilyType().toString())) {
+            createNewFamily(user, request);
+        } else {
+            throw new BaseException(INVALID_FAMILY_CREATE_PERMISSION);
+        }
     }
 
-    public String joinFamily(String inviteCode, String email) {
-        User user = userService.getUserOrException(email);
-        Family family = familyRepository.findByInviteCode(inviteCode).orElseThrow(() ->
-                new BaseException(BaseResponseStatus.INVALID_INVITE_CODE));
-
-        if (user.getFamily() != null && user.getFamily().equals(family)) {
-            throw new BaseException(BaseResponseStatus.DUPLICATED_FAMILY);
-        }
-        user.setFamily(family);
-        return family.getFamilyName();
+    private void addUserToFamily(User user, Family family, UserJoinRequest request) {
+        String role = "PARENTS".equals(request.getFamilyType().toString()) ? "부모님" : request.getFamilyRole();
+        userFamilyRepository.save(UserFamily.of(user, family, request.getFamilyType(), role));
     }
 
-    public String leaveFamily(String email) {
-        User user = userService.getUserOrException(email);
-
-        Family family = user.getFamily();
-        if (family == null) {
-            throw new BaseException(BaseResponseStatus.NO_FAMILY_TO_LEAVE);
+    private void createNewFamily(User user, UserJoinRequest request) {
+        String familyName = request.getFamilyName();
+        if (familyName == null || familyName.trim().isEmpty()) {
+            throw new BaseException(INVALID_FAMILY_NAME);
+        }
+        if (familyRepository.findByFamilyName(familyName).isPresent()) {
+            throw new BaseException(DUPLICATED_FAMILY_NAME);
         }
 
-        family.getMembers().remove(user);
-        user.setFamily(null);
-
-        if (family.getMembers().isEmpty()) {
-            familyRepository.delete(family);
-            return "마지막 가족이 떠났으므로, " + family.getFamilyName() + "이 해산했습니다.";
-        }
-
-        return user.getNickname() + "이 탈퇴했습니다.";
+        Family newFamily = familyRepository.save(Family.of(familyName));
+        addUserToFamily(user, newFamily, request);
     }
 
-    private void validateFamilyCreate(User user, String familyName) {
-        if (user.getFamily() != null) {
-            throw new BaseException(BaseResponseStatus.EXISTING_FAMILY);
+    private Family validFamilyCode(String inviteCode) {
+        if (inviteCode != null && !inviteCode.trim().isEmpty()) {
+            return familyRepository.findByInviteCode(inviteCode).orElseThrow(() -> {
+                throw new BaseException(INVALID_INVITE_CODE);
+            });
         }
-
-        familyRepository.findByFamilyName(familyName).ifPresent(f -> {
-            throw new BaseException(BaseResponseStatus.DUPLICATED_FAMILY_NAME);
-        });
-
-        if (!user.getFamilyType().equals(FamilyType.PARENT)) {
-            throw new BaseException(BaseResponseStatus.INVALID_FAMILY_CREATE_PERMISSION);
-        }
+        return null;
     }
 }

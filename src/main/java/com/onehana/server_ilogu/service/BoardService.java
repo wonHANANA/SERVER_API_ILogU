@@ -150,6 +150,10 @@ public class BoardService {
         if (parentCommentId != null) {
             parentComment = commentRepository.findById(parentCommentId).orElseThrow(() ->
                     new BaseException(BaseResponseStatus.COMMENT_NOT_FOUND));
+
+            if (!parentComment.getBoard().getId().equals(boardId)) {
+                throw new BaseException(BaseResponseStatus.BOARD_COMMENT_MISMATCH);
+            }
         }
         commentRepository.save(Comment.of(user, board, comment, parentComment));
     }

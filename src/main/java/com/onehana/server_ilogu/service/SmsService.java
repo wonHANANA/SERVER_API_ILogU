@@ -20,6 +20,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
@@ -38,6 +39,7 @@ import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @RequiredArgsConstructor
+@Transactional
 @Service
 public class SmsService {
 
@@ -113,9 +115,8 @@ public class SmsService {
 
     private VerificationCode createVerificationCode(String email) {
         Random random = new Random();
-        int code = random.nextInt(900000) + 100000;
+        String generateCode = String.valueOf(random.nextInt(900000) + 100000);
 
-        String generateCode = String.valueOf(code);
         long expirationTime = System.currentTimeMillis() + 3 * 60 * 1000;
 
         VerificationCode verifyCode = new VerificationCode(generateCode, expirationTime);

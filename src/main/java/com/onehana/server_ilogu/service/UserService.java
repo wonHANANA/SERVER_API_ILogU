@@ -5,10 +5,11 @@ import com.onehana.server_ilogu.dto.UserDto;
 import com.onehana.server_ilogu.dto.request.UserJoinRequest;
 import com.onehana.server_ilogu.dto.request.UserLoginRequest;
 import com.onehana.server_ilogu.dto.response.BaseResponseStatus;
-import com.onehana.server_ilogu.entity.Family;
+import com.onehana.server_ilogu.dto.response.UserLoginResponse;
+import com.onehana.server_ilogu.entity.Child;
 import com.onehana.server_ilogu.entity.User;
 import com.onehana.server_ilogu.exception.BaseException;
-import com.onehana.server_ilogu.repository.FamilyRepository;
+import com.onehana.server_ilogu.repository.ChildRepository;
 import com.onehana.server_ilogu.repository.UserRepository;
 import com.onehana.server_ilogu.util.jwt.JwtTokenUtils;
 import lombok.RequiredArgsConstructor;
@@ -18,19 +19,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Map;
-import java.util.Random;
-import java.util.concurrent.ConcurrentHashMap;
-
 import static com.onehana.server_ilogu.dto.response.BaseResponseStatus.*;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class UserService {
 
     private final AmazonS3Service amazonS3Service;
+    private final DepositAccountService depositAccountService;
+    private final FamilyService familyService;
     private final UserRepository userRepository;
-    private final FamilyRepository familyRepository;
+    private final ChildRepository childRepository;
     private final BCryptPasswordEncoder encoder;
 
     @Value("${jwt.access-token.secret-key}")
@@ -45,20 +45,26 @@ public class UserService {
     @Value("${jwt.refresh-token.expired-time-ms}")
     private Long refreshExpiredTime;
 
-    @Transactional
     public UserDto join(UserJoinRequest request, MultipartFile file) {
         checkDuplicateUserInfo(request);
 
 //        request.setPassword(encoder.encode(request.getPassword()));
-
         String profileUrl = setProfileUrl(file);
-        Family family = validFamilyCode(request.getInviteCode());
+        User user = userRepository.save(User.of(request, profileUrl));
 
-        User user = userRepository.save(User.of(request, profileUrl, family));
+        depositAccountService.createDepositAccount(user);
+
+        familyService.joinFamily(user, request);
+
+        if (request.getChildName() != null && !request.getChildName().trim().isEmpty()) {
+            Child child = childRepository.save(Child.of(request.getChildName(), request.getChildBirth(), user));
+            user.setChild(child);
+            userRepository.save(user);
+        }
         return UserDto.of(user);
     }
 
-    public JwtDto login(UserLoginRequest request) {
+    public UserLoginResponse login(UserLoginRequest request) {
         User user = getUserOrException(request.getEmail());
 
         // 비번 암호화 하면 수정
@@ -68,8 +74,16 @@ public class UserService {
         if (!request.getPassword().equals(user.getPassword())) {
             throw new BaseException(INVALID_PASSWORD);
         }
+        return loginResponse(user, request);
+    }
 
-        return createJwtDto(user, request.getEmail());
+    public UserLoginResponse simpleLogin(UserLoginRequest request) {
+        User user = getUserOrException(request.getEmail());
+
+        if (!request.getPassword().equals(user.getSimplePassword())) {
+            throw new BaseException(INVALID_PASSWORD);
+        }
+        return loginResponse(user, request);
     }
 
     public JwtDto refresh(String refreshToken) {
@@ -117,13 +131,14 @@ public class UserService {
         return amazonS3Service.uploadProfileImage(file);
     }
 
-    private Family validFamilyCode(String inviteCode) {
-        if (inviteCode != null && !inviteCode.trim().isEmpty()) {
-            return familyRepository.findByInviteCode(inviteCode).orElseThrow(() -> {
-                throw new BaseException(INVALID_INVITE_CODE);
-            });
-        }
-        return null;
+    public UserLoginResponse loginResponse(User user, UserLoginRequest request) {
+        JwtDto tokens = createJwtDto(user, request.getEmail());
+
+        return UserLoginResponse.builder()
+                .email(request.getEmail())
+                .accessToken(tokens.getAccessToken())
+                .refreshToken(tokens.getRefreshToken())
+                .build();
     }
 
     @Transactional(readOnly = true)

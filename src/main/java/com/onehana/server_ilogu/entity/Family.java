@@ -1,6 +1,5 @@
 package com.onehana.server_ilogu.entity;
 
-import com.onehana.server_ilogu.dto.FamilyDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -8,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 @Entity
 @Getter
@@ -25,13 +25,19 @@ public class Family extends BaseTimeEntity {
     private String inviteCode;
 
     @OneToMany(mappedBy = "family")
-    private List<User> members = new ArrayList<>();
+    private List<UserFamily> members = new ArrayList<>();
 
-    public static Family toEntity(FamilyDto familyDto, User user) {
-        Family family = new Family();
-        family.familyName = familyDto.getFamilyName();
-        family.inviteCode = familyDto.getInviteCode();
-        family.members.add(user);
-        return family;
+    private Family(String familyName, String inviteCode) {
+        this.familyName = familyName;
+        this.inviteCode = inviteCode;
+    }
+
+    public static Family of(String familyName) {
+        Random r = new Random();
+        String random = String.valueOf(r.nextInt(900000) + 100000);
+        return new Family(
+                familyName,
+                familyName + "#" + random
+        );
     }
 }

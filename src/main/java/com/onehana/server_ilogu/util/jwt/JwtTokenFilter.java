@@ -39,8 +39,8 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         String servletPath = request.getServletPath();
         String header = request.getHeader(HttpHeaders.AUTHORIZATION);
 
-        List<String> excludePaths = Arrays.asList("/api/user/login", "/api/user/join", "/api/user/sendCode",
-                "/api/user/token/refresh", "/", "/api/board/image/explain");
+        List<String> excludePaths = Arrays.asList("/", "/api/user/login", "/api/user/simpleLogin", "/api/user/join",
+                "/api/user/sendCode", "/api/user/token/refresh", "/api/board/image/explain");
 
         if (excludePaths.contains(servletPath) || servletPath.contains("swagger-ui")
                 || servletPath.contains("api-docs") || servletPath.contains("webjars")){
