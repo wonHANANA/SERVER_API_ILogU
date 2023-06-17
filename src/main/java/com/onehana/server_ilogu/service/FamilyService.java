@@ -1,5 +1,6 @@
 package com.onehana.server_ilogu.service;
 
+import com.onehana.server_ilogu.dto.UserDto;
 import com.onehana.server_ilogu.dto.request.UserJoinRequest;
 import com.onehana.server_ilogu.dto.response.BaseResponseStatus;
 import com.onehana.server_ilogu.entity.Child;
@@ -14,6 +15,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.onehana.server_ilogu.dto.response.BaseResponseStatus.*;
 
@@ -34,6 +37,19 @@ public class FamilyService {
         } else {
             throw new BaseException(INVALID_FAMILY_CREATE_PERMISSION);
         }
+    }
+
+    public List<UserDto> getFamilyMembers(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new BaseException(USER_NOT_FOUND));
+
+        Family family = user.getFamily();
+
+        List<User> familyMembers = family.getMembers();
+
+        return familyMembers.stream()
+                .map(UserDto::of)
+                .collect(Collectors.toList());
     }
 
     private void addUserToFamily(User user, Family family, UserJoinRequest request) {

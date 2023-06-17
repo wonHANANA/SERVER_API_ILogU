@@ -8,6 +8,7 @@ import com.onehana.server_ilogu.entity.Product;
 import com.onehana.server_ilogu.entity.enums.ProductType;
 import com.onehana.server_ilogu.service.ProductService;
 import com.onehana.server_ilogu.service.UserProductService;
+import com.onehana.server_ilogu.util.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -25,24 +26,24 @@ public class ProductController {
 
     @Operation(summary = "유저 금융 상품 등록", description = "유저가 금융 상품 중 하나를 등록한다.")
     @PostMapping("/{productId}")
-    public BaseResponse<Void> enrollProduct(@AuthenticationPrincipal UserDto userDto,
+    public BaseResponse<Void> enrollProduct(@AuthenticationPrincipal CustomUserDetails userDetails,
                                             @PathVariable Long productId) {
-        userProductService.enrollProduct(userDto.getEmail(), productId);
+        userProductService.enrollProduct(userDetails.getEmail(), productId);
         return new BaseResponse<>(BaseResponseStatus.SUCCESS);
     }
 
     @Operation(summary = "유저 금융 상품 취소", description = "유저가 가진 금융 상품 중 하나를 취소한다.")
     @DeleteMapping("/{productId}")
-    public BaseResponse<Void> cancelProduct(@AuthenticationPrincipal UserDto userDto,
+    public BaseResponse<Void> cancelProduct(@AuthenticationPrincipal CustomUserDetails userDetails,
                                             @PathVariable Long productId) {
-        userProductService.cancelProduct(userDto.getEmail(), productId);
+        userProductService.cancelProduct(userDetails.getEmail(), productId);
         return new BaseResponse<>(BaseResponseStatus.SUCCESS);
     }
 
     @Operation(summary = "유저 금융 상품 조회", description = "유저가 등록한 금융 상품을 전체 조회한다.")
     @GetMapping("/my")
-    public BaseResponse<List<ProductDto>> getUserProducts(@AuthenticationPrincipal UserDto userDto) {
-        List<ProductDto> products = userProductService.getUserProducts(userDto.getEmail());
+    public BaseResponse<List<ProductDto>> getUserProducts(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        List<ProductDto> products = userProductService.getUserProducts(userDetails.getEmail());
         return new BaseResponse<>(products);
     }
 

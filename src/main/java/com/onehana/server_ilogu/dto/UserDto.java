@@ -5,16 +5,10 @@ import com.onehana.server_ilogu.entity.User;
 import com.onehana.server_ilogu.entity.enums.UserRole;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-
-import java.util.Collection;
-import java.util.List;
 
 @Data
 @AllArgsConstructor
-public class UserDto implements UserDetails {
+public class UserDto {
     private String email;
     private String password;
     private String simplePassword;
@@ -45,39 +39,5 @@ public class UserDto implements UserDetails {
                 user.getPhone(),
                 user.getUserRole()
         );
-    }
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(this.getUserRole().toString()));
-    }
-
-    @Override
-    public String getUsername() {
-        return this.username;
-    }
-
-    public String getEmail() {
-        return this.email;
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return true;
     }
 }

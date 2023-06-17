@@ -9,9 +9,12 @@ import com.onehana.server_ilogu.dto.response.UserLoginResponse;
 import com.onehana.server_ilogu.entity.User;
 import com.onehana.server_ilogu.exception.BaseException;
 import com.onehana.server_ilogu.repository.UserRepository;
+import com.onehana.server_ilogu.util.CustomUserDetails;
 import com.onehana.server_ilogu.util.jwt.JwtTokenUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,7 +25,7 @@ import static com.onehana.server_ilogu.dto.response.BaseResponseStatus.*;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class UserService {
+public class UserService implements UserDetailsService {
 
     private final AmazonS3Service amazonS3Service;
     private final DepositAccountService depositAccountService;
@@ -132,11 +135,12 @@ public class UserService {
                 .build();
     }
 
+    @Override
     @Transactional(readOnly = true)
-    public UserDto loadUserByEmail(String email) {
-        return userRepository.findByEmail(email).map(UserDto::of).orElseThrow(() -> {
-            throw new BaseException(USER_NOT_FOUND);
-        });
+    public UserDetails loadUserByUsername(String email) {
+        User user = userRepository.findByEmail(email).orElseThrow(() ->
+                new BaseException(USER_NOT_FOUND));
+        return new CustomUserDetails(user);
     }
 
     public User getUserOrException(String email) {

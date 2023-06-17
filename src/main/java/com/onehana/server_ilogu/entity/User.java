@@ -6,15 +6,13 @@ import com.onehana.server_ilogu.entity.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Entity
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(indexes = {
         @Index(columnList = "email", unique = true),
+        @Index(columnList = "family_id")
 })
 public class User extends BaseTimeEntity {
 
