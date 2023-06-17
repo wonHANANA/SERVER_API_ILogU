@@ -1,15 +1,22 @@
 package com.onehana.server_ilogu.service;
 
+import com.onehana.server_ilogu.dto.UserDto;
 import com.onehana.server_ilogu.dto.request.UserJoinRequest;
+import com.onehana.server_ilogu.dto.response.BaseResponseStatus;
+import com.onehana.server_ilogu.entity.Child;
 import com.onehana.server_ilogu.entity.Family;
-import com.onehana.server_ilogu.entity.UserFamily;
 import com.onehana.server_ilogu.entity.User;
+import com.onehana.server_ilogu.entity.enums.FamilyType;
 import com.onehana.server_ilogu.exception.BaseException;
 import com.onehana.server_ilogu.repository.FamilyRepository;
-import com.onehana.server_ilogu.repository.UserFamilyRepository;
+import com.onehana.server_ilogu.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.onehana.server_ilogu.dto.response.BaseResponseStatus.*;
 
@@ -19,7 +26,7 @@ import static com.onehana.server_ilogu.dto.response.BaseResponseStatus.*;
 public class FamilyService {
 
     private final FamilyRepository familyRepository;
-    private final UserFamilyRepository userFamilyRepository;
+    private final UserRepository userRepository;
 
     public void joinFamily(User user, UserJoinRequest request) {
         Family invitedFamily = validFamilyCode(request.getInviteCode());
@@ -32,9 +39,34 @@ public class FamilyService {
         }
     }
 
+    public List<UserDto> getFamilyMembers(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new BaseException(USER_NOT_FOUND));
+
+        Family family = user.getFamily();
+
+        List<User> familyMembers = family.getMembers();
+
+        return familyMembers.stream()
+                .map(UserDto::of)
+                .collect(Collectors.toList());
+    }
+
     private void addUserToFamily(User user, Family family, UserJoinRequest request) {
-        String role = "PARENTS".equals(request.getFamilyType().toString()) ? "부모님" : request.getFamilyRole();
-        userFamilyRepository.save(UserFamily.of(user, family, request.getFamilyType(), role));
+        String role;
+        if (request.getFamilyType() == FamilyType.PARENTS) {
+            role = "부모님";
+            long parentCount = family.getMembers().stream()
+                    .filter(member -> member.getFamilyType() == FamilyType.PARENTS)
+                    .count();
+            if (parentCount >= 2) {
+                throw new BaseException(ALREADY_TWO_PARENTS);
+            }
+        } else {
+            role = request.getFamilyRole();
+        }
+        user.joinFamily(family, request.getFamilyType(), role);
+        userRepository.save(user);
     }
 
     private void createNewFamily(User user, UserJoinRequest request) {
@@ -45,8 +77,8 @@ public class FamilyService {
         if (familyRepository.findByFamilyName(familyName).isPresent()) {
             throw new BaseException(DUPLICATED_FAMILY_NAME);
         }
-
-        Family newFamily = familyRepository.save(Family.of(familyName));
+        Child child = Child.of(request.getChildName(), request.getChildBirth(), BigDecimal.ZERO);
+        Family newFamily = familyRepository.save(Family.of(familyName, child));
         addUserToFamily(user, newFamily, request);
     }
 

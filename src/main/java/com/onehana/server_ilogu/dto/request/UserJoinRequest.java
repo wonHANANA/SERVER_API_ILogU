@@ -23,8 +23,8 @@ public class UserJoinRequest {
     private String phone;
     @Size(message = "인증코드는 필수 입력입니다.", min = 6)
     private String verifyCode;
-    private String familyName;
     private String inviteCode;
+    private String familyName;
     private FamilyType familyType;
     private String familyRole;
     private String childName;

@@ -1,9 +1,7 @@
 package com.onehana.server_ilogu.service;
 
 import com.microsoft.azure.cognitiveservices.vision.computervision.ComputerVisionClient;
-import com.microsoft.azure.cognitiveservices.vision.computervision.models.ImageAnalysis;
-import com.microsoft.azure.cognitiveservices.vision.computervision.models.ImageTag;
-import com.microsoft.azure.cognitiveservices.vision.computervision.models.VisualFeatureTypes;
+import com.microsoft.azure.cognitiveservices.vision.computervision.models.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -32,17 +30,24 @@ public class AzureService {
         List<ImageTag> tags = analysis.tags();
         String description = analysis.description().captions().get(0).text();
 
-        System.out.println("이미지 요약 결과 :" + description);
-        for (ImageTag tag : tags) {
-            System.out.print(tag.name() + " ");
-            System.out.println();
-        }
-
         String joinedString = tags.stream()
                 .map(ImageTag::name)
                 .collect(Collectors.joining(","));
 
         joinedString = description + "," + joinedString;
         return joinedString;
+    }
+
+    public String analyzeText(byte[] imageData) {
+        OcrResult result = client.computerVision().recognizePrintedTextInStream()
+                .withDetectOrientation(true)
+                .withImage(imageData)
+                .execute();
+
+        return result.regions().stream()
+                .flatMap(region -> region.lines().stream())
+                .flatMap(line -> line.words().stream())
+                .map(OcrWord::text)
+                .collect(Collectors.joining(" "));
     }
 }

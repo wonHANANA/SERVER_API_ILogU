@@ -1,19 +1,19 @@
 package com.onehana.server_ilogu.entity;
 
 import com.onehana.server_ilogu.dto.request.UserJoinRequest;
+import com.onehana.server_ilogu.entity.enums.FamilyType;
 import com.onehana.server_ilogu.entity.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.*;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Table(indexes = {
         @Index(columnList = "email", unique = true),
+        @Index(columnList = "family_id")
 })
 public class User extends BaseTimeEntity {
 
@@ -40,16 +40,27 @@ public class User extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private UserRole userRole;
 
-    @OneToMany(mappedBy = "user")
-    private List<UserFamily> families = new ArrayList<>();
+    @ManyToOne
+    @JoinColumn(name = "family_id")
+    @Setter
+    private Family family;
+
+    @Enumerated(EnumType.STRING)
+    @Setter
+    private FamilyType familyType;
+    @Setter
+    private String familyRole;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "child_id", referencedColumnName = "id")
+    @JoinColumn(name = "deposit_account_id", referencedColumnName = "id")
     @Setter
-    private Child child;
+    private DepositAccount depositAccount;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<DepositAccount> depositAccounts = new ArrayList<>();
+    public void joinFamily(Family family, FamilyType familyType, String familyRole) {
+        this.family = family;
+        this.familyType = familyType;
+        this.familyRole = familyRole;
+    }
 
     public static User of(UserJoinRequest request, String url) {
         User user = new User();

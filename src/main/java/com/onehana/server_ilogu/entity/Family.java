@@ -24,20 +24,26 @@ public class Family extends BaseTimeEntity {
     @Column(unique = true)
     private String inviteCode;
 
-    @OneToMany(mappedBy = "family")
-    private List<UserFamily> members = new ArrayList<>();
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "child_id", referencedColumnName = "id")
+    private Child child;
 
-    private Family(String familyName, String inviteCode) {
+    @OneToMany(mappedBy = "family")
+    private List<User> members = new ArrayList<>();
+
+    private Family(String familyName, String inviteCode, Child child) {
         this.familyName = familyName;
         this.inviteCode = inviteCode;
+        this.child = child;
     }
 
-    public static Family of(String familyName) {
+    public static Family of(String familyName, Child child) {
         Random r = new Random();
         String random = String.valueOf(r.nextInt(900000) + 100000);
         return new Family(
                 familyName,
-                familyName + "#" + random
+                familyName + "#" + random,
+                child
         );
     }
 }

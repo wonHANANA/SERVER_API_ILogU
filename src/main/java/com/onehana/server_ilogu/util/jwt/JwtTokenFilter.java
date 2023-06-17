@@ -1,12 +1,12 @@
 package com.onehana.server_ilogu.util.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.onehana.server_ilogu.dto.UserDto;
 import com.onehana.server_ilogu.dto.response.BaseResponse;
 import com.onehana.server_ilogu.dto.response.BaseResponseStatus;
 import com.onehana.server_ilogu.exception.ExpiredTokenException;
 import com.onehana.server_ilogu.exception.InvalidHeaderException;
 import com.onehana.server_ilogu.service.UserService;
+import com.onehana.server_ilogu.util.CustomUserDetails;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -57,10 +57,10 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             }
 
             String email = JwtTokenUtils.getEmail(token, key);
-            UserDto user = userService.loadUserByEmail(email);
+            CustomUserDetails customUserDetails = (CustomUserDetails) userService.loadUserByEmail(email);
 
             UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                    user, null, user.getAuthorities());
+                    customUserDetails, null, customUserDetails.getAuthorities());
 
             authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
             SecurityContextHolder.getContext().setAuthentication(authentication);

@@ -17,8 +17,7 @@ public class DepositAccountService {
 
     public DepositAccountDto createDepositAccount(User user) {
         DepositAccount depositAccount = new DepositAccount();
-        depositAccount.setUser(user);
-        user.getDepositAccounts().add(depositAccount);
+        user.setDepositAccount(depositAccount);
 
         return DepositAccountDto.of(depositAccountRepository.save(depositAccount));
     }

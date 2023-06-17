@@ -50,6 +50,7 @@ public enum BaseResponseStatus {
     INVALID_FAMILY_CREATE_PERMISSION(false, "400-04-08", "가족은 PARENT 권한만 생성할 수 있습니다."),
     INVALID_INVITE_CODE(false, "400-04-09", "유효하지 않은 가족 코드입니다."),
     INVALID_FAMILY_NAME(false, "400-04-10", "유효하지 않은 가족 이름입니다."),
+    ALREADY_TWO_PARENTS(false, "400-04-11", "이미 두 명의 부모가 존재합니다."),
 
     USER_NOT_FOUND(false, "400-04-20", "존재하지 않는 아이디입니다."),
     INVALID_PASSWORD(false, "400-04-21", "비밀번호가 일치하지 않습니다."),
