@@ -14,7 +14,6 @@ import com.onehana.server_ilogu.util.jwt.JwtTokenUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,7 +24,7 @@ import static com.onehana.server_ilogu.dto.response.BaseResponseStatus.*;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class UserService implements UserDetailsService {
+public class UserService {
 
     private final AmazonS3Service amazonS3Service;
     private final DepositAccountService depositAccountService;
@@ -135,11 +134,11 @@ public class UserService implements UserDetailsService {
                 .build();
     }
 
-    @Override
     @Transactional(readOnly = true)
-    public UserDetails loadUserByUsername(String email) {
+    public UserDetails loadUserByEmail(String email) {
         User user = userRepository.findByEmail(email).orElseThrow(() ->
                 new BaseException(USER_NOT_FOUND));
+
         return new CustomUserDetails(user);
     }
 

@@ -17,7 +17,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -58,7 +57,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             }
 
             String email = JwtTokenUtils.getEmail(token, key);
-            CustomUserDetails customUserDetails = (CustomUserDetails) userService.loadUserByUsername(email);
+            CustomUserDetails customUserDetails = (CustomUserDetails) userService.loadUserByEmail(email);
 
             UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                     customUserDetails, null, customUserDetails.getAuthorities());

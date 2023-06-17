@@ -1,7 +1,7 @@
 package com.onehana.server_ilogu.util;
 
 import com.onehana.server_ilogu.entity.User;
-import lombok.RequiredArgsConstructor;
+import com.onehana.server_ilogu.entity.enums.UserRole;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -9,28 +9,37 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.Collections;
 
-@RequiredArgsConstructor
 public class CustomUserDetails implements UserDetails {
 
-    private final User user;
+    private final String email;
+    private final String username;
+    private final String password;
+    private final UserRole userRole;
+
+    public CustomUserDetails(User user) {
+        this.email = user.getEmail();
+        this.username = user.getUsername();
+        this.password = user.getPassword();
+        this.userRole = user.getUserRole();
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singletonList(new SimpleGrantedAuthority(user.getUserRole().toString()));
+        return Collections.singletonList(new SimpleGrantedAuthority(userRole.toString()));
     }
 
     public String getEmail() {
-        return user.getEmail();
+        return email;
     }
 
     @Override
     public String getPassword() {
-        return user.getPassword();
+        return password;
     }
 
     @Override
     public String getUsername() {
-        return user.getUsername();
+        return username;
     }
 
     @Override

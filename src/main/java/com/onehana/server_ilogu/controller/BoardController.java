@@ -116,7 +116,7 @@ public class BoardController {
     }
 
     @Operation(summary = "좋아요", description = "이미 좋아요 한 게시글은 좋아요가 삭제된다.", tags = "피드")
-    @PutMapping("/{boardId}/like")
+    @PutMapping("/like/{boardId}")
     public BaseResponse<Integer> like(@PathVariable Long boardId, @AuthenticationPrincipal CustomUserDetails userDetails) {
 
         return new BaseResponse<>(boardService.like(boardId, userDetails.getEmail()));
@@ -151,8 +151,7 @@ public class BoardController {
 
     @Operation(summary = "댓글 조회", description = "해당 게시글의 모든 댓글을 조회한다.", tags = "댓글")
     @GetMapping("/{boardId}/comments")
-    public BaseResponse<Page<CommentResponse>> getComments(@PathVariable Long boardId, Pageable pageable,
-                                                           @AuthenticationPrincipal CustomUserDetails userDetails) {
+    public BaseResponse<Page<CommentResponse>> getComments(@PathVariable Long boardId, Pageable pageable) {
         return new BaseResponse<>(boardService.getComments(boardId, pageable).map(CommentResponse::fromCommentDto));
     }
 }

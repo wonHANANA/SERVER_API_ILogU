@@ -14,6 +14,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
@@ -24,9 +25,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.springframework.http.HttpMethod.*;
-import static org.springframework.http.HttpMethod.DELETE;
 
 @Configuration
 @EnableWebSecurity
@@ -54,9 +52,6 @@ public class SecurityConfig implements WebMvcConfigurer {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        BasicAuthenticationEntryPoint basicAuthenticationEntryPoint = new BasicAuthenticationEntryPoint();
-        basicAuthenticationEntryPoint.setRealmName("default");
-
         return http
                 .sessionManagement((sessionManagement) ->
                         sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -67,14 +62,21 @@ public class SecurityConfig implements WebMvcConfigurer {
                         .requestMatchers("/**").permitAll()
                 )
                 .httpBasic(httpBasic -> httpBasic
-                        .authenticationEntryPoint(basicAuthenticationEntryPoint)
+                        .authenticationEntryPoint(swaggerAuthenticationEntryPoint())
                 )
                 .addFilterBefore(new JwtTokenFilter(key, userService), UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 
     @Bean
-    public InMemoryUserDetailsManager inMemoryUserDetailsManager() {
+    public BasicAuthenticationEntryPoint swaggerAuthenticationEntryPoint(){
+        BasicAuthenticationEntryPoint entryPoint = new BasicAuthenticationEntryPoint();
+        entryPoint.setRealmName("Swagger Realm");
+        return entryPoint;
+    }
+
+    @Bean
+    public UserDetailsService userDetailsService() {
         List<UserDetails> userDetailsList = new ArrayList<>();
 
         userDetailsList.add(User.builder()

@@ -10,6 +10,7 @@ import lombok.*;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Table(indexes = {
         @Index(columnList = "email", unique = true),
         @Index(columnList = "family_id")
