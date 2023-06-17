@@ -142,6 +142,20 @@ public class BoardService {
                 });
     }
 
+    public Page<BoardListDto> getFamilyBoards(String email, Pageable pageable) {
+        User user = userService.getUserOrException(email);
+        Long familyId = user.getFamily().getId();
+
+        Page<Board> familyBoards = boardRepository.findAllByUser_Family_Id(familyId, pageable);
+
+        return familyBoards.map(board -> {
+            int likesCount = countLike(board.getId());
+            int commentsCount = countComments(board.getId());
+            boolean isLiked = isLiked(board.getId(), user.getId());
+            return BoardListDto.of(board, likesCount, commentsCount, isLiked);
+        });
+    }
+
     public void createComment(Long boardId, Long parentCommentId, String comment, String email) {
         User user = userService.getUserOrException(email);
         Board board = getBoardOrException(boardId);
