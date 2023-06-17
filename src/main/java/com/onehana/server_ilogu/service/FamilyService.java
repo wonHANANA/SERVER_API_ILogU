@@ -8,6 +8,7 @@ import com.onehana.server_ilogu.entity.Family;
 import com.onehana.server_ilogu.entity.User;
 import com.onehana.server_ilogu.entity.enums.FamilyType;
 import com.onehana.server_ilogu.exception.BaseException;
+import com.onehana.server_ilogu.repository.ChildRepository;
 import com.onehana.server_ilogu.repository.FamilyRepository;
 import com.onehana.server_ilogu.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,20 @@ public class FamilyService {
 
     private final FamilyRepository familyRepository;
     private final UserRepository userRepository;
+    private final ChildRepository childRepository;
+
+    public void sendMoneyToChild(String email, BigDecimal amount) {
+        User user = userRepository.findByEmail(email).orElseThrow(() ->
+                new BaseException(BaseResponseStatus.USER_NOT_FOUND));
+
+        Child child = user.getFamily().getChild();
+
+        user.getDepositAccount().withdraw(amount);
+        child.deposit(amount);
+
+        userRepository.save(user);
+        childRepository.save(child);
+    }
 
     public void joinFamily(User user, UserJoinRequest request) {
         Family invitedFamily = validFamilyCode(request.getInviteCode());
@@ -39,6 +54,7 @@ public class FamilyService {
         }
     }
 
+    @Transactional(readOnly = true)
     public List<UserDto> getFamilyMembers(String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new BaseException(USER_NOT_FOUND));

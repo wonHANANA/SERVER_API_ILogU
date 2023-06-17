@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 
@@ -22,6 +23,10 @@ public class Child {
 
     @OneToOne(mappedBy = "child")
     private Family family;
+
+    public void deposit(BigDecimal money) {
+        balance = balance.add(money);
+    }
 
     private Child(String name, String birth, BigDecimal balance) {
         this.name = name;

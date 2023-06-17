@@ -9,7 +9,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
+
+import static com.onehana.server_ilogu.dto.response.BaseResponseStatus.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -22,5 +25,14 @@ public class FamilyController {
     @GetMapping
     public BaseResponse<List<UserDto>> getFamilyMembers(@AuthenticationPrincipal CustomUserDetails userDetails) {
         return new BaseResponse<>(familyService.getFamilyMembers(userDetails.getEmail()));
+    }
+
+    @Operation(summary = "아이에게 송금하기", description = "우리 아이에게 돈을 송금한다.")
+    @PostMapping("/money/child/{balance}")
+    public BaseResponse<List<UserDto>> sendMoneyToChild(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                                        @PathVariable BigDecimal balance) {
+        familyService.sendMoneyToChild(userDetails.getEmail(), balance);
+
+        return new BaseResponse<>(SUCCESS);
     }
 }

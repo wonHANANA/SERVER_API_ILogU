@@ -24,6 +24,8 @@ import java.net.URISyntaxException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
+import static com.onehana.server_ilogu.dto.response.BaseResponseStatus.*;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/user")
@@ -50,7 +52,7 @@ public class UserController {
             UserDto userDto = userService.join(request, file);
             return new BaseResponse<>(UserJoinResponse.of(userDto));
         } else {
-            throw new BaseException(BaseResponseStatus.INVALID_VERIFY_CODE);
+            throw new BaseException(INVALID_VERIFY_CODE);
         }
     }
 
@@ -69,7 +71,7 @@ public class UserController {
     @Operation(summary = "일반 페이지 토큰 인증", description = "일반 페이지 접근을 위한 토큰 인증")
     @GetMapping("/token/pages")
     public BaseResponse<String> showPage() {
-        return new BaseResponse<>(BaseResponseStatus.SUCCESS);
+        return new BaseResponse<>(SUCCESS);
     }
 
     @Operation(summary = "토큰 재발급", description = "header에 refresh token을 담아서 보낸다.")
@@ -77,7 +79,7 @@ public class UserController {
     public BaseResponse<JwtDto> refresh(HttpServletRequest request) {
         String header = request.getHeader(HttpHeaders.AUTHORIZATION);
         if (header == null || !header.startsWith("Bearer ")) {
-            throw new BaseException(BaseResponseStatus.INVALID_HEADER);
+            throw new BaseException(INVALID_HEADER);
         }
 
         String refreshToken = header.split(" ")[1].trim();

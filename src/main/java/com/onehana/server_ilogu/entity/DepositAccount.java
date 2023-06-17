@@ -29,6 +29,7 @@ public class DepositAccount {
     public void deposit(BigDecimal money) {
         balance = balance.add(money);
     }
+
     public void withdraw(BigDecimal money) {
         if (balance.compareTo(money) < 0) {
             throw new BaseException(BaseResponseStatus.LACK_OF_BALANCE);

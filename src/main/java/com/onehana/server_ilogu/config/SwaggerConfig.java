@@ -55,14 +55,4 @@ public class SwaggerConfig {
                 .pathsToMatch(paths)
                 .build();
     }
-
-    @Bean
-    public GroupedOpenApi bankAccount() {
-        String[] paths = {"/api/account/**"};
-
-        return GroupedOpenApi.builder()
-                .group("계좌")
-                .pathsToMatch(paths)
-                .build();
-    }
 }
