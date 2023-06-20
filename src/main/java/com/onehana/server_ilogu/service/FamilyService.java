@@ -28,7 +28,6 @@ public class FamilyService {
 
     private final FamilyRepository familyRepository;
     private final UserRepository userRepository;
-    private final ChildRepository childRepository;
 
     public void sendMoneyToChild(String email, BigDecimal amount) {
         User user = userRepository.findByEmail(email).orElseThrow(() ->
@@ -38,9 +37,6 @@ public class FamilyService {
 
         user.getDepositAccount().withdraw(amount);
         child.deposit(amount);
-
-        userRepository.save(user);
-        childRepository.save(child);
     }
 
     public void joinFamily(User user, UserJoinRequest request) {
