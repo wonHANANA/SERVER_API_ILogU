@@ -13,12 +13,14 @@ public class DepositAccountDto {
     private Long id;
     private String accountNumber;
     private BigDecimal balance;
+    private BigDecimal sendToChild;
 
     public static DepositAccountDto of(DepositAccount depositAccount) {
         return new DepositAccountDto(
                 depositAccount.getId(),
                 depositAccount.getAccountNumber(),
-                depositAccount.getBalance()
+                depositAccount.getBalance(),
+                depositAccount.getSendToChild()
         );
     }
 }

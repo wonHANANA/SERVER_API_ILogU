@@ -1,5 +1,6 @@
 package com.onehana.server_ilogu.service;
 
+import com.onehana.server_ilogu.dto.SendToChildDto;
 import com.onehana.server_ilogu.dto.UserDto;
 import com.onehana.server_ilogu.dto.request.UserJoinRequest;
 import com.onehana.server_ilogu.dto.response.BaseResponseStatus;
@@ -9,6 +10,7 @@ import com.onehana.server_ilogu.entity.User;
 import com.onehana.server_ilogu.entity.enums.FamilyType;
 import com.onehana.server_ilogu.exception.BaseException;
 import com.onehana.server_ilogu.repository.ChildRepository;
+import com.onehana.server_ilogu.repository.DepositAccountRepository;
 import com.onehana.server_ilogu.repository.FamilyRepository;
 import com.onehana.server_ilogu.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -61,6 +63,15 @@ public class FamilyService {
 
         return familyMembers.stream()
                 .map(UserDto::of)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<SendToChildDto> sendToChildRank(String email) {
+        List<User> users = userRepository.findFamilyMembersOrderBySendToChildDesc(email);
+
+        return users.stream()
+                .map(SendToChildDto::of)
                 .collect(Collectors.toList());
     }
 

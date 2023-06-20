@@ -1,8 +1,10 @@
 package com.onehana.server_ilogu.controller;
 
 import com.onehana.server_ilogu.dto.BoardListDto;
+import com.onehana.server_ilogu.dto.SendToChildDto;
 import com.onehana.server_ilogu.dto.UserDto;
 import com.onehana.server_ilogu.dto.response.BaseResponse;
+import com.onehana.server_ilogu.entity.User;
 import com.onehana.server_ilogu.service.BoardService;
 import com.onehana.server_ilogu.service.FamilyService;
 import com.onehana.server_ilogu.util.CustomUserDetails;
@@ -38,6 +40,12 @@ public class FamilyController {
                                                         @PathVariable BigDecimal balance) {
         familyService.sendMoneyToChild(userDetails.getEmail(), balance);
         return new BaseResponse<>(SUCCESS);
+    }
+
+    @Operation(summary = "용돈 랭킹 조회", description = "용돈을 많이 준 가족 순으로 조회한다.")
+    @GetMapping("/rank/money")
+    public BaseResponse<List<SendToChildDto>> sendToChildRank(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        return new BaseResponse<>(familyService.sendToChildRank(userDetails.getEmail()));
     }
 
     @Operation(summary = "가족 게시글 조회", description = "내가 속한 가족이 올린 게시글만 조회한다.")
