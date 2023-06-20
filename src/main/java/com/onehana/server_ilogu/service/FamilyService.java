@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -70,9 +71,15 @@ public class FamilyService {
     public List<SendToChildDto> sendToChildRank(String email) {
         List<User> users = userRepository.findFamilyMembersOrderBySendToChildDesc(email);
 
-        return users.stream()
-                .map(SendToChildDto::of)
-                .collect(Collectors.toList());
+        int rank = 1;
+        List<SendToChildDto> rankedUsers = new ArrayList<>();
+        for (User user : users) {
+            SendToChildDto dto = SendToChildDto.of(user);
+            dto.setRank(rank++);
+            rankedUsers.add(dto);
+        }
+
+        return rankedUsers;
     }
 
     private void addUserToFamily(User user, Family family, UserJoinRequest request) {
