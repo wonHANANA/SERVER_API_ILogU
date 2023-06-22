@@ -46,7 +46,7 @@ public enum BaseResponseStatus {
     DUPLICATED_FAMILY(false, "400-04-04", "이미 가입된 가족입니다."),
     DUPLICATED_FAMILY_NAME(false, "400-04-05", "중복된 가족 이름입니다."),
     EXISTING_FAMILY(false, "400-04-06", "이미 가족에 속해 있습니다. 새로운 가족을 생성하려면 현재 가족에서 탈퇴해야 합니다."),
-    NO_FAMILY_TO_LEAVE(false, "400-04-07", "탈퇴할 가족이 없습니다."),
+    FAMILY_NOT_FOUND(false, "400-04-07", "가족이 없습니다."),
     INVALID_FAMILY_CREATE_PERMISSION(false, "400-04-08", "가족은 PARENT 권한만 생성할 수 있습니다."),
     INVALID_INVITE_CODE(false, "400-04-09", "유효하지 않은 가족 코드입니다."),
     INVALID_FAMILY_NAME(false, "400-04-10", "유효하지 않은 가족 이름입니다."),

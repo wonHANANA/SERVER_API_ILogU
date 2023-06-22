@@ -26,14 +26,18 @@ public class DepositAccount {
     @Column(nullable = false)
     private BigDecimal balance;
 
+    private BigDecimal sendToChild;
+
     public void deposit(BigDecimal money) {
         balance = balance.add(money);
     }
+
     public void withdraw(BigDecimal money) {
         if (balance.compareTo(money) < 0) {
             throw new BaseException(BaseResponseStatus.LACK_OF_BALANCE);
         }
         balance = balance.subtract(money);
+        sendToChild = sendToChild.add(money);
     }
 
     @PrePersist
@@ -41,13 +45,15 @@ public class DepositAccount {
         Random rand = new Random();
         this.accountNumber = String.format("%014d", Math.abs(rand.nextLong()) % (long) Math.pow(10, 14));
         this.balance = BigDecimal.valueOf(30000000);
+        this.sendToChild = BigDecimal.ZERO;
     }
 
     public static DepositAccount of(DepositAccountDto accountDto) {
         return new DepositAccount(
                 accountDto.getId(),
                 accountDto.getAccountNumber(),
-                accountDto.getBalance()
+                accountDto.getBalance(),
+                accountDto.getSendToChild()
         );
     }
 }

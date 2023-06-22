@@ -1,5 +1,6 @@
 package com.onehana.server_ilogu.service;
 
+import com.onehana.server_ilogu.dto.SendToChildDto;
 import com.onehana.server_ilogu.dto.UserDto;
 import com.onehana.server_ilogu.dto.request.UserJoinRequest;
 import com.onehana.server_ilogu.dto.response.BaseResponseStatus;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,6 +30,16 @@ public class FamilyService {
     private final FamilyRepository familyRepository;
     private final UserRepository userRepository;
 
+    public void sendMoneyToChild(String email, BigDecimal amount) {
+        User user = userRepository.findByEmail(email).orElseThrow(() ->
+                new BaseException(BaseResponseStatus.USER_NOT_FOUND));
+
+        Child child = user.getFamily().getChild();
+
+        user.getDepositAccount().withdraw(amount);
+        child.deposit(amount);
+    }
+
     public void joinFamily(User user, UserJoinRequest request) {
         Family invitedFamily = validFamilyCode(request.getInviteCode());
         if (invitedFamily != null) {
@@ -39,6 +51,7 @@ public class FamilyService {
         }
     }
 
+    @Transactional(readOnly = true)
     public List<UserDto> getFamilyMembers(String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new BaseException(USER_NOT_FOUND));
@@ -50,6 +63,21 @@ public class FamilyService {
         return familyMembers.stream()
                 .map(UserDto::of)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<SendToChildDto> sendToChildRank(String email) {
+        List<User> users = userRepository.findFamilyMembersOrderBySendToChildDesc(email);
+
+        int rank = 1;
+        List<SendToChildDto> rankedUsers = new ArrayList<>();
+        for (User user : users) {
+            SendToChildDto dto = SendToChildDto.of(user);
+            dto.setRank(rank++);
+            rankedUsers.add(dto);
+        }
+
+        return rankedUsers;
     }
 
     private void addUserToFamily(User user, Family family, UserJoinRequest request) {
@@ -82,7 +110,7 @@ public class FamilyService {
         addUserToFamily(user, newFamily, request);
     }
 
-    private Family validFamilyCode(String inviteCode) {
+    public Family validFamilyCode(String inviteCode) {
         if (inviteCode != null && !inviteCode.trim().isEmpty()) {
             return familyRepository.findByInviteCode(inviteCode).orElseThrow(() -> {
                 throw new BaseException(INVALID_INVITE_CODE);

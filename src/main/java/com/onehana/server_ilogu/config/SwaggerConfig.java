@@ -2,7 +2,10 @@ package com.onehana.server_ilogu.config;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Info;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.security.SecurityScheme;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.customizers.OpenApiCustomizer;
 import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,6 +19,19 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class SwaggerConfig {
 
+    public OpenApiCustomizer buildSecurityOpenApi() {
+        SecurityScheme securityScheme = new SecurityScheme()
+                .name("Authorization")
+                .type(SecurityScheme.Type.HTTP)
+                .in(SecurityScheme.In.HEADER)
+                .bearerFormat("JWT")
+                .scheme("bearer");
+
+        return OpenApi -> OpenApi
+                .addSecurityItem(new SecurityRequirement().addList("jwt token"))
+                .getComponents().addSecuritySchemes("jwt token", securityScheme);
+    }
+
     @Bean
     public GroupedOpenApi user() {
         String[] paths = {"/api/user/**"};
@@ -23,6 +39,7 @@ public class SwaggerConfig {
         return GroupedOpenApi.builder()
                 .group("유저")
                 .pathsToMatch(paths)
+                .addOpenApiCustomizer(buildSecurityOpenApi())
                 .build();
     }
 
@@ -33,6 +50,7 @@ public class SwaggerConfig {
         return GroupedOpenApi.builder()
                 .group("피드")
                 .pathsToMatch(paths)
+                .addOpenApiCustomizer(buildSecurityOpenApi())
                 .build();
     }
 
@@ -43,6 +61,7 @@ public class SwaggerConfig {
         return GroupedOpenApi.builder()
                 .group("가족")
                 .pathsToMatch(paths)
+                .addOpenApiCustomizer(buildSecurityOpenApi())
                 .build();
     }
 
@@ -52,16 +71,6 @@ public class SwaggerConfig {
 
         return GroupedOpenApi.builder()
                 .group("금융 상품")
-                .pathsToMatch(paths)
-                .build();
-    }
-
-    @Bean
-    public GroupedOpenApi bankAccount() {
-        String[] paths = {"/api/account/**"};
-
-        return GroupedOpenApi.builder()
-                .group("계좌")
                 .pathsToMatch(paths)
                 .build();
     }

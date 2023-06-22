@@ -13,4 +13,5 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
 
     Page<Board> findByUserAndCategory(User user, BoardCategory category, Pageable pageable);
 
+    Page<Board> findAllByUser_Family_Id(Long familyId, Pageable pageable);
 }
