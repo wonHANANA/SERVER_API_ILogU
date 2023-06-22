@@ -9,8 +9,6 @@ import com.onehana.server_ilogu.entity.Family;
 import com.onehana.server_ilogu.entity.User;
 import com.onehana.server_ilogu.entity.enums.FamilyType;
 import com.onehana.server_ilogu.exception.BaseException;
-import com.onehana.server_ilogu.repository.ChildRepository;
-import com.onehana.server_ilogu.repository.DepositAccountRepository;
 import com.onehana.server_ilogu.repository.FamilyRepository;
 import com.onehana.server_ilogu.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -112,7 +110,7 @@ public class FamilyService {
         addUserToFamily(user, newFamily, request);
     }
 
-    private Family validFamilyCode(String inviteCode) {
+    public Family validFamilyCode(String inviteCode) {
         if (inviteCode != null && !inviteCode.trim().isEmpty()) {
             return familyRepository.findByInviteCode(inviteCode).orElseThrow(() -> {
                 throw new BaseException(INVALID_INVITE_CODE);

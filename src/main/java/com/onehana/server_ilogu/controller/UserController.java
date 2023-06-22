@@ -1,12 +1,14 @@
 package com.onehana.server_ilogu.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.onehana.server_ilogu.dto.FamilyDto;
 import com.onehana.server_ilogu.dto.JwtDto;
 import com.onehana.server_ilogu.dto.UserDto;
 import com.onehana.server_ilogu.dto.request.UserJoinRequest;
 import com.onehana.server_ilogu.dto.request.UserLoginRequest;
 import com.onehana.server_ilogu.dto.response.*;
 import com.onehana.server_ilogu.exception.BaseException;
+import com.onehana.server_ilogu.service.FamilyService;
 import com.onehana.server_ilogu.service.SmsService;
 import com.onehana.server_ilogu.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -32,6 +34,7 @@ import static com.onehana.server_ilogu.dto.response.BaseResponseStatus.*;
 public class UserController {
 
     private final UserService userService;
+    private final FamilyService familyService;
     private final SmsService smsService;
 
     @Operation(summary = "인증 문자 발송", description = "이메일과 전화번호를 받아 인증 메시지를 발송한다. [건당 9원 들어서 호출제한 5초당 1번으로 설정해놓음]")
@@ -54,6 +57,13 @@ public class UserController {
         } else {
             throw new BaseException(INVALID_VERIFY_CODE);
         }
+    }
+
+    @Operation(summary = "가족코드 일치여부 조회", description = "가족코드가 일치하는지 여부를 확인한다.")
+    @GetMapping("/join/familyCode/{familyCode}")
+    public BaseResponse<Void> isValidFamilyCode(@PathVariable String familyCode) {
+        familyService.validFamilyCode(familyCode);
+        return new BaseResponse<>(SUCCESS);
     }
 
     @Operation(summary = "로그인", description = "로그인")
