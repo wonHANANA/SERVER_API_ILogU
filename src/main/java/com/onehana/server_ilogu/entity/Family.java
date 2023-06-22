@@ -42,7 +42,7 @@ public class Family extends BaseTimeEntity {
         String random = String.valueOf(r.nextInt(900000) + 100000);
         return new Family(
                 familyName,
-                familyName + random,
+                familyName + "_" + random,
                 child
         );
     }
