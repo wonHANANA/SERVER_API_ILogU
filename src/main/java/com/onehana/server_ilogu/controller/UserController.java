@@ -1,7 +1,6 @@
 package com.onehana.server_ilogu.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.onehana.server_ilogu.dto.FamilyDto;
 import com.onehana.server_ilogu.dto.JwtDto;
 import com.onehana.server_ilogu.dto.UserDto;
 import com.onehana.server_ilogu.dto.request.UserJoinRequest;
@@ -12,6 +11,10 @@ import com.onehana.server_ilogu.service.FamilyService;
 import com.onehana.server_ilogu.service.SmsService;
 import com.onehana.server_ilogu.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.annotation.Nullable;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -60,6 +63,10 @@ public class UserController {
     }
 
     @Operation(summary = "가족코드 일치여부 조회", description = "가족코드가 일치하는지 여부를 확인한다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200-00-01", description = "요청에 성공하였습니다."),
+            @ApiResponse(responseCode = "400-04-09", description = "유효하지 않은 가족 코드입니다."),
+    })
     @GetMapping("/join/familyCode/{familyCode}")
     public BaseResponse<Void> isValidFamilyCode(@PathVariable String familyCode) {
         familyService.validFamilyCode(familyCode);
@@ -79,12 +86,26 @@ public class UserController {
     }
 
     @Operation(summary = "일반 페이지 토큰 인증", description = "일반 페이지 접근을 위한 토큰 인증")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200-00-01", description = "요청에 성공하였습니다."),
+            @ApiResponse(responseCode = "400-03-01", description = "Header가 null이거나 형식이 올바르지 않습니다."),
+            @ApiResponse(responseCode = "400-03-02", description = "Access 토큰이 유효하지 않습니다."),
+            @ApiResponse(responseCode = "400-03-04", description = "Access 토큰이 만료되었습니다.")
+    })
+    @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "Access Token", required = true)
     @GetMapping("/token/pages")
     public BaseResponse<String> showPage() {
         return new BaseResponse<>(SUCCESS);
     }
 
     @Operation(summary = "토큰 재발급", description = "header에 refresh token을 담아서 보낸다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200-00-01", description = "요청에 성공하였습니다."),
+            @ApiResponse(responseCode = "400-03-01", description = "Header가 null이거나 형식이 올바르지 않습니다."),
+            @ApiResponse(responseCode = "400-03-03", description = "Refresh 토큰이 유효하지 않습니다."),
+            @ApiResponse(responseCode = "400-03-05", description = "Refresh 토큰이 만료되었습니다. 로그인이 필요합니다.")
+    })
+    @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "Refresh Token", required = true)
     @GetMapping("/token/refresh")
     public BaseResponse<JwtDto> refresh(HttpServletRequest request) {
         String header = request.getHeader(HttpHeaders.AUTHORIZATION);
