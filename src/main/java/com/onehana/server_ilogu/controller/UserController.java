@@ -106,7 +106,7 @@ public class UserController {
             @ApiResponse(responseCode = "400-03-02", description = "Access 토큰이 유효하지 않습니다."),
             @ApiResponse(responseCode = "400-03-04", description = "Access 토큰이 만료되었습니다.")
     })
-    @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "Access Token", required = true)
+    @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "Access Token")
     @GetMapping("/token/pages")
     public BaseResponse<String> showPage() {
         return new BaseResponse<>(SUCCESS);
@@ -119,7 +119,7 @@ public class UserController {
             @ApiResponse(responseCode = "400-03-03", description = "Refresh 토큰이 유효하지 않습니다."),
             @ApiResponse(responseCode = "400-03-05", description = "Refresh 토큰이 만료되었습니다. 로그인이 필요합니다.")
     })
-    @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "Refresh Token", required = true)
+    @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "Refresh Token")
     @GetMapping("/token/refresh")
     public BaseResponse<JwtDto> refresh(HttpServletRequest request) {
         String header = request.getHeader(HttpHeaders.AUTHORIZATION);
