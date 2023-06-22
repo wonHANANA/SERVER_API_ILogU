@@ -18,9 +18,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.annotation.Nullable;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -70,6 +72,18 @@ public class UserController {
     @GetMapping("/join/familyCode/{familyCode}")
     public BaseResponse<Void> isValidFamilyCode(@PathVariable String familyCode) {
         familyService.validFamilyCode(familyCode);
+        return new BaseResponse<>(SUCCESS);
+    }
+
+    @Operation(summary = "이메일 유효성 조회", description = "이메일이 중복되거나 옳지 않은 형태인지 판별한다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200-00-01", description = "요청에 성공하였습니다."),
+            @ApiResponse(responseCode = "400-04-02", description = "이미 가입된 이메일입니다."),
+            @ApiResponse(responseCode = "400-06-01", description = "빈 문자열을 입력하셨습니다."),
+    })
+    @GetMapping("/join/email/{email}")
+    public BaseResponse<Void> isValidEmail(@PathVariable String email) {
+        userService.isValidEmail(email);
         return new BaseResponse<>(SUCCESS);
     }
 

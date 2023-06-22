@@ -117,6 +117,16 @@ public class UserService {
         }
     }
 
+    public void isValidEmail(String email) {
+        if (email == null || email.trim().isEmpty()) {
+            throw new BaseException(EMPTY_STRING);
+        }
+
+        if(userRepository.existsByEmail(email)) {
+            throw new BaseException(DUPLICATED_EMAIL);
+        }
+    }
+
     private String setProfileUrl(MultipartFile file) {
         if (file == null) {
             return null;
