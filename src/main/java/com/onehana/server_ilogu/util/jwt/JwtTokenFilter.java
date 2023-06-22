@@ -37,7 +37,6 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         String servletPath = request.getServletPath();
-
         String header = request.getHeader(HttpHeaders.AUTHORIZATION);
 
         List<String> excludePaths = Arrays.asList("/", "/api/user/login", "/api/user/simpleLogin",
