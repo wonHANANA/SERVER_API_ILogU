@@ -139,7 +139,7 @@ public class UserController {
         return new BaseResponse<>(SUCCESS);
     }
 
-    @Operation(summary = "토큰 재발급", description = "header에 refresh token을 담아서 보낸다.")
+    @Operation(summary = "토큰 재발급", description = "header에 refresh token을 담아서 보낸다. Authorization에 access token 대신 refresh token을 넣으세요.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200-00-01", description = "요청에 성공하였습니다."),
             @ApiResponse(responseCode = "400-03-01", description = "Header가 null이거나 형식이 올바르지 않습니다."),
@@ -147,7 +147,7 @@ public class UserController {
             @ApiResponse(responseCode = "400-03-05", description = "Refresh 토큰이 만료되었습니다. 로그인이 필요합니다.")
     })
     @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "Refresh Token")
-    @GetMapping("/token/refresh")
+    @PostMapping("/token/refresh")
     public BaseResponse<JwtDto> refresh(HttpServletRequest request) {
         String header = request.getHeader(HttpHeaders.AUTHORIZATION);
         if (header == null || !header.startsWith("Bearer ")) {
