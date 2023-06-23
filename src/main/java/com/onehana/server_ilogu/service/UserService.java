@@ -117,11 +117,7 @@ public class UserService {
         }
     }
 
-    public void isValidEmail(String email) {
-        if (email == null || email.trim().isEmpty()) {
-            throw new BaseException(EMPTY_STRING);
-        }
-
+    public void isDuplicatedEmail(String email) {
         if(userRepository.existsByEmail(email)) {
             throw new BaseException(DUPLICATED_EMAIL);
         }

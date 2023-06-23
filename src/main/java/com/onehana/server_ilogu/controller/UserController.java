@@ -19,6 +19,7 @@ import jakarta.annotation.Nullable;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -33,6 +34,7 @@ import java.security.NoSuchAlgorithmException;
 
 import static com.onehana.server_ilogu.dto.response.BaseResponseStatus.*;
 
+@Validated
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/user")
@@ -64,26 +66,27 @@ public class UserController {
         }
     }
 
-    @Operation(summary = "가족코드 일치여부 조회", description = "가족코드가 일치하는지 여부를 확인한다.")
+    @Operation(summary = "가족코드 일치여부 조회", description = "가족코드가 일치하는지 여부를 확인한다.", tags = "회원가입 유효성 검사")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200-00-01", description = "요청에 성공하였습니다."),
             @ApiResponse(responseCode = "400-04-09", description = "유효하지 않은 가족 코드입니다."),
+            @ApiResponse(responseCode = "400-06-03", description = "JSON에 null값이나 잘못된 형식이 포함되어 있습니다."),
     })
     @GetMapping("/join/familyCode/{familyCode}")
-    public BaseResponse<Void> isValidFamilyCode(@PathVariable String familyCode) {
+    public BaseResponse<Void> isValidFamilyCode(@NotBlank @PathVariable String familyCode) {
         familyService.validFamilyCode(familyCode);
         return new BaseResponse<>(SUCCESS);
     }
 
-    @Operation(summary = "이메일 유효성 조회", description = "이메일이 중복되거나 옳지 않은 형태인지 판별한다.")
+    @Operation(summary = "이메일 유효성 조회", description = "이메일이 중복되거나 옳지 않은 형태인지 판별한다.", tags = "회원가입 유효성 검사")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200-00-01", description = "요청에 성공하였습니다."),
             @ApiResponse(responseCode = "400-04-02", description = "이미 가입된 이메일입니다."),
-            @ApiResponse(responseCode = "400-06-01", description = "빈 문자열을 입력하셨습니다."),
+            @ApiResponse(responseCode = "400-06-03", description = "JSON에 null값이나 잘못된 형식이 포함되어 있습니다."),
     })
     @GetMapping("/join/email/{email}")
-    public BaseResponse<Void> isValidEmail(@PathVariable String email) {
-        userService.isValidEmail(email);
+    public BaseResponse<Void> isValidEmail(@NotBlank @Email @PathVariable String email) {
+        userService.isDuplicatedEmail(email);
         return new BaseResponse<>(SUCCESS);
     }
 
