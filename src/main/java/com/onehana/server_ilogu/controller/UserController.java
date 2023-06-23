@@ -46,8 +46,8 @@ public class UserController {
 
     @Operation(summary = "인증 문자 발송", description = "이메일과 전화번호를 받아 인증 메시지를 발송한다. [건당 9원 들어서 호출제한 5초당 1번으로 설정해놓음]")
     @PostMapping("/sendCode")
-    public BaseResponse<SmsResponse> sendVerificationCode(@RequestParam String email,
-                                                          @RequestParam String phone) throws UnsupportedEncodingException, URISyntaxException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException {
+    public BaseResponse<SmsResponse> sendVerificationCode(@RequestParam String email, @RequestParam String phone)
+            throws UnsupportedEncodingException, URISyntaxException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException {
 
         return new BaseResponse<>(smsService.sendVerifySms(email, phone));
     }
@@ -66,7 +66,7 @@ public class UserController {
         }
     }
 
-    @Operation(summary = "가족코드 일치여부 조회", description = "가족코드가 일치하는지 여부를 확인한다.", tags = "회원가입 유효성 검사")
+    @Operation(summary = "가족코드 일치여부 검사", description = "가족코드가 일치하는지 여부를 확인한다.", tags = "회원가입 유효성 검사")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200-00-01", description = "요청에 성공하였습니다."),
             @ApiResponse(responseCode = "400-04-09", description = "유효하지 않은 가족 코드입니다."),
@@ -78,7 +78,7 @@ public class UserController {
         return new BaseResponse<>(SUCCESS);
     }
 
-    @Operation(summary = "이메일 유효성 조회", description = "이메일이 중복되거나 옳지 않은 형태인지 판별한다.", tags = "회원가입 유효성 검사")
+    @Operation(summary = "이메일 유효성 검사", description = "이메일이 중복되거나 잘못된 형태인지 판별한다.", tags = "회원가입 유효성 검사")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200-00-01", description = "요청에 성공하였습니다."),
             @ApiResponse(responseCode = "400-04-02", description = "이미 가입된 이메일입니다."),
@@ -87,6 +87,30 @@ public class UserController {
     @GetMapping("/join/email/{email}")
     public BaseResponse<Void> isValidEmail(@NotBlank @Email @PathVariable String email) {
         userService.isDuplicatedEmail(email);
+        return new BaseResponse<>(SUCCESS);
+    }
+
+    @Operation(summary = "닉네임 유효성 검사", description = "닉네임이 중복되거나 잘못된 형태인지 판별한다.", tags = "회원가입 유효성 검사")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200-00-01", description = "요청에 성공하였습니다."),
+            @ApiResponse(responseCode = "400-04-01", description = "이미 가입된 닉네임입니다."),
+            @ApiResponse(responseCode = "400-06-03", description = "JSON에 null값이나 잘못된 형식이 포함되어 있습니다."),
+    })
+    @GetMapping("/join/nickname/{nickname}")
+    public BaseResponse<Void> isValidNickname(@NotBlank @PathVariable String nickname) {
+        userService.isDuplicatedNickname(nickname);
+        return new BaseResponse<>(SUCCESS);
+    }
+
+    @Operation(summary = "가족 이름 유효성 검사", description = "가족이름이 중복되거나 잘못된 형태인지 판별한다.", tags = "회원가입 유효성 검사")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200-00-01", description = "요청에 성공하였습니다."),
+            @ApiResponse(responseCode = "400-04-05", description = "중복된 가족 이름입니다."),
+            @ApiResponse(responseCode = "400-06-03", description = "JSON에 null값이나 잘못된 형식이 포함되어 있습니다."),
+    })
+    @GetMapping("/join/familyName/{familyName}")
+    public BaseResponse<Void> isValidFamilyName(@NotBlank @PathVariable String familyName) {
+        userService.isDuplicatedFamilyName(familyName);
         return new BaseResponse<>(SUCCESS);
     }
 

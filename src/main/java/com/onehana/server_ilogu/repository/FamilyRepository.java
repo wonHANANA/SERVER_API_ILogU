@@ -10,4 +10,6 @@ public interface FamilyRepository extends JpaRepository<Family, Long> {
     Optional<Family> findByInviteCode(String inviteCode);
 
     Optional<Family> findByFamilyName(String familyName);
+
+    boolean existsByFamilyName(String familyName);
 }
