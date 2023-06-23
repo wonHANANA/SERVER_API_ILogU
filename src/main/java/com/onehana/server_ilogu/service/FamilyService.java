@@ -76,7 +76,6 @@ public class FamilyService {
             dto.setRank(rank++);
             rankedUsers.add(dto);
         }
-
         return rankedUsers;
     }
 
