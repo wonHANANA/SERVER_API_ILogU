@@ -1,10 +1,9 @@
 package com.onehana.server_ilogu.controller;
 
 import com.onehana.server_ilogu.dto.BoardListDto;
-import com.onehana.server_ilogu.dto.SendToChildDto;
 import com.onehana.server_ilogu.dto.UserDto;
 import com.onehana.server_ilogu.dto.response.BaseResponse;
-import com.onehana.server_ilogu.entity.User;
+import com.onehana.server_ilogu.dto.response.FamilyHomeResponse;
 import com.onehana.server_ilogu.service.BoardService;
 import com.onehana.server_ilogu.service.FamilyService;
 import com.onehana.server_ilogu.util.CustomUserDetails;
@@ -28,8 +27,15 @@ public class FamilyController {
     private final FamilyService familyService;
     private final BoardService boardService;
 
-    @Operation(summary = "우리 가족 구성원 전체 조회", description = "내가 속한 가족 구성원을 전체 조회한다.")
+    @Operation(summary = "우리 가족 메인 화면", description = "우리 가족 탭 메인 화면 출력")
     @GetMapping
+    public BaseResponse<FamilyHomeResponse> mainPage(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                                     Pageable pageable) {
+        return new BaseResponse<>(familyService.mainPage(userDetails.getEmail(), pageable));
+    }
+
+    @Operation(summary = "우리 가족 구성원 전체 조회", description = "내가 속한 가족 구성원을 전체 조회한다.")
+    @GetMapping("/members")
     public BaseResponse<List<UserDto>> getFamilyMembers(@AuthenticationPrincipal CustomUserDetails userDetails) {
         return new BaseResponse<>(familyService.getFamilyMembers(userDetails.getEmail()));
     }
@@ -40,12 +46,6 @@ public class FamilyController {
                                                         @PathVariable BigDecimal balance) {
         familyService.sendMoneyToChild(userDetails.getEmail(), balance);
         return new BaseResponse<>(SUCCESS);
-    }
-
-    @Operation(summary = "용돈 랭킹 조회", description = "용돈을 많이 준 가족 순으로 조회한다.")
-    @GetMapping("/rank/money")
-    public BaseResponse<List<SendToChildDto>> sendToChildRank(@AuthenticationPrincipal CustomUserDetails userDetails) {
-        return new BaseResponse<>(familyService.sendToChildRank(userDetails.getEmail()));
     }
 
     @Operation(summary = "가족 게시글 조회", description = "내가 속한 가족이 올린 게시글만 조회한다.")

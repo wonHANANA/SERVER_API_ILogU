@@ -8,20 +8,16 @@ import java.math.BigDecimal;
 
 @Data
 @AllArgsConstructor
-public class SendToChildDto {
+public class FamilyMoneyRankDto {
 
-    private int rank;
     private String username;
+    private String profileUrl;
     private BigDecimal sendToChild;
 
-    private SendToChildDto(String username, BigDecimal sendToChild) {
-        this.username = username;
-        this.sendToChild = sendToChild;
-    }
-
-    public static SendToChildDto of(User user) {
-        return new SendToChildDto(
+    public static FamilyMoneyRankDto of(User user) {
+        return new FamilyMoneyRankDto(
                 user.getUsername(),
+                user.getProfileImageUrl(),
                 user.getDepositAccount().getSendToChild());
     }
 }

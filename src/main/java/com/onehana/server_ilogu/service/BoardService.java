@@ -26,7 +26,6 @@ import java.util.List;
 @Transactional
 public class BoardService {
 
-    private final UserService userService;
     private final BoardRepository boardRepository;
     private final BoardLikeRepository boardLikeRepository;
     private final UserRepository userRepository;
@@ -35,7 +34,7 @@ public class BoardService {
     private final HashTagService hashTagService;
 
     public BoardDto createBoard(BoardDto boardDto, String email, List<MultipartFile> files) {
-        User user = userService.getUserOrException(email);
+        User user = getUserOrException(email);
         Board board = boardRepository.save(Board.toEntity(boardDto, user));
 
         hashTagService.createTagList(board);
@@ -47,7 +46,7 @@ public class BoardService {
     }
 
     public BoardDto modifyBoard(String title, String content, BoardCategory category, String email, Long boardId) {
-        User user = userService.getUserOrException(email);
+        User user = getUserOrException(email);
         Board board = getBoardOrException(boardId);
 
         if (board.getUser() != user) {
@@ -64,7 +63,7 @@ public class BoardService {
     }
 
     public void deleteBoard(String email, Long boardId) {
-        User user = userService.getUserOrException(email);
+        User user = getUserOrException(email);
         Board board = getBoardOrException(boardId);
 
         if (board.getUser() != user) {
@@ -75,7 +74,7 @@ public class BoardService {
 
     @Transactional(readOnly = true)
     public BoardDetailDto getBoardWithComments(Long boardId, String email, Pageable pageable) {
-        User user = userService.getUserOrException(email);
+        User user = getUserOrException(email);
         Board board = getBoardOrException(boardId);
 
         int likesCount = countLike(board.getId());
@@ -90,7 +89,7 @@ public class BoardService {
 
     @Transactional(readOnly = true)
     public Page<BoardListDto> getBoards(Pageable pageable, String email) {
-        User user = userService.getUserOrException(email);
+        User user = getUserOrException(email);
 
         return boardRepository.findAll(pageable)
                 .map(board -> {
@@ -103,7 +102,7 @@ public class BoardService {
 
     @Transactional(readOnly = true)
     public Page<BoardListDto> getBoardsByCategory(BoardCategory category, Pageable pageable, String email) {
-        User user = userService.getUserOrException(email);
+        User user = getUserOrException(email);
 
         return boardRepository.findByCategory(category, pageable)
                 .map(board -> {
@@ -143,7 +142,8 @@ public class BoardService {
     }
 
     public Page<BoardListDto> getFamilyBoards(String email, Pageable pageable) {
-        User user = userService.getUserOrException(email);
+        User user = userRepository.findByEmail(email).orElseThrow(() ->
+                new BaseException(BaseResponseStatus.USER_NOT_FOUND));
         Long familyId = user.getFamily().getId();
 
         Page<Board> familyBoards = boardRepository.findAllByUser_Family_Id(familyId, pageable);
@@ -157,7 +157,7 @@ public class BoardService {
     }
 
     public void createComment(Long boardId, Long parentCommentId, String comment, String email) {
-        User user = userService.getUserOrException(email);
+        User user = getUserOrException(email);
         Board board = getBoardOrException(boardId);
 
         Comment parentComment = null;
@@ -173,7 +173,7 @@ public class BoardService {
     }
 
     public void modifyComment(Long commentId, String newComment, String email) {
-        User user = userService.getUserOrException(email);
+        User user = getUserOrException(email);
         Comment comment = commentRepository.findById(commentId).orElseThrow(() ->
                 new BaseException(BaseResponseStatus.COMMENT_NOT_FOUND));
 
@@ -184,7 +184,7 @@ public class BoardService {
     }
 
     public void deleteComment(Long commentId, String email) {
-        User user = userService.getUserOrException(email);
+        User user = getUserOrException(email);
         Comment comment = commentRepository.findById(commentId).orElseThrow(() ->
                 new BaseException(BaseResponseStatus.COMMENT_NOT_FOUND));
 
@@ -211,7 +211,7 @@ public class BoardService {
     }
 
     public int like(Long boardId, String email) {
-        User user = userService.getUserOrException(email);
+        User user = getUserOrException(email);
         Board board = getBoardOrException(boardId);
 
         BoardLike boardLike = boardLikeRepository.findByUserAndBoard(user, board);
@@ -233,6 +233,11 @@ public class BoardService {
 
     public boolean isLiked(Long boardId, Long userId) {
         return boardLikeRepository.existsByBoardIdAndUserId(boardId, userId);
+    }
+
+    public User getUserOrException(String email) {
+        return userRepository.findByEmail(email).orElseThrow(() ->
+                new BaseException(BaseResponseStatus.USER_NOT_FOUND));
     }
 
     @Transactional(readOnly = true)
