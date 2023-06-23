@@ -2,6 +2,7 @@ package com.onehana.server_ilogu.exception;
 
 import com.onehana.server_ilogu.dto.response.BaseResponse;
 import com.onehana.server_ilogu.dto.response.BaseResponseStatus;
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -38,6 +39,14 @@ public class GlobalControllerAdvice {
         return new BaseResponse<>(status, errorMessage);
     }
 
+    @ExceptionHandler(ConstraintViolationException.class)   // 유효성 검사 실패
+    public BaseResponse<Object> ConstraintViolationException(ConstraintViolationException e) {
+        String errorMessage = e.getMessage();
+        log.info("ConstraintViolationException " + e.getMessage());
+        BaseResponseStatus status = BaseResponseStatus.INVALID_JSON_REQUEST;
+        return new BaseResponse<>(status, errorMessage);
+    }
+
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)    // 잘못된 자료형을 처리
     public BaseResponse<Object> MethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
         log.info("MethodTypeMismatch " + e.getMessage());
@@ -68,6 +77,7 @@ public class GlobalControllerAdvice {
     @ExceptionHandler(Exception.class)
     public BaseResponse<Object> Exception(Exception e) {
         String errorMessage = e.getMessage();
+        log.info("Exception에서 처리");
         BaseResponseStatus status = BaseResponseStatus.UNKNOWN_SERVER_ERROR;
         return new BaseResponse<>(status, errorMessage);
     }

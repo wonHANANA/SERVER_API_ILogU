@@ -8,6 +8,7 @@ import com.onehana.server_ilogu.dto.response.BaseResponseStatus;
 import com.onehana.server_ilogu.dto.response.UserLoginResponse;
 import com.onehana.server_ilogu.entity.User;
 import com.onehana.server_ilogu.exception.BaseException;
+import com.onehana.server_ilogu.repository.FamilyRepository;
 import com.onehana.server_ilogu.repository.UserRepository;
 import com.onehana.server_ilogu.util.CustomUserDetails;
 import com.onehana.server_ilogu.util.jwt.JwtTokenUtils;
@@ -43,6 +44,7 @@ public class UserService {
 
     @Value("${jwt.refresh-token.expired-time-ms}")
     private Long refreshExpiredTime;
+    private final FamilyRepository familyRepository;
 
     public UserDto join(UserJoinRequest request, MultipartFile file) {
         checkDuplicateUserInfo(request);
@@ -106,24 +108,25 @@ public class UserService {
     }
 
     private void checkDuplicateUserInfo(UserJoinRequest request) {
-        if(userRepository.existsByEmail(request.getEmail())) {
+        isDuplicatedEmail(request.getEmail());
+        isDuplicatedNickname(request.getNickname());
+    }
+
+    public void isDuplicatedEmail(String email) {
+        if(userRepository.existsByEmail(email)) {
             throw new BaseException(DUPLICATED_EMAIL);
         }
-        if(userRepository.existsByPhone(request.getPhone())) {
-            throw new BaseException(DUPLICATED_PHONE);
-        }
-        if(userRepository.existsByNickname(request.getNickname())) {
+    }
+
+    public void isDuplicatedNickname(String nickname) {
+        if(userRepository.existsByNickname(nickname)) {
             throw new BaseException(DUPLICATED_NICKNAME);
         }
     }
 
-    public void isValidEmail(String email) {
-        if (email == null || email.trim().isEmpty()) {
-            throw new BaseException(EMPTY_STRING);
-        }
-
-        if(userRepository.existsByEmail(email)) {
-            throw new BaseException(DUPLICATED_EMAIL);
+    public void isDuplicatedFamilyName(String familyName) {
+        if(familyRepository.existsByFamilyName(familyName)) {
+            throw new BaseException(DUPLICATED_FAMILY_NAME);
         }
     }
 
