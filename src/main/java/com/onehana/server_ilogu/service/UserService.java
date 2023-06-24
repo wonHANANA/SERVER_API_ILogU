@@ -47,7 +47,8 @@ public class UserService {
     private final FamilyRepository familyRepository;
 
     public UserDto join(UserJoinRequest request, MultipartFile file) {
-        checkDuplicateUserInfo(request);
+        isDuplicatedEmail(request.getEmail());
+        isDuplicatedNickname(request.getNickname());
 
 //        request.setPassword(encoder.encode(request.getPassword()));
         String profileUrl = setProfileUrl(file);
@@ -105,11 +106,6 @@ public class UserService {
         user.setRefreshToken(refreshToken);
         userRepository.save(user);
         return jwtDto;
-    }
-
-    private void checkDuplicateUserInfo(UserJoinRequest request) {
-        isDuplicatedEmail(request.getEmail());
-        isDuplicatedNickname(request.getNickname());
     }
 
     public void isDuplicatedEmail(String email) {
