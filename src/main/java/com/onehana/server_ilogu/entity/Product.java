@@ -1,6 +1,7 @@
 package com.onehana.server_ilogu.entity;
 
 import com.onehana.server_ilogu.dto.ProductDto;
+import com.onehana.server_ilogu.entity.enums.BoardCategory;
 import com.onehana.server_ilogu.entity.enums.ProductType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -27,6 +28,9 @@ public class Product {
 
     @Enumerated(EnumType.STRING)
     private ProductType type;
+
+    @Enumerated(EnumType.STRING)
+    private BoardCategory category;
 
     @OneToMany(mappedBy = "product")
     private List<UserProduct> userProducts = new ArrayList<>();

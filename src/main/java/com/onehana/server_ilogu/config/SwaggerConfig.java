@@ -33,6 +33,17 @@ public class SwaggerConfig {
     }
 
     @Bean
+    public GroupedOpenApi Home() {
+        String[] paths = {"/api/home/**"};
+
+        return GroupedOpenApi.builder()
+                .group("홈 화면")
+                .pathsToMatch(paths)
+                .addOpenApiCustomizer(buildSecurityOpenApi())
+                .build();
+    }
+
+    @Bean
     public GroupedOpenApi user() {
         String[] paths = {"/api/user/**"};
 

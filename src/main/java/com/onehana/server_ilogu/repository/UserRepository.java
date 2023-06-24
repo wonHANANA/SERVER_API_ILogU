@@ -1,5 +1,6 @@
 package com.onehana.server_ilogu.repository;
 
+import com.onehana.server_ilogu.entity.Family;
 import com.onehana.server_ilogu.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -20,6 +21,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
             "(SELECT f.id FROM Family f JOIN User u ON u.family.id = f.id WHERE u.email = :email) " +
             "ORDER BY u.depositAccount.sendToChild DESC")
     List<User> findFamilyMembersOrderBySendToChildDesc(@Param("email") String email);
+
+    List<User> findByFamily(Family family);
 
     Optional<User> findByUsername(String username);
     Optional<User> findByNickname(String nickname);

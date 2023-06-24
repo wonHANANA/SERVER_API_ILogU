@@ -1,17 +1,21 @@
 package com.onehana.server_ilogu.service;
 
-import com.onehana.server_ilogu.dto.SendToChildDto;
+import com.onehana.server_ilogu.dto.FamilyLikeRankDto;
+import com.onehana.server_ilogu.dto.FamilyMoneyRankDto;
 import com.onehana.server_ilogu.dto.UserDto;
 import com.onehana.server_ilogu.dto.request.UserJoinRequest;
 import com.onehana.server_ilogu.dto.response.BaseResponseStatus;
+import com.onehana.server_ilogu.dto.response.FamilyHomeResponse;
 import com.onehana.server_ilogu.entity.Child;
 import com.onehana.server_ilogu.entity.Family;
 import com.onehana.server_ilogu.entity.User;
 import com.onehana.server_ilogu.entity.enums.FamilyType;
 import com.onehana.server_ilogu.exception.BaseException;
+import com.onehana.server_ilogu.repository.BoardLikeRepository;
 import com.onehana.server_ilogu.repository.FamilyRepository;
 import com.onehana.server_ilogu.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,17 +31,14 @@ import static com.onehana.server_ilogu.dto.response.BaseResponseStatus.*;
 @RequiredArgsConstructor
 public class FamilyService {
 
-    private final FamilyRepository familyRepository;
     private final UserRepository userRepository;
+    private final FamilyRepository familyRepository;
+    private final BoardService boardService;
+    private final BoardLikeRepository boardLikeRepository;
 
-    public void sendMoneyToChild(String email, BigDecimal amount) {
-        User user = userRepository.findByEmail(email).orElseThrow(() ->
-                new BaseException(BaseResponseStatus.USER_NOT_FOUND));
-
-        Child child = user.getFamily().getChild();
-
-        user.getDepositAccount().withdraw(amount);
-        child.deposit(amount);
+    public FamilyHomeResponse mainPage(String email, Pageable pageable) {
+        return FamilyHomeResponse.of(sendToChildRank(email), familyLikeRank(email),
+                boardService.getFamilyBoards(email, pageable));
     }
 
     public void joinFamily(User user, UserJoinRequest request) {
@@ -49,6 +50,16 @@ public class FamilyService {
         } else {
             throw new BaseException(INVALID_FAMILY_CREATE_PERMISSION);
         }
+    }
+
+    public void sendMoneyToChild(String email, BigDecimal amount) {
+        User user = userRepository.findByEmail(email).orElseThrow(() ->
+                new BaseException(BaseResponseStatus.USER_NOT_FOUND));
+
+        Child child = user.getFamily().getChild();
+
+        user.getDepositAccount().withdraw(amount);
+        child.deposit(amount);
     }
 
     @Transactional(readOnly = true)
@@ -66,18 +77,30 @@ public class FamilyService {
     }
 
     @Transactional(readOnly = true)
-    public List<SendToChildDto> sendToChildRank(String email) {
+    public List<FamilyMoneyRankDto> sendToChildRank(String email) {
         List<User> users = userRepository.findFamilyMembersOrderBySendToChildDesc(email);
 
-        int rank = 1;
-        List<SendToChildDto> rankedUsers = new ArrayList<>();
+        List<FamilyMoneyRankDto> familyMoneyRank = new ArrayList<>();
         for (User user : users) {
-            SendToChildDto dto = SendToChildDto.of(user);
-            dto.setRank(rank++);
-            rankedUsers.add(dto);
+            familyMoneyRank.add(FamilyMoneyRankDto.of(user));
         }
+        return familyMoneyRank;
+    }
 
-        return rankedUsers;
+    @Transactional(readOnly = true)
+    public List<FamilyLikeRankDto> familyLikeRank(String email) {
+        User user = userRepository.findByEmail(email).orElseThrow(() ->
+                new BaseException(USER_NOT_FOUND));
+        Family family = user.getFamily();
+        List<User> familyMembers = userRepository.findByFamily(family);
+
+        List<FamilyLikeRankDto> familyLikeRank = new ArrayList<>();
+        for(User member : familyMembers) {
+            int likeCount = boardLikeRepository.countByUserAndBoard_User_Family(member, family);
+            familyLikeRank.add(FamilyLikeRankDto.of(member, likeCount));
+        }
+        familyLikeRank.sort((dto1, dto2) -> Integer.compare(dto2.getLikes(), dto1.getLikes()));
+        return familyLikeRank;
     }
 
     private void addUserToFamily(User user, Family family, UserJoinRequest request) {
