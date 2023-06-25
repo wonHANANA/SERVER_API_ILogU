@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -39,9 +40,7 @@ public class BoardService {
 
         hashTagService.createTagList(board);
 
-        if (files != null)
-            amazonS3Service.uploadBoardImages(files, BoardDto.of(board));
-
+        Optional.ofNullable(files).ifPresent(f -> amazonS3Service.uploadBoardImages(f, BoardDto.of(board)));
         return BoardDto.of(board);
     }
 

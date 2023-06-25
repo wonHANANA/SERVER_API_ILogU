@@ -41,7 +41,7 @@ public class BoardController {
     @Operation(summary = "피드글 업로드", description = "피드글을 작성한다", tags = "피드")
     @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public BaseResponse<Void> createBoard(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestPart BoardCreateRequest request,
-                                          @Nullable @RequestPart List<MultipartFile> files) {
+                                          @RequestPart(required = false) List<MultipartFile> files) {
         boardService.createBoard(BoardDto.of(request), userDetails.getEmail(), files);
 
         return new BaseResponse<>(BaseResponseStatus.SUCCESS);
