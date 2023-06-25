@@ -53,8 +53,8 @@ public class UserController {
     }
 
     @Operation(summary = "회원가입", description = "회원가입, 인증코드 [onehana] 쓰면 가입가능, FamilyType은 [PARENTS, OTHERS]")
-    @PostMapping(value = "/join", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
-    public BaseResponse<UserJoinResponse> join(@Valid @RequestPart UserJoinRequest request) {
+    @PostMapping(value = "/join")
+    public BaseResponse<UserJoinResponse> join(@Valid @RequestBody UserJoinRequest request) {
 
         boolean isValidCode = smsService.isVerifiedCode(request.getEmail(), request.getVerifyCode());
         if (isValidCode || request.getVerifyCode().equals("onehana")) {
