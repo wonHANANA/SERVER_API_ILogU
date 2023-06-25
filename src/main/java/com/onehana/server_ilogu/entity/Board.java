@@ -29,8 +29,7 @@ public class Board extends BaseTimeEntity{
     @Setter
     @Column(columnDefinition = "TEXT")
     private String content;
-
-    @Setter
+    
     private BigDecimal balance;
 
     @Setter

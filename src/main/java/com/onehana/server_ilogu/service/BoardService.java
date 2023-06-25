@@ -20,6 +20,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -39,9 +42,7 @@ public class BoardService {
 
         hashTagService.createTagList(board);
 
-        if (files != null)
-            amazonS3Service.uploadBoardImages(files, BoardDto.of(board));
-
+        Optional.ofNullable(files).ifPresent(f -> amazonS3Service.uploadBoardImages(f, BoardDto.of(board)));
         return BoardDto.of(board);
     }
 
@@ -77,14 +78,19 @@ public class BoardService {
         User user = getUserOrException(email);
         Board board = getBoardOrException(boardId);
 
+        Set<String> hashtags = board.getHashtags().stream()
+                .map(Hashtag::getHashtagName)
+                .collect(Collectors.toSet());
+
         int likesCount = countLike(board.getId());
         int commentsCount = countComments(board.getId());
         boolean isLiked = isLiked(board.getId(), user.getId());
+        boolean isFamily = isFamily(board.getUser().getFamily(), user.getFamily());
 
         Page<CommentDto> comments = commentRepository.findAllByBoardAndParentCommentIsNull(board, pageable)
                 .map(CommentDto::fromEntity);
 
-        return BoardDetailDto.of(board, likesCount, commentsCount, isLiked, comments);
+        return BoardDetailDto.of(board, likesCount, commentsCount, hashtags, isLiked, isFamily, comments);
     }
 
     @Transactional(readOnly = true)
@@ -96,7 +102,8 @@ public class BoardService {
                     int likesCount = countLike(board.getId());
                     int commentsCount = countComments(board.getId());
                     boolean isLiked = isLiked(board.getId(), user.getId());
-                    return BoardListDto.of(board, likesCount, commentsCount, isLiked);
+                    boolean isFamily = isFamily(board.getUser().getFamily(), user.getFamily());
+                    return BoardListDto.of(board, likesCount, commentsCount, isLiked, isFamily);
                 });
     }
 
@@ -109,7 +116,8 @@ public class BoardService {
                     int likesCount = countLike(board.getId());
                     int commentsCount = countComments(board.getId());
                     boolean isLiked = isLiked(board.getId(), user.getId());
-                    return BoardListDto.of(board, likesCount, commentsCount, isLiked);
+                    boolean isFamily = isFamily(board.getUser().getFamily(), user.getFamily());
+                    return BoardListDto.of(board, likesCount, commentsCount, isLiked, isFamily);
                 });
     }
 
@@ -123,7 +131,8 @@ public class BoardService {
                     int likesCount = countLike(board.getId());
                     int commentsCount = countComments(board.getId());
                     boolean isLiked = isLiked(board.getId(), user.getId());
-                    return BoardListDto.of(board, likesCount, commentsCount, isLiked);
+                    boolean isFamily = isFamily(board.getUser().getFamily(), user.getFamily());
+                    return BoardListDto.of(board, likesCount, commentsCount, isLiked, isFamily);
                 });
     }
 
@@ -137,7 +146,8 @@ public class BoardService {
                     int likesCount = countLike(board.getId());
                     int commentsCount = countComments(board.getId());
                     boolean isLiked = isLiked(board.getId(), user.getId());
-                    return BoardListDto.of(board, likesCount, commentsCount, isLiked);
+                    boolean isFamily = isFamily(board.getUser().getFamily(), user.getFamily());
+                    return BoardListDto.of(board, likesCount, commentsCount, isLiked, isFamily);
                 });
     }
 
@@ -152,7 +162,8 @@ public class BoardService {
             int likesCount = countLike(board.getId());
             int commentsCount = countComments(board.getId());
             boolean isLiked = isLiked(board.getId(), user.getId());
-            return BoardListDto.of(board, likesCount, commentsCount, isLiked);
+            boolean isFamily = isFamily(board.getUser().getFamily(), user.getFamily());
+            return BoardListDto.of(board, likesCount, commentsCount, isLiked, isFamily);
         });
     }
 
@@ -233,6 +244,10 @@ public class BoardService {
 
     public boolean isLiked(Long boardId, Long userId) {
         return boardLikeRepository.existsByBoardIdAndUserId(boardId, userId);
+    }
+
+    public boolean isFamily(Family boardFamily, Family userFamily) {
+        return boardFamily.equals(userFamily);
     }
 
     public User getUserOrException(String email) {

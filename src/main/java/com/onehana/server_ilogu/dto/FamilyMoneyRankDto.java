@@ -10,13 +10,13 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 public class FamilyMoneyRankDto {
 
-    private String username;
+    private String nickname;
     private String profileUrl;
     private BigDecimal sendToChild;
 
     public static FamilyMoneyRankDto of(User user) {
         return new FamilyMoneyRankDto(
-                user.getUsername(),
+                user.getNickname(),
                 user.getProfileImageUrl(),
                 user.getDepositAccount().getSendToChild());
     }

@@ -6,6 +6,7 @@ import com.onehana.server_ilogu.entity.enums.BoardCategory;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Set;
 
@@ -18,9 +19,12 @@ public class BoardListResponse {
     private String nickname;
     private String userProfileUrl;
     private BoardCategory category;
+    private BigDecimal balance;
     private Set<String> hashtags;
     @JsonProperty("isLiked")
     private boolean isLiked;
+    @JsonProperty("isFamily")
+    private boolean isFamily;
     private int likesCount;
     private int commentsCount;
     private LocalDateTime createdAt;
@@ -35,8 +39,10 @@ public class BoardListResponse {
                 boardListDto.getNickname(),
                 boardListDto.getUserProfileUrl(),
                 boardListDto.getCategory(),
+                boardListDto.getBalance(),
                 boardListDto.getHashtags(),
                 boardListDto.isLiked(),
+                boardListDto.isFamily(),
                 boardListDto.getLikesCount(),
                 boardListDto.getCommentsCount(),
                 boardListDto.getCreatedAt(),
