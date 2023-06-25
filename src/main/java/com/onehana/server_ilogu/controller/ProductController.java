@@ -1,10 +1,8 @@
 package com.onehana.server_ilogu.controller;
 
 import com.onehana.server_ilogu.dto.ProductDto;
-import com.onehana.server_ilogu.dto.UserDto;
 import com.onehana.server_ilogu.dto.response.BaseResponse;
 import com.onehana.server_ilogu.dto.response.BaseResponseStatus;
-import com.onehana.server_ilogu.entity.Product;
 import com.onehana.server_ilogu.entity.enums.ProductType;
 import com.onehana.server_ilogu.service.ProductService;
 import com.onehana.server_ilogu.service.UserProductService;
@@ -54,7 +52,7 @@ public class ProductController {
         return new BaseResponse<>(products);
     }
 
-    @Operation(summary = "하나금융 상품 종류 별 조회", description = "하나 예금-적금 등 종류에 따라 상품을 조회한다.")
+    @Operation(summary = "하나금융 상품 종류 별 조회 ProductType = [DEPOSIT, INSTALLMENT_SAVINGS, LOANS, FUND, INSURANCE, ETF]", description = "하나 예금-적금 등 종류에 따라 상품을 조회한다.")
     @GetMapping("/type/{type}")
     public BaseResponse<List<ProductDto>> getProductsByType(@PathVariable ProductType type) {
         List<ProductDto> products = productService.getProductsByType(type);

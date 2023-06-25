@@ -22,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -250,6 +251,7 @@ public class BoardService {
         return boardFamily.equals(userFamily);
     }
 
+    @Transactional(readOnly = true)
     public User getUserOrException(String email) {
         return userRepository.findByEmail(email).orElseThrow(() ->
                 new BaseException(BaseResponseStatus.USER_NOT_FOUND));

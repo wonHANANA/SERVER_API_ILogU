@@ -16,7 +16,6 @@ import com.onehana.server_ilogu.service.BoardService;
 import com.onehana.server_ilogu.service.ChatGptService;
 import com.onehana.server_ilogu.util.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
-import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -38,7 +37,7 @@ public class BoardController {
     private final AzureService azureService;
     private final ChatGptService chatGptService;
 
-    @Operation(summary = "피드글 업로드", description = "피드글을 작성한다", tags = "피드")
+    @Operation(summary = "피드글 업로드", description = "피드글을 작성한다. category = [DAILY, SPORTS, SPORTS]", tags = "피드")
     @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public BaseResponse<Void> createBoard(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestPart BoardCreateRequest request,
                                           @RequestPart(required = false) List<MultipartFile> files) {
@@ -47,7 +46,7 @@ public class BoardController {
         return new BaseResponse<>(BaseResponseStatus.SUCCESS);
     }
 
-    @Operation(summary = "피드글 수정", description = "피드글을 수정한다", tags = "피드")
+    @Operation(summary = "피드글 수정", description = "피드글을 수정한다. category = [DAILY, SPORTS, SPORTS]", tags = "피드")
     @PutMapping("/{boardId}")
     public BaseResponse<Void> modifyBoard(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable Long boardId,
                                           @RequestBody BoardModifyRequest request) {
@@ -68,7 +67,7 @@ public class BoardController {
         return new BaseResponse<>(BaseResponseStatus.SUCCESS);
     }
 
-    @Operation(summary = "피드글 단건 조회", description = "피드글 상세 정보를 댓글과 함께 조회한다.", tags = "피드조회")
+    @Operation(summary = "피드글 단건 조회", description = "피드글 상세 정보 + 댓글(pageable)과 함께 조회한다.", tags = "피드조회")
     @GetMapping("/{boardId}")
     public BaseResponse<BoardDetailDto> getBoardWithComments(@AuthenticationPrincipal CustomUserDetails userDetails,
                                                              @PathVariable Long boardId, Pageable pageable) {
@@ -105,7 +104,7 @@ public class BoardController {
     }
 
     @Operation(summary = "이미지 설명글 생성", description = "이미지를 등록하면 분석해서 관련 글을 작성해준다.", tags = "피드")
-    @PostMapping("/image/explain")
+    @PostMapping(value = "/image/explain", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public BaseResponse<String> explainImage(@RequestParam List<MultipartFile> file,
                                              @RequestParam String prompt) throws IOException {
         byte[] imageData = file.get(0).getBytes();
