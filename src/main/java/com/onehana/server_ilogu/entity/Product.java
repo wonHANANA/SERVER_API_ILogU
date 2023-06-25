@@ -26,11 +26,16 @@ public class Product {
     @Column(length = 500)
     private String description;
 
+    private String managementCompany;
+
     @Enumerated(EnumType.STRING)
     private ProductType type;
 
     @Enumerated(EnumType.STRING)
     private BoardCategory category;
+
+    private String profitRate;
+    private String imageUrl;
 
     @OneToMany(mappedBy = "product")
     private List<UserProduct> userProducts = new ArrayList<>();

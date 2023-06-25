@@ -5,5 +5,6 @@ public enum ProductType {
     INSTALLMENT_SAVINGS,
     LOANS,
     FUND,
-    INSURANCE
+    INSURANCE,
+    ETF
 }
