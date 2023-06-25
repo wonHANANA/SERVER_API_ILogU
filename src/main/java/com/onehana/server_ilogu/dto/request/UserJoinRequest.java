@@ -19,7 +19,6 @@ public class UserJoinRequest {
     private String nickname;
     private String username;
     private String phone;
-    @Size(message = "인증코드는 필수 입력입니다.", min = 6)
     private String verifyCode;
     private String inviteCode;
     private String familyName;

@@ -52,14 +52,13 @@ public class UserController {
         return new BaseResponse<>(smsService.sendVerifySms(email, phone));
     }
 
-    @Operation(summary = "회원가입", description = "회원가입, 인증코드 [onehana] 쓰면 가입가능")
+    @Operation(summary = "회원가입", description = "회원가입, 인증코드 [onehana] 쓰면 가입가능, FamilyType은 [PARENTS, OTHERS]")
     @PostMapping(value = "/join", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
-    public BaseResponse<UserJoinResponse> join(@Valid @RequestPart UserJoinRequest request,
-                                               @Nullable @RequestPart("file") MultipartFile file) {
+    public BaseResponse<UserJoinResponse> join(@Valid @RequestPart UserJoinRequest request) {
 
         boolean isValidCode = smsService.isVerifiedCode(request.getEmail(), request.getVerifyCode());
         if (isValidCode || request.getVerifyCode().equals("onehana")) {
-            UserDto userDto = userService.join(request, file);
+            UserDto userDto = userService.join(request);
             return new BaseResponse<>(UserJoinResponse.of(userDto));
         } else {
             throw new BaseException(INVALID_VERIFY_CODE);

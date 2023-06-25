@@ -28,7 +28,7 @@ public class User extends BaseTimeEntity {
     private String simplePassword;
     @Column(nullable = false, unique = true)
     private String nickname;
-    @Column(nullable = false)
+
     private String username;
     private String phone;
     private String profileImageUrl;
@@ -61,7 +61,7 @@ public class User extends BaseTimeEntity {
         this.familyRole = familyRole;
     }
 
-    public static User of(UserJoinRequest request, String url) {
+    public static User of(UserJoinRequest request) {
         User user = new User();
         user.email = request.getEmail();
         user.password = request.getPassword();
@@ -70,7 +70,6 @@ public class User extends BaseTimeEntity {
         user.username = request.getUsername();
         user.phone = request.getPhone();
         user.userRole = UserRole.USER_ROLE;
-        user.profileImageUrl = url;
         return user;
     }
 }
