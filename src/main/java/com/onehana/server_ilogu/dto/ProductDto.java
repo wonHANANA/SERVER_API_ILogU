@@ -12,16 +12,22 @@ public class ProductDto {
     private Long id;
     private String name;
     private String description;
+    private String managementCompany;
     private ProductType type;
     private BoardCategory category;
+    private String profitRate;
+    private String imageUrl;
 
     public static ProductDto of(Product product) {
         return new ProductDto(
                 product.getId(),
                 product.getName(),
                 product.getDescription(),
+                product.getManagementCompany(),
                 product.getType(),
-                product.getCategory()
+                product.getCategory(),
+                product.getProfitRate(),
+                product.getImageUrl()
         );
     }
 }
