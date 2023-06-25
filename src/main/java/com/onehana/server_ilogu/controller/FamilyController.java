@@ -54,4 +54,10 @@ public class FamilyController {
                                                             Pageable pageable) {
         return new BaseResponse<>(boardService.getFamilyBoards(userDetails.getEmail(), pageable));
     }
+
+    @Operation(summary = "아이가 받은 용돈 조회", description = "우리 가족이 아이에게 준 모든 돈을 조회한다.")
+    @GetMapping("/child/balance")
+    public BaseResponse<BigDecimal> getChildBalance(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        return new BaseResponse<>(familyService.getChildBalance(userDetails.getEmail()));
+    }
 }

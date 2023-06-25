@@ -65,12 +65,19 @@ public class FamilyService {
         if (!board.getUser().getFamily().equals(user.getFamily())) {
             throw new BaseException(BaseResponseStatus.INVALID_PERMISSION);
         }
-
         Child child = user.getFamily().getChild();
 
         user.getDepositAccount().withdraw(amount);
         child.deposit(amount);
         board.deposit(amount);
+    }
+
+    @Transactional(readOnly = true)
+    public BigDecimal getChildBalance(String email) {
+        User user = userRepository.findByEmail(email).orElseThrow(() ->
+            new BaseException(USER_NOT_FOUND));
+
+        return user.getFamily().getChild().getBalance();
     }
 
     @Transactional(readOnly = true)
