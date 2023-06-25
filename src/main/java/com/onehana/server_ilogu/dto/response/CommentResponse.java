@@ -14,7 +14,7 @@ public class CommentResponse {
 
     private Long id;
     private String comment;
-    private String username;
+    private String nickname;
     private Long boardId;
     private Long parentComment;
     private LocalDateTime createdAt;
@@ -29,7 +29,7 @@ public class CommentResponse {
         return new CommentResponse(
                 commentDto.getId(),
                 commentDto.getComment(),
-                commentDto.getUserName(),
+                commentDto.getNickname(),
                 commentDto.getBoardId(),
                 commentDto.getParentCommentId(),
                 commentDto.getCreatedAt(),

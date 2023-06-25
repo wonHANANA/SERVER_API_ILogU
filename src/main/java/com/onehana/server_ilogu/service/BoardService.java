@@ -21,6 +21,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -76,14 +78,19 @@ public class BoardService {
         User user = getUserOrException(email);
         Board board = getBoardOrException(boardId);
 
+        Set<String> hashtags = board.getHashtags().stream()
+                .map(Hashtag::getHashtagName)
+                .collect(Collectors.toSet());
+
         int likesCount = countLike(board.getId());
         int commentsCount = countComments(board.getId());
         boolean isLiked = isLiked(board.getId(), user.getId());
+        boolean isFamily = isFamily(board.getUser().getFamily(), user.getFamily());
 
         Page<CommentDto> comments = commentRepository.findAllByBoardAndParentCommentIsNull(board, pageable)
                 .map(CommentDto::fromEntity);
 
-        return BoardDetailDto.of(board, likesCount, commentsCount, isLiked, comments);
+        return BoardDetailDto.of(board, likesCount, commentsCount, hashtags, isLiked, isFamily, comments);
     }
 
     @Transactional(readOnly = true)
