@@ -6,12 +6,14 @@ import com.onehana.server_ilogu.dto.UserDto;
 import com.onehana.server_ilogu.dto.request.UserJoinRequest;
 import com.onehana.server_ilogu.dto.response.BaseResponseStatus;
 import com.onehana.server_ilogu.dto.response.FamilyHomeResponse;
+import com.onehana.server_ilogu.entity.Board;
 import com.onehana.server_ilogu.entity.Child;
 import com.onehana.server_ilogu.entity.Family;
 import com.onehana.server_ilogu.entity.User;
 import com.onehana.server_ilogu.entity.enums.FamilyType;
 import com.onehana.server_ilogu.exception.BaseException;
 import com.onehana.server_ilogu.repository.BoardLikeRepository;
+import com.onehana.server_ilogu.repository.BoardRepository;
 import com.onehana.server_ilogu.repository.FamilyRepository;
 import com.onehana.server_ilogu.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +37,9 @@ public class FamilyService {
     private final FamilyRepository familyRepository;
     private final BoardService boardService;
     private final BoardLikeRepository boardLikeRepository;
+    private final BoardRepository boardRepository;
 
+    @Transactional(readOnly = true)
     public FamilyHomeResponse mainPage(String email, Pageable pageable) {
         return FamilyHomeResponse.of(sendToChildRank(email), familyLikeRank(email),
                 boardService.getFamilyBoards(email, pageable));
@@ -52,14 +56,21 @@ public class FamilyService {
         }
     }
 
-    public void sendMoneyToChild(String email, BigDecimal amount) {
+    public void sendMoneyToChild(String email, Long boardId, BigDecimal amount) {
         User user = userRepository.findByEmail(email).orElseThrow(() ->
                 new BaseException(BaseResponseStatus.USER_NOT_FOUND));
+        Board board = boardRepository.findById(boardId).orElseThrow(() ->
+                new BaseException(BOARD_NOT_FOUND));
+
+        if (!board.getUser().getFamily().equals(user.getFamily())) {
+            throw new BaseException(BaseResponseStatus.INVALID_PERMISSION);
+        }
 
         Child child = user.getFamily().getChild();
 
         user.getDepositAccount().withdraw(amount);
         child.deposit(amount);
+        board.deposit(amount);
     }
 
     @Transactional(readOnly = true)

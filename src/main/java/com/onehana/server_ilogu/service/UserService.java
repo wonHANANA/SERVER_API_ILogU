@@ -46,13 +46,12 @@ public class UserService {
     private Long refreshExpiredTime;
     private final FamilyRepository familyRepository;
 
-    public UserDto join(UserJoinRequest request, MultipartFile file) {
+    public UserDto join(UserJoinRequest request) {
         isDuplicatedEmail(request.getEmail());
         isDuplicatedNickname(request.getNickname());
 
 //        request.setPassword(encoder.encode(request.getPassword()));
-        String profileUrl = setProfileUrl(file);
-        User user = userRepository.save(User.of(request, profileUrl));
+        User user = userRepository.save(User.of(request));
 
         depositAccountService.createDepositAccount(user);
         familyService.joinFamily(user, request);

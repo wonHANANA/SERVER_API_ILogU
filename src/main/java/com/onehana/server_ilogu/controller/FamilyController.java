@@ -40,11 +40,11 @@ public class FamilyController {
         return new BaseResponse<>(familyService.getFamilyMembers(userDetails.getEmail()));
     }
 
-    @Operation(summary = "아이에게 송금하기", description = "우리 아이에게 돈을 송금한다.")
-    @PostMapping("/money/child/{balance}")
+    @Operation(summary = "피드글을 통해 아이에게 송금하기", description = "우리 아이에게 돈을 송금한다.")
+    @PostMapping("/board/{boardId}/balance/{balance}")
     public BaseResponse<List<UserDto>> sendMoneyToChild(@AuthenticationPrincipal CustomUserDetails userDetails,
-                                                        @PathVariable BigDecimal balance) {
-        familyService.sendMoneyToChild(userDetails.getEmail(), balance);
+                                                        @PathVariable Long boardId, @PathVariable BigDecimal balance) {
+        familyService.sendMoneyToChild(userDetails.getEmail(), boardId, balance);
         return new BaseResponse<>(SUCCESS);
     }
 

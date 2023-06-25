@@ -6,6 +6,7 @@ import com.onehana.server_ilogu.entity.enums.BoardCategory;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 @Entity
@@ -28,6 +29,9 @@ public class Board extends BaseTimeEntity{
     @Setter
     @Column(columnDefinition = "TEXT")
     private String content;
+
+    @Setter
+    private BigDecimal balance;
 
     @Setter
     @Enumerated(EnumType.STRING)
@@ -62,6 +66,10 @@ public class Board extends BaseTimeEntity{
         board.hashtags = boardDto.getHashtags();
         board.user = user;
         return board;
+    }
+
+    public void deposit(BigDecimal money) {
+        balance = balance.add(money);
     }
 
     public void addHashtag(Hashtag hashtag) {
