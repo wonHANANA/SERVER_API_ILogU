@@ -8,13 +8,13 @@ import lombok.Data;
 @AllArgsConstructor
 public class FamilyLikeRankDto {
 
-    private String username;
+    private String nickname;
     private String profileUrl;
     private int likes;
 
     public static FamilyLikeRankDto of(User user, int likes) {
         return new FamilyLikeRankDto(
-                user.getUsername(),
+                user.getNickname(),
                 user.getProfileImageUrl(),
                 likes
         );
