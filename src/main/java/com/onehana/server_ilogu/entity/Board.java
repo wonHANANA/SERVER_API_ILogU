@@ -65,6 +65,7 @@ public class Board extends BaseTimeEntity{
         board.category = boardDto.getCategory();
         board.hashtags = boardDto.getHashtags();
         board.user = user;
+        board.balance = BigDecimal.ZERO;
         return board;
     }
 

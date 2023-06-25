@@ -2,7 +2,6 @@ package com.onehana.server_ilogu.dto.request;
 
 import com.onehana.server_ilogu.entity.enums.FamilyType;
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
