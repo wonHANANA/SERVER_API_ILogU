@@ -43,7 +43,7 @@ public class BoardService {
 
         hashTagService.createTagList(board);
 
-        Optional.ofNullable(files).ifPresent(f -> amazonS3Service.uploadBoardImages(f, BoardDto.of(board)));
+//        Optional.ofNullable(files).ifPresent(f -> amazonS3Service.uploadBoardImages(f, BoardDto.of(board)));
         return BoardDto.of(board);
     }
 
