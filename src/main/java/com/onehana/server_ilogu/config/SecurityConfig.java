@@ -64,7 +64,7 @@ public class SecurityConfig implements WebMvcConfigurer {
                 .httpBasic(httpBasic -> httpBasic
                         .authenticationEntryPoint(swaggerAuthenticationEntryPoint())
                 )
-                .addFilterBefore(new JwtTokenFilter(key, userService), UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(new JwtTokenFilter(key, userService), UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 
