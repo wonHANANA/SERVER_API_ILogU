@@ -1,9 +1,6 @@
 package com.onehana.server_ilogu.service;
 
-import com.onehana.server_ilogu.dto.BoardDetailDto;
-import com.onehana.server_ilogu.dto.BoardDto;
-import com.onehana.server_ilogu.dto.BoardListDto;
-import com.onehana.server_ilogu.dto.CommentDto;
+import com.onehana.server_ilogu.dto.*;
 import com.onehana.server_ilogu.dto.response.BaseResponseStatus;
 import com.onehana.server_ilogu.entity.*;
 import com.onehana.server_ilogu.entity.enums.BoardCategory;
@@ -19,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -35,6 +33,7 @@ public class BoardService {
     private final UserRepository userRepository;
     private final CommentRepository commentRepository;
     private final AmazonS3Service amazonS3Service;
+    private final AzureService azureService;
     private final HashTagService hashTagService;
 
     public BoardDto createBoard(BoardDto boardDto, String email, List<MultipartFile> files) {
@@ -43,8 +42,32 @@ public class BoardService {
 
         hashTagService.createTagList(board);
 
-        Optional.ofNullable(files).ifPresent(f -> amazonS3Service.uploadBoardImages(f, BoardDto.of(board)));
+        Optional.ofNullable(files).ifPresent(f ->
+                amazonS3Service.uploadBoardImages(f, BoardDto.of(board)));
+
         return BoardDto.of(board);
+    }
+
+    public List<ImageAdultDto> createBoardSafeFromAdults(BoardDto boardDto, String email, List<MultipartFile> files) {
+        User user = getUserOrException(email);
+        Board board = boardRepository.save(Board.toEntity(boardDto, user));
+        hashTagService.createTagList(board);
+
+        List<ImageAdultDto> imageAnalysisResults = new ArrayList<>();
+        List<MultipartFile> safeFiles = new ArrayList<>();
+
+        if (files != null && !files.isEmpty()) {
+            imageAnalysisResults = azureService.analyzeImagesForAdult(files);
+
+            for(int i = 0; i < imageAnalysisResults.size(); i++) {
+                ImageAdultDto imageAdultDto = imageAnalysisResults.get(i);
+                if (!imageAdultDto.isAdult() && !imageAdultDto.isGory() && !imageAdultDto.isRacy()) {
+                    safeFiles.add(files.get(i));
+                }
+            }
+            amazonS3Service.uploadBoardImages(safeFiles, BoardDto.of(board));
+        }
+        return imageAnalysisResults;
     }
 
     public BoardDto modifyBoard(String title, String content, BoardCategory category, String email, Long boardId) {
