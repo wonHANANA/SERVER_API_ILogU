@@ -91,7 +91,7 @@ public class SecurityConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         registry
                 .addMapping("/**")
-                .allowedOrigins("http://localhost:3000", "http://i-log-u.site")
+                .allowedOrigins("*")
                 .allowedMethods("*")
                 .allowedHeaders("*")
                 .allowCredentials(true);

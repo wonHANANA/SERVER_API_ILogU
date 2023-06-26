@@ -38,7 +38,7 @@ public class BoardController {
     private final ChatGptService chatGptService;
 
     @Operation(summary = "피드글 업로드", description = "피드글을 작성한다. category = [DAILY, SPORTS, TRAVEL]", tags = "피드")
-    @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/upload", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public BaseResponse<Void> createBoard(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestPart BoardCreateRequest request,
                                           @RequestPart(required = false) List<MultipartFile> files) {
         boardService.createBoard(BoardDto.of(request), userDetails.getEmail(), files);
