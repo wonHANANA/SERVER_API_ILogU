@@ -20,6 +20,7 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
+import org.springframework.web.filter.CorsFilter;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -64,7 +65,7 @@ public class SecurityConfig implements WebMvcConfigurer {
                 .httpBasic(httpBasic -> httpBasic
                         .authenticationEntryPoint(swaggerAuthenticationEntryPoint())
                 )
-                .addFilterAfter(new JwtTokenFilter(key, userService), UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(new JwtTokenFilter(key, userService), CorsFilter.class)
                 .build();
     }
 
