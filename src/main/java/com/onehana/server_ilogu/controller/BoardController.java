@@ -2,6 +2,7 @@ package com.onehana.server_ilogu.controller;
 
 import com.onehana.server_ilogu.dto.BoardDetailDto;
 import com.onehana.server_ilogu.dto.BoardDto;
+import com.onehana.server_ilogu.dto.ImageAdultDto;
 import com.onehana.server_ilogu.dto.request.BoardCreateRequest;
 import com.onehana.server_ilogu.dto.request.BoardModifyRequest;
 import com.onehana.server_ilogu.dto.request.CommentRequest;
@@ -44,6 +45,15 @@ public class BoardController {
         boardService.createBoard(BoardDto.of(request), userDetails.getEmail(), files);
 
         return new BaseResponse<>(BaseResponseStatus.SUCCESS);
+    }
+
+    @Operation(summary = "피드글 유해물 제외 업로드", description = "피드글을 성인물, 고어 사진을 제외하고 게시한다. category = [DAILY, SPORTS, TRAVEL]", tags = "피드")
+    @PostMapping(value = "/upload/adult", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public BaseResponse<List<ImageAdultDto>> createBoardSafeFromAdults(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                                                       @RequestPart BoardCreateRequest request,
+                                                                       @RequestPart(required = false) List<MultipartFile> files) {
+
+        return new BaseResponse<>(boardService.createBoardSafeFromAdults(BoardDto.of(request), userDetails.getEmail(), files));
     }
 
     @Operation(summary = "피드글 수정", description = "피드글을 수정한다. category = [DAILY, SPORTS, TRAVEL]", tags = "피드")
@@ -108,7 +118,7 @@ public class BoardController {
     public BaseResponse<String> explainImage(@RequestParam List<MultipartFile> file,
                                              @RequestParam String prompt) throws IOException {
         byte[] imageData = file.get(0).getBytes();
-        String imageKeyword = azureService.analyzeImage(imageData);
+        String imageKeyword = azureService.analyzeImageForGPT(imageData);
 
         String res = chatGptService.askQuestionWithPrompt(imageKeyword, prompt);
         return new BaseResponse<>(res);

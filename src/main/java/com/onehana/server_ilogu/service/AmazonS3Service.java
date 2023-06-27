@@ -60,11 +60,9 @@ public class AmazonS3Service {
                         new PutObjectRequest(bucket, keyName, inputStream, objectMetadata));
 
                 uploadFileUrl = amazonS3Client.getUrl(bucket, keyName).toString();
-
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
             s3files.add(
                     BoardImageDto.builder()
                             .originalFileName(originalFileName)
