@@ -61,7 +61,7 @@ public class BoardService {
 
             for(int i = 0; i < imageAnalysisResults.size(); i++) {
                 ImageAdultDto imageAdultDto = imageAnalysisResults.get(i);
-                if (!imageAdultDto.isAdult() && !imageAdultDto.isGory()) {
+                if (!imageAdultDto.isAdult() && !imageAdultDto.isGory() && !imageAdultDto.isRacy()) {
                     safeFiles.add(files.get(i));
                 }
             }
