@@ -56,7 +56,7 @@ public class BoardService {
 
         imageAnalysisResults = azureService.analyzeImagesForAdult(files);
         for (ImageAdultDto imageAdultDto : imageAnalysisResults) {
-            if (imageAdultDto.isAdult() || imageAdultDto.isGory() || imageAdultDto.isRacy()) {
+            if (imageAdultDto.isAdult() || imageAdultDto.isGory()) {
                 isSafe = false;
                 break;
             }
