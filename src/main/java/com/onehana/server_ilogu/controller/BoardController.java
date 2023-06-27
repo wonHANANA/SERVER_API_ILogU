@@ -47,7 +47,7 @@ public class BoardController {
         return new BaseResponse<>(BaseResponseStatus.SUCCESS);
     }
 
-    @Operation(summary = "피드글 유해물 제외 업로드", description = "피드글을 성인, 고어, 자극적인 사진을 제외하고 게시한다. category = [DAILY, SPORTS, TRAVEL]", tags = "피드")
+    @Operation(summary = "피드글 유해물 제외 업로드", description = "피드글을 성인물, 고어 사진을 제외하고 게시한다. category = [DAILY, SPORTS, TRAVEL]", tags = "피드")
     @PostMapping(value = "/upload/adult", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public BaseResponse<List<ImageAdultDto>> createBoardSafeFromAdults(@AuthenticationPrincipal CustomUserDetails userDetails,
                                                                        @RequestPart BoardCreateRequest request,
