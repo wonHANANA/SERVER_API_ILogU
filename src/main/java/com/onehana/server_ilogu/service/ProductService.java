@@ -36,7 +36,7 @@ public class ProductService {
 
     @Transactional(readOnly = true)
     public List<ProductDto> getProductsByCategory(BoardCategory category) {
-        return productRepository.findByCategory(category)
+        return productRepository.findByCategoryOrderByType(category)
                 .stream()
                 .map(ProductDto::of)
                 .collect(Collectors.toList());
