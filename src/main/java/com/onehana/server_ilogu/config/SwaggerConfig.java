@@ -83,6 +83,7 @@ public class SwaggerConfig {
         return GroupedOpenApi.builder()
                 .group("금융 상품")
                 .pathsToMatch(paths)
+                .addOpenApiCustomizer(buildSecurityOpenApi())
                 .build();
     }
 }
