@@ -50,22 +50,24 @@ public class BoardService {
 
     public List<ImageAdultDto> createBoardSafeFromAdults(BoardDto boardDto, String email, List<MultipartFile> files) {
         User user = getUserOrException(email);
-        Board board = boardRepository.save(Board.toEntity(boardDto, user));
-        hashTagService.createTagList(board);
 
-        List<ImageAdultDto> imageAnalysisResults = new ArrayList<>();
-        List<MultipartFile> safeFiles = new ArrayList<>();
+        List<ImageAdultDto> imageAnalysisResults;
+        boolean isSafe = true;
 
-        if (files != null && !files.isEmpty()) {
-            imageAnalysisResults = azureService.analyzeImagesForAdult(files);
-
-            for(int i = 0; i < imageAnalysisResults.size(); i++) {
-                ImageAdultDto imageAdultDto = imageAnalysisResults.get(i);
-                if (!imageAdultDto.isAdult() && !imageAdultDto.isGory() && !imageAdultDto.isRacy()) {
-                    safeFiles.add(files.get(i));
-                }
+        imageAnalysisResults = azureService.analyzeImagesForAdult(files);
+        for (ImageAdultDto imageAdultDto : imageAnalysisResults) {
+            if (imageAdultDto.isAdult() || imageAdultDto.isGory() || imageAdultDto.isRacy()) {
+                isSafe = false;
+                break;
             }
-            amazonS3Service.uploadBoardImages(safeFiles, BoardDto.of(board));
+        }
+
+        if (isSafe) {
+            Board board = boardRepository.save(Board.toEntity(boardDto, user));
+            hashTagService.createTagList(board);
+            if (!files.isEmpty()) {
+                amazonS3Service.uploadBoardImages(files, BoardDto.of(board));
+            }
         }
         return imageAnalysisResults;
     }
