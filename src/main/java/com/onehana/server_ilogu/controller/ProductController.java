@@ -60,7 +60,7 @@ public class ProductController {
         return new BaseResponse<>(BaseResponseStatus.SUCCESS);
     }
 
-    @Operation(summary = "유저 금융 상품 조회", description = "유저가 등록한 금융 상품을 전체 조회한다.")
+    @Operation(summary = "내가 가진 금융 상품 조회", description = "내가 현재 가지고 있는 금융 상품을 전체 조회한다.")
     @GetMapping("/my")
     public BaseResponse<List<ProductDto>> getUserProducts(@AuthenticationPrincipal CustomUserDetails userDetails) {
         List<ProductDto> products = userProductService.getUserProducts(userDetails.getEmail());
