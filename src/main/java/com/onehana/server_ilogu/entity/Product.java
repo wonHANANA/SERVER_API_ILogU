@@ -36,6 +36,11 @@ public class Product {
 
     private String profitRate;
     private String imageUrl;
+    private String feature;
+    private String target;
+    private String period;
+    private String subscriptionAmount;
+    private String minSubscriptionAmount;
 
     @OneToMany(mappedBy = "product")
     private List<UserProduct> userProducts = new ArrayList<>();

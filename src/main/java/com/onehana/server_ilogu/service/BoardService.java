@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -45,6 +46,7 @@ public class BoardService {
         Optional.ofNullable(files).ifPresent(f ->
                 amazonS3Service.uploadBoardImages(f, BoardDto.of(board)));
 
+        user.getDepositAccount().deposit(BigDecimal.valueOf(5));
         return BoardDto.of(board);
     }
 
@@ -56,7 +58,7 @@ public class BoardService {
 
         imageAnalysisResults = azureService.analyzeImagesForAdult(files);
         for (ImageAdultDto imageAdultDto : imageAnalysisResults) {
-            if (imageAdultDto.isAdult() || imageAdultDto.isGory() || imageAdultDto.isRacy()) {
+            if (imageAdultDto.isAdult() || imageAdultDto.isGory()) {
                 isSafe = false;
                 break;
             }
@@ -247,18 +249,21 @@ public class BoardService {
         return commentRepository.countByBoard(board);
     }
 
-    public int like(Long boardId, String email) {
+    public LikeDto like(Long boardId, String email) {
         User user = getUserOrException(email);
         Board board = getBoardOrException(boardId);
 
+        boolean isLike;
         BoardLike boardLike = boardLikeRepository.findByUserAndBoard(user, board);
 
         if (boardLike == null) {
             boardLikeRepository.save(BoardLike.of(user, board));
+            isLike = true;
         } else {
             boardLikeRepository.delete(boardLike);
+            isLike = false;
         }
-        return countLike(boardId);
+        return LikeDto.of(countLike(boardId), isLike);
     }
 
     public int countLike(Long boardId) {
