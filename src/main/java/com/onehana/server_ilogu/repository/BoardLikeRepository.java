@@ -8,9 +8,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Optional;
+
 public interface BoardLikeRepository extends JpaRepository<BoardLike, Long> {
 
-    BoardLike findByUserAndBoard(User user, Board board);
+    Optional<BoardLike> findByUserAndBoard(User user, Board board);
 
     @Query(value = "select count(*) from BoardLike like where like.board =:board")
     Integer countByBoard(@Param("board") Board board);

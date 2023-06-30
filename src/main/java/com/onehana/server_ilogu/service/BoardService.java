@@ -254,13 +254,14 @@ public class BoardService {
         Board board = getBoardOrException(boardId);
 
         boolean isLike;
-        BoardLike boardLike = boardLikeRepository.findByUserAndBoard(user, board);
+        Optional<BoardLike> boardLike = boardLikeRepository.findByUserAndBoard(user, board);
 
-        if (boardLike == null) {
+        if (boardLike.isEmpty()) {
             boardLikeRepository.save(BoardLike.of(user, board));
             isLike = true;
         } else {
-            boardLikeRepository.delete(boardLike);
+            BoardLike alreadyLike = boardLike.get();
+            boardLikeRepository.delete(alreadyLike);
             isLike = false;
         }
         return LikeDto.of(countLike(boardId), isLike);
