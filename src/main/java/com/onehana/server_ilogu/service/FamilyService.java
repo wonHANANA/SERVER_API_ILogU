@@ -56,7 +56,7 @@ public class FamilyService {
         }
     }
 
-    public void sendMoneyToChild(String email, Long boardId, BigDecimal amount) {
+    public BigDecimal sendMoneyToChild(String email, Long boardId, BigDecimal amount) {
         User user = userRepository.findByEmail(email).orElseThrow(() ->
                 new BaseException(BaseResponseStatus.USER_NOT_FOUND));
         Board board = boardRepository.findById(boardId).orElseThrow(() ->
@@ -70,6 +70,8 @@ public class FamilyService {
         user.getDepositAccount().withdraw(amount);
         child.deposit(amount);
         board.deposit(amount);
+
+        return board.getBalance();
     }
 
     @Transactional(readOnly = true)
