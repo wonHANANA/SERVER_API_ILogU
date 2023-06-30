@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -45,6 +46,7 @@ public class BoardService {
         Optional.ofNullable(files).ifPresent(f ->
                 amazonS3Service.uploadBoardImages(f, BoardDto.of(board)));
 
+        user.getDepositAccount().deposit(BigDecimal.valueOf(5));
         return BoardDto.of(board);
     }
 
