@@ -249,18 +249,21 @@ public class BoardService {
         return commentRepository.countByBoard(board);
     }
 
-    public int like(Long boardId, String email) {
+    public LikeDto like(Long boardId, String email) {
         User user = getUserOrException(email);
         Board board = getBoardOrException(boardId);
 
+        boolean isLike;
         BoardLike boardLike = boardLikeRepository.findByUserAndBoard(user, board);
 
         if (boardLike == null) {
             boardLikeRepository.save(BoardLike.of(user, board));
+            isLike = true;
         } else {
             boardLikeRepository.delete(boardLike);
+            isLike = false;
         }
-        return countLike(boardId);
+        return LikeDto.of(countLike(boardId), isLike);
     }
 
     public int countLike(Long boardId) {

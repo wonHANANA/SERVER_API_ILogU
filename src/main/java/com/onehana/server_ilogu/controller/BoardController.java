@@ -3,6 +3,7 @@ package com.onehana.server_ilogu.controller;
 import com.onehana.server_ilogu.dto.BoardDetailDto;
 import com.onehana.server_ilogu.dto.BoardDto;
 import com.onehana.server_ilogu.dto.ImageAdultDto;
+import com.onehana.server_ilogu.dto.LikeDto;
 import com.onehana.server_ilogu.dto.request.BoardCreateRequest;
 import com.onehana.server_ilogu.dto.request.BoardModifyRequest;
 import com.onehana.server_ilogu.dto.request.CommentRequest;
@@ -126,7 +127,7 @@ public class BoardController {
 
     @Operation(summary = "좋아요", description = "이미 좋아요 한 게시글은 좋아요가 삭제된다.", tags = "피드")
     @PutMapping("/like/{boardId}")
-    public BaseResponse<Integer> like(@PathVariable Long boardId, @AuthenticationPrincipal CustomUserDetails userDetails) {
+    public BaseResponse<LikeDto> like(@PathVariable Long boardId, @AuthenticationPrincipal CustomUserDetails userDetails) {
 
         return new BaseResponse<>(boardService.like(boardId, userDetails.getEmail()));
     }
