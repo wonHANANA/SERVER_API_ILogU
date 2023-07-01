@@ -15,6 +15,7 @@ public class CommentResponse {
     private Long id;
     private String comment;
     private String nickname;
+    private String imageUrl;
     private Long boardId;
     private Long parentComment;
     private LocalDateTime createdAt;
@@ -30,6 +31,7 @@ public class CommentResponse {
                 commentDto.getId(),
                 commentDto.getComment(),
                 commentDto.getNickname(),
+                commentDto.getImageUrl(),
                 commentDto.getBoardId(),
                 commentDto.getParentCommentId(),
                 commentDto.getCreatedAt(),

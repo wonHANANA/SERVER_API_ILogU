@@ -16,6 +16,7 @@ public class CommentDto {
     private Long id;
     private String comment;
     private String nickname;
+    private String imageUrl;
     private Long boardId;
     private Long parentCommentId;
     private LocalDateTime createdAt;
@@ -34,6 +35,7 @@ public class CommentDto {
                 comment.getId(),
                 comment.getComment(),
                 comment.getUser().getNickname(),
+                comment.getUser().getProfileImageUrl(),
                 comment.getBoard().getId(),
                 comment.getParentComment() != null ? comment.getParentComment().getId() : null,
                 comment.getCreatedAt(),
