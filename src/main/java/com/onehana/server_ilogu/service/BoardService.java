@@ -17,11 +17,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -254,13 +252,14 @@ public class BoardService {
         Board board = getBoardOrException(boardId);
 
         boolean isLike;
-        BoardLike boardLike = boardLikeRepository.findByUserAndBoard(user, board);
+        Optional<BoardLike> boardLike = boardLikeRepository.findByUserAndBoard(user, board);
 
-        if (boardLike == null) {
+        if (boardLike.isEmpty()) {
             boardLikeRepository.save(BoardLike.of(user, board));
             isLike = true;
         } else {
-            boardLikeRepository.delete(boardLike);
+            BoardLike alreadyLike = boardLike.get();
+            boardLikeRepository.delete(alreadyLike);
             isLike = false;
         }
         return LikeDto.of(countLike(boardId), isLike);

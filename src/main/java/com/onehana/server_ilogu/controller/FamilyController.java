@@ -42,10 +42,9 @@ public class FamilyController {
 
     @Operation(summary = "피드글을 통해 아이에게 송금하기", description = "우리 아이에게 돈을 송금한다.")
     @PostMapping("/board/{boardId}/balance/{balance}")
-    public BaseResponse<Void> sendMoneyToChild(@AuthenticationPrincipal CustomUserDetails userDetails,
+    public BaseResponse<BigDecimal> sendMoneyToChild(@AuthenticationPrincipal CustomUserDetails userDetails,
                                                         @PathVariable Long boardId, @PathVariable BigDecimal balance) {
-        familyService.sendMoneyToChild(userDetails.getEmail(), boardId, balance);
-        return new BaseResponse<>(SUCCESS);
+        return new BaseResponse<>(familyService.sendMoneyToChild(userDetails.getEmail(), boardId, balance));
     }
 
     @Operation(summary = "가족 게시글 조회", description = "내가 속한 가족이 올린 게시글만 조회한다.")
