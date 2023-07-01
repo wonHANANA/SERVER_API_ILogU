@@ -160,7 +160,7 @@ public class BoardController {
     }
 
     @Operation(summary = "댓글 조회", description = "해당 게시글의 모든 댓글을 조회한다.", tags = "댓글")
-    @GetMapping("/{boardId}/comments")
+    @PostMapping("/{boardId}/comments")
     public BaseResponse<Page<CommentResponse>> getComments(@PathVariable Long boardId, Pageable pageable) {
         return new BaseResponse<>(boardService.getComments(boardId, pageable).map(CommentResponse::fromCommentDto));
     }
