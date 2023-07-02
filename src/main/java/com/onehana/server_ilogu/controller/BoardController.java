@@ -1,9 +1,6 @@
 package com.onehana.server_ilogu.controller;
 
-import com.onehana.server_ilogu.dto.BoardDetailDto;
-import com.onehana.server_ilogu.dto.BoardDto;
-import com.onehana.server_ilogu.dto.ImageAdultDto;
-import com.onehana.server_ilogu.dto.LikeDto;
+import com.onehana.server_ilogu.dto.*;
 import com.onehana.server_ilogu.dto.request.BoardCreateRequest;
 import com.onehana.server_ilogu.dto.request.BoardModifyRequest;
 import com.onehana.server_ilogu.dto.request.CommentRequest;
@@ -134,11 +131,11 @@ public class BoardController {
 
     @Operation(summary = "댓글 작성", description = "댓글을 작성한다.", tags = "댓글")
     @PostMapping("/{boardId}/comment")
-    public BaseResponse<Void> createComment(@PathVariable Long boardId, @RequestBody CommentRequest request,
+    public BaseResponse<CommentResponse> createComment(@PathVariable Long boardId, @RequestBody CommentRequest request,
                                             @AuthenticationPrincipal CustomUserDetails userDetails) {
 
-        boardService.createComment(boardId, request.getParentComment(), request.getComment(), userDetails.getEmail());
-        return new BaseResponse<>(BaseResponseStatus.SUCCESS);
+        CommentDto commentDto = boardService.createComment(boardId, request.getParentComment(), request.getComment(), userDetails.getEmail());
+        return new BaseResponse<>(CommentResponse.fromCommentDto(commentDto));
     }
 
     @Operation(summary = "댓글 수정", description = "댓글을 수정한다.", tags = "댓글")
