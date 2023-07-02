@@ -2,6 +2,7 @@ package com.onehana.server_ilogu.service;
 
 import com.onehana.server_ilogu.dto.*;
 import com.onehana.server_ilogu.dto.response.BaseResponseStatus;
+import com.onehana.server_ilogu.dto.response.CommentResponse;
 import com.onehana.server_ilogu.entity.*;
 import com.onehana.server_ilogu.entity.enums.BoardCategory;
 import com.onehana.server_ilogu.exception.BaseException;
@@ -193,7 +194,7 @@ public class BoardService {
         });
     }
 
-    public void createComment(Long boardId, Long parentCommentId, String comment, String email) {
+    public CommentDto createComment(Long boardId, Long parentCommentId, String comment, String email) {
         User user = getUserOrException(email);
         Board board = getBoardOrException(boardId);
 
@@ -206,7 +207,8 @@ public class BoardService {
                 throw new BaseException(BaseResponseStatus.BOARD_COMMENT_MISMATCH);
             }
         }
-        commentRepository.save(Comment.of(user, board, comment, parentComment));
+        Comment userComment = commentRepository.save(Comment.of(user, board, comment, parentComment));
+        return CommentDto.fromEntity(userComment);
     }
 
     public void modifyComment(Long commentId, String newComment, String email) {
