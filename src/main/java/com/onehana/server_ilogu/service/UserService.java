@@ -137,6 +137,7 @@ public class UserService {
 
         return UserLoginResponse.builder()
                 .email(request.getEmail())
+                .familyType(user.getFamilyType())
                 .accessToken(tokens.getAccessToken())
                 .refreshToken(tokens.getRefreshToken())
                 .build();
