@@ -9,6 +9,7 @@ import lombok.Data;
 public class UserLoginResponse {
     private String email;
     private FamilyType familyType;
+    private String imageUrl;
     private String accessToken;
     private String refreshToken;
 }

@@ -138,6 +138,7 @@ public class UserService {
         return UserLoginResponse.builder()
                 .email(request.getEmail())
                 .familyType(user.getFamilyType())
+                .imageUrl(user.getProfileImageUrl())
                 .accessToken(tokens.getAccessToken())
                 .refreshToken(tokens.getRefreshToken())
                 .build();
