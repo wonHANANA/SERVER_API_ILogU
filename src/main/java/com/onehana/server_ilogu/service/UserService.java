@@ -1,6 +1,7 @@
 package com.onehana.server_ilogu.service;
 
 import com.onehana.server_ilogu.dto.JwtDto;
+import com.onehana.server_ilogu.dto.MyPageDto;
 import com.onehana.server_ilogu.dto.UserDto;
 import com.onehana.server_ilogu.dto.request.UserJoinRequest;
 import com.onehana.server_ilogu.dto.request.UserLoginRequest;
@@ -91,6 +92,14 @@ public class UserService {
         }
 
         return createJwtDto(user, user.getEmail());
+    }
+
+    public MyPageDto myPage(String email) {
+        User user = userRepository.findByEmail(email).orElseThrow(() -> {
+            throw new BaseException(USER_NOT_FOUND);
+        });
+
+        return MyPageDto.of(user.getNickname(), user.getProfileImageUrl());
     }
 
     private JwtDto createJwtDto(User user, String email) {
