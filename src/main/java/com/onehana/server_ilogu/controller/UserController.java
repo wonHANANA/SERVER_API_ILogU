@@ -2,6 +2,7 @@ package com.onehana.server_ilogu.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.onehana.server_ilogu.dto.JwtDto;
+import com.onehana.server_ilogu.dto.MyPageDto;
 import com.onehana.server_ilogu.dto.UserDto;
 import com.onehana.server_ilogu.dto.request.UserJoinRequest;
 import com.onehana.server_ilogu.dto.request.UserLoginRequest;
@@ -10,6 +11,7 @@ import com.onehana.server_ilogu.exception.BaseException;
 import com.onehana.server_ilogu.service.FamilyService;
 import com.onehana.server_ilogu.service.SmsService;
 import com.onehana.server_ilogu.service.UserService;
+import com.onehana.server_ilogu.util.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -21,6 +23,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -60,6 +63,12 @@ public class UserController {
         } else {
             throw new BaseException(INVALID_VERIFY_CODE);
         }
+    }
+
+    @Operation(summary = "마이 페이지", description = "마이 페이지 정보를 출력한다. [토큰만 넣으면 됩니다]")
+    @GetMapping("/myPage")
+    public BaseResponse<MyPageDto> myPage(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        return new BaseResponse<>(userService.myPage(userDetails.getEmail()));
     }
 
     @Operation(summary = "가족코드 일치여부 검사", description = "가족코드가 일치하는지 여부를 확인한다.", tags = "회원가입 유효성 검사")
