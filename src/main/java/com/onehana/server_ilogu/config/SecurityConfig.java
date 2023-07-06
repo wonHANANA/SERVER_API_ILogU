@@ -30,7 +30,6 @@ import java.util.List;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig implements WebMvcConfigurer {
-
     private final UserService userService;
     private final BCryptPasswordEncoder passwordEncoder;
 
